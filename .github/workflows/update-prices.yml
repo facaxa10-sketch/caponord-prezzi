@@ -1,0 +1,26 @@
+name: Aggiorna prezzi benzina
+on:
+  schedule:
+    - cron: "30 5 * * *"   # ogni giorno alle 07:30 italiane (05:30 UTC)
+  workflow_dispatch:        # pulsante per lanciarlo a mano
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dipendenze
+        run: pip install requests openpyxl
+      - name: Aggiorna i prezzi
+        run: python scripts/update_prices.py
+      - name: Commit se qualcosa è cambiato
+        run: |
+          git config user.name "caponord-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add prices.json
+          git diff --cached --quiet || git commit -m "Prezzi benzina $(date -u +%F)"
+          git push
