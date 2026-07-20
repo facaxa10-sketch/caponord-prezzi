@@ -1,0 +1,9 @@
+{
+ "updated": "2026-07-20",
+ "prices": {
+  "IT": 1.89, "CH": 1.89, "DE": 1.85, "DK": 2.13, "SE": 1.33,
+  "NO": 1.79, "FI": 1.90, "EE": 1.65, "LV": 1.64, "LT": 1.59, "PL": 1.35
+ },
+ "sources": {"seed": "valori manuali luglio 2026"},
+ "note": "NO e CH non hanno fonti gratuite automatiche: correggili a mano nel sito quando serve."
+}
