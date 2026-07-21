@@ -70,10 +70,14 @@ body{
 .shell{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 20px 90px}
 
 header.topbar{
-  display:flex;align-items:center;gap:14px;padding:18px 4px;position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  background:linear-gradient(180deg,rgba(11,18,32,.92),rgba(11,18,32,.72));
-  border-bottom:1px solid var(--line);margin:0 -20px;padding-left:24px;padding-right:24px;
+  background:linear-gradient(120deg,rgba(79,227,193,.14),rgba(124,108,255,.12)),linear-gradient(180deg,rgba(11,18,32,.96),rgba(11,18,32,.80));
+  border-bottom:1px solid var(--line);margin:0 -20px;
+  padding:18px 24px 18px 24px;
+  padding-top:calc(18px + env(safe-area-inset-top));
+  padding-left:calc(24px + env(safe-area-inset-left));
+  padding-right:calc(24px + env(safe-area-inset-right));
 }
 .logo{width:42px;height:42px;flex-shrink:0;animation:spinSlow 40s linear infinite}
 @keyframes spinSlow{to{transform:rotate(360deg)}}
@@ -249,8 +253,10 @@ label.f{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(
 .ck-item{
   display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;
   background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  padding:10px 14px;margin-bottom:8px;transition:all .35s cubic-bezier(.2,.8,.2,1);
+  padding:11px 14px;margin-bottom:8px;transition:background .3s,border-color .3s;
+  min-height:48px;
 }
+.ck-name{overflow-wrap:anywhere;line-height:1.3}
 .ck-item:hover{border-color:rgba(124,108,255,.4)}
 .ck-item.done{background:rgba(79,227,193,.06);border-color:rgba(79,227,193,.35)}
 .ck-item.done .ck-name{color:var(--mist);text-decoration:line-through;text-decoration-color:rgba(79,227,193,.7)}
@@ -262,7 +268,7 @@ label.f{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(
 .ck-item.done .ck-box{background:var(--aurora-1);border-color:var(--aurora-1);transform:scale(1.05)}
 .ck-item.done .ck-box svg{stroke-dashoffset:0}
 .ck-name{font-size:.92rem;font-weight:500}
-.qty{display:flex;align-items:center;gap:8px}
+.qty{display:flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap}
 .qty button{
   width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--deep);
   color:var(--ice);cursor:pointer;font-size:1rem;line-height:1;transition:all .2s;
@@ -352,6 +358,12 @@ footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);color:v
   .trophy.big{grid-column:span 2}
   .trophy{padding:14px 10px}
   .trophy .t-ico{font-size:1.9rem}
+  /* checklist: nome leggibile, quantità intatta */
+  .ck-item{grid-template-columns:auto 1fr auto;gap:10px;padding:12px}
+  .ck-name{font-size:.9rem}
+  .ck-box{width:26px;height:26px}
+  .qty button{width:30px;height:30px;font-size:1.1rem}
+  .qty b{min-width:38px;font-size:.95rem}
   .section-title{font-size:1rem;margin:32px 0 6px}
   .card{padding:16px}
   /* tappe: header leggibile su schermo stretto */
@@ -587,6 +599,14 @@ footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);color:v
 #gameCv{width:100%;max-width:340px;border-radius:14px;border:1px solid var(--line);background:#0A101E;display:block;margin:12px auto;touch-action:none}
 .g-score{display:flex;justify-content:space-between;font-family:var(--display);font-size:.8rem;color:var(--sun);max-width:340px;margin:0 auto}
 .g-board li{list-style:none;display:flex;justify-content:space-between;font-size:.85rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+
+/* barra di stato iOS colorata dietro il notch */
+body::before{
+  content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);
+
+  background:linear-gradient(120deg,rgba(79,227,193,.16),rgba(124,108,255,.14)),#0B1220;
+  z-index:60;pointer-events:none;
+}
 </style>
 </head>
 <body>
@@ -1938,7 +1958,7 @@ function cityMapSvg(name){
   labels += `<path class="leader" d="M${n0[0]} ${n0[1]} L${n1[0]} ${n1[1]}"/><text class="latlabel" x="${n1[0]+1}" y="${n1[1]}">N</text>`;
   return `<svg class="city-svg" viewBox="0 0 200 118" role="img" aria-label="Vista 3D di ${esc(name)}">${ground}${landLabels}${items.map(i=>i.s).join("")}${labels}</svg>`;
 }
-function poiIcon(t){ return t==="eat" ? "🍽" : "👁"; }
+function poiIcon(t, name){ if(name && name.indexOf("\uD83D\uDC8E")===0) return ""; return t==="eat" ? "🍽" : "👁"; }
 function haversine(a,b,c,d){
   const R=6371e3, toR=x=>x*Math.PI/180, dLa=toR(c-a), dLo=toR(d-b);
   const h=Math.sin(dLa/2)**2 + Math.cos(toR(a))*Math.cos(toR(c))*Math.sin(dLo/2)**2;
@@ -1950,10 +1970,13 @@ function openCityMap(name, dayLabel){
   if(!c && !g) return;
   const hasL = g && typeof L !== "undefined";
   const legendPois = g ? g.pois : [];
-  const legend = legendPois.length ? `<ul class="poi-legend">${legendPois.map((p,i)=>
-    `<li data-poi="${i}"><span>${poiIcon(p[3])} ${esc(p[2])}</span><span class="chip ${/gratis|GRATIS/.test(p[4]||"")?'free':'paid'}">${esc(p[4]||"")}</span></li>`).join("")}</ul>` : "";
-  const gemGuide = CITIES.find(x=>x.city.startsWith(name)) || CITIES.find(x=>x.city===name);
-  const gemHtml = (gemGuide && gemGuide.gem) ? `<div class="cc-h" style="color:var(--sun);margin-top:14px">💎 Chicche da intenditori</div><ul class="poi-legend">${gemGuide.gem.map(([a,b])=>`<li><span>${esc(a)}</span><span class="chip ${/gratis|GRATIS/.test(b)?'free':'paid'}">${esc(b)}</span></li>`).join("")}</ul>` : "";
+  const isGemName = n => n && n.indexOf("\uD83D\uDC8E")===0;
+  // ordino: prima le chicche 💎, poi il resto
+  const ordered = legendPois.map((p,i)=>({p,i})).sort((a,b)=> (isGemName(b.p[2])?1:0) - (isGemName(a.p[2])?1:0));
+  const legend = legendPois.length ? `<ul class="poi-legend">${ordered.map(({p,i})=>
+    `<li data-poi="${i}" ${isGemName(p[2])?'style="border-color:rgba(124,108,255,.35)"':''}><span>${poiIcon(p[3],p[2])} ${esc(p[2])}</span><span class="chip ${/gratis|GRATIS/.test(p[4]||"")?'free':'paid'}">${esc(p[4]||"")}</span></li>`).join("")}</ul>` : "";
+  const gemCount = legendPois.filter(p=>isGemName(p[2])).length;
+  const colorKey = legendPois.length ? `<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.72rem;color:var(--mist);margin:10px 0 2px"><span style="color:#4FE3C1">● da vedere</span><span style="color:#FFB454">● da mangiare</span>${gemCount?'<span style="color:#7C6CFF">● 💎 chicca da intenditori</span>':''}</div>` : "";
   openModal(`<h3>📍 ${esc(name)} <small>${esc(dayLabel||"")}</small></h3>
     <p style="color:var(--mist);font-size:.86rem;margin-top:4px">${esc(c?c.note:"")}</p>
     <div class="mtabs">
@@ -1965,7 +1988,7 @@ function openCityMap(name, dayLabel){
       <div class="geo-line"><button class="btn ghost" id="cityGeo" style="padding:8px 16px">📍 Aggancia GPS</button><span id="cityGeoOut">${g?"Tocca un posto nell'elenco per centrarlo · ↗ per navigare":""}</span></div>
     </div>`:`<p style="color:var(--mist);font-size:.8rem">Mappa stradale non disponibile senza connessione: vista 3D attiva.</p>`}
     <div id="mtIso" style="display:${hasL?"none":"block"}">${c?cityMapSvg(name):""}</div>
-    ${legend}${gemHtml}`);
+    ${colorKey}${legend}`);
   /* tab reale / 3D */
   modalBody.querySelectorAll(".mtabs button").forEach(b=>b.addEventListener("click",()=>{
     modalBody.querySelectorAll(".mtabs button").forEach(x=>x.classList.remove("active"));
@@ -1984,8 +2007,10 @@ function openCityMap(name, dayLabel){
     const bounds=[];
     leafMarkers = g.pois.map(p=>{
       const [la,lo,n,t,pr] = p;
-      const m = L.circleMarker([la,lo],{radius:8,color:t==="eat"?"#FFB454":"#4FE3C1",weight:2.5,fillColor:"#0B1220",fillOpacity:.92}).addTo(leafMap);
-      m.bindPopup(`<b>${poiIcon(t)} ${esc(n)}</b>${pr?"<br>"+esc(pr):""}<br><a href="https://www.google.com/maps/dir/?api=1&destination=${la},${lo}" target="_blank" rel="noopener">Naviga con Google Maps ↗</a>`);
+      const isGem = n.indexOf("\uD83D\uDC8E")===0;
+      const col = isGem ? "#7C6CFF" : (t==="eat" ? "#FFB454" : "#4FE3C1");
+      const m = L.circleMarker([la,lo],{radius:isGem?9:8,color:col,weight:isGem?3.5:2.5,fillColor:isGem?"#1a1030":"#0B1220",fillOpacity:.92}).addTo(leafMap);
+      m.bindPopup(`<b>${poiIcon(t,n)} ${esc(n)}</b>${pr?"<br>"+esc(pr):""}<br><a href="https://www.google.com/maps/dir/?api=1&destination=${la},${lo}" target="_blank" rel="noopener">Naviga con Google Maps ↗</a>`);
       bounds.push([la,lo]);
       return m;
     });
@@ -2163,10 +2188,20 @@ if("serviceWorker" in navigator){ try{ navigator.serviceWorker.register("./sw.js
 
 
 /* ---- mappa e GPS su ogni scheda della guida ---- */
+function geoKeyFor(name){
+  // normalizza il nome della guida verso le chiavi di CITYGEO/CITYMAPS
+  const base = name.split("·")[0].split("·")[0].trim();
+  if(CITYGEO[name] || CITYMAPS[name]) return name;
+  if(CITYGEO[base] || CITYMAPS[base]) return base;
+  // fallback: prima chiave che inizia uguale
+  const all = new Set([...Object.keys(CITYGEO), ...Object.keys(CITYMAPS)]);
+  for(const k of all){ if(base.startsWith(k) || k.startsWith(base)) return k; }
+  return base;
+}
 document.querySelectorAll("#cityGuide .city-card").forEach((card,i)=>{
   const c = CITIES[i];
   if(!c) return;
-  const key = c.city.split(" ·")[0].trim();
+  const key = geoKeyFor(c.city);
   if(!CITYGEO[key] && !CITYMAPS[key]) return;
   const b = document.createElement("button");
   b.className = "btn ghost";
