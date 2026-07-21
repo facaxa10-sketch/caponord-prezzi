@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 <title>CAPO NORD 2026 · Mission Control</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0B1220">
@@ -326,6 +326,72 @@ footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);color:v
   nav.tabs{width:100%;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}
   header.topbar{flex-wrap:wrap}
 }
+
+/* ============ MOBILE: layout dedicato < 640px ============ */
+@media (max-width:640px){
+  .shell{padding:0 14px 70px}
+  header.topbar{padding-left:14px;padding-right:14px;gap:10px;position:sticky;top:0}
+  .logo{width:34px;height:34px}
+  .brand{font-size:.9rem}
+  .brand small{font-size:.55rem;letter-spacing:.2em}
+  /* barra tab scorrevole, sempre visibile e comoda al pollice */
+  nav.tabs{width:100%;order:3;gap:6px;padding-bottom:4px;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,transparent,#000 8px,#000 92%,transparent)}
+  .tab{padding:9px 15px;font-size:.8rem;scroll-snap-align:start;flex:0 0 auto}
+  /* hero: tutto in colonna, testo che ci sta */
+  .hero{padding:30px 0 20px;gap:22px}
+  .hero h1{font-size:clamp(2rem,10vw,3rem)}
+  .hero p.sub{font-size:.95rem}
+  .odometer-card{padding:20px}
+  .odo-value{font-size:2.5rem}
+  #mountains{display:none}
+  /* aurora: più bassa così non copre il testo */
+  #auroraCanvas{height:38vh}
+  /* griglie a colonna singola ovunque */
+  .grid-3,.check-cols,.calc-grid,.wx-grid,.t-grid,.gallery{grid-template-columns:1fr!important}
+  .t-grid{grid-template-columns:1fr 1fr!important;gap:10px}
+  .trophy.big{grid-column:span 2}
+  .trophy{padding:14px 10px}
+  .trophy .t-ico{font-size:1.9rem}
+  .section-title{font-size:1rem;margin:32px 0 6px}
+  .card{padding:16px}
+  /* tappe: header leggibile su schermo stretto */
+  .day-row{grid-template-columns:52px 1fr;gap:10px;padding:12px}
+  .day-meta{grid-column:1/-1;justify-content:flex-start;margin-top:4px}
+  .stage-inner{grid-template-columns:1fr}
+  /* modal a tutto schermo con mappa più alta */
+  .overlay{padding:0;align-items:stretch}
+  .modal-card{max-height:100vh;border-radius:0;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
+  #cityLeaflet{height:56vh}
+  .city-svg{max-height:52vh}
+  /* form: campi impilati e grandi abbastanza da toccare */
+  .diary-form .row{grid-template-columns:1fr!important}
+  .foto-tools,.check-tools,.geo-line{flex-direction:column;align-items:stretch}
+  .foto-tools .btn,.check-tools .btn,.geo-line .btn{width:100%}
+  input,select,textarea,.btn{font-size:16px}  /* 16px = niente zoom automatico iOS */
+  .btn{padding:13px 20px}
+  /* tabelle scrollabili invece che schiacciate */
+  .fuel-table,table{font-size:.82rem}
+  /* meteo e grafici */
+  .wx-grid{grid-template-columns:1fr 1fr!important}
+  footer{flex-direction:column;gap:6px;font-size:.72rem}
+  /* countdown / trip in colonna */
+  .countdown{gap:8px}
+  .cd-cell{min-width:66px;padding:10px 12px}
+  .cd-cell b{font-size:1.4rem}
+  #gameCv{max-width:100%}
+}
+/* schermi molto stretti */
+@media (max-width:380px){
+  .t-grid{grid-template-columns:1fr!important}
+  .trophy.big{grid-column:span 1}
+  .hero h1{font-size:1.8rem}
+}
+/* garantisco tocchi comodi ovunque */
+@media (hover:none){
+  .tab,.btn,.ck-box,.qty button,.p-chip,.day-row,.trophy{min-height:40px}
+  .card:hover,.trophy:hover,.stage:hover{transform:none}  /* niente hover-tilt col dito */
+}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
@@ -2635,8 +2701,16 @@ async function initSos(){
   const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ctx = cv.getContext("2d");
   let W, H, t = 0, raf = null, visible = true;
-  function size(){ W = cv.width = innerWidth; H = cv.height = Math.round(innerHeight * 0.46); }
-  size(); addEventListener("resize", size);
+  const isMobile = innerWidth < 640;
+  const DPR = Math.min(window.devicePixelRatio||1, isMobile?1.5:2);
+  function size(){
+    const h = Math.round(innerHeight * (isMobile?0.38:0.46));
+    cv.width = Math.round(innerWidth*DPR); cv.height = Math.round(h*DPR);
+    cv.style.width = innerWidth+"px"; cv.style.height = h+"px";
+    W = cv.width; H = cv.height; ctx.setTransform(DPR,0,0,DPR,0,0); W/=DPR; H/=DPR;
+  }
+  size();
+  let rz; addEventListener("resize", ()=>{ clearTimeout(rz); rz=setTimeout(size,200); });
   // intensità 0..1 dal Kp (default tenue finché non arriva la NOAA)
   let intensity = 0.32;
   function setFromKp(){ const kp = window.__KP; if(typeof kp === "number") intensity = Math.max(0.28, Math.min(1, kp/9 + 0.15)); }
@@ -2650,7 +2724,7 @@ async function initSos(){
     ctx.clearRect(0,0,W,H);
     ctx.globalCompositeOperation = "lighter";
     bands.forEach((b,bi)=>{
-      const steps = 26;
+      const steps = isMobile ? 16 : 26;
       for(let s=0;s<steps;s++){
         const x = (s/steps)*W;
         const wave = Math.sin(x*0.006 + t*b.spd + bi) * Math.cos(x*0.013 - t*b.spd*0.7);
@@ -2713,17 +2787,21 @@ async function initSos(){
   function apply(){ cx += (tx-cx)*0.08; cy += (ty-cy)*0.08;
     layers.forEach(p=>{ const d=+p.dataset.depth; p.style.transform = `translate(${cx*d*20}px, ${cy*d*10}px)`; });
     requestAnimationFrame(apply); }
-  if(!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)){
+  const fine = window.matchMedia && matchMedia("(hover:hover) and (pointer:fine)").matches;
+  if(fine && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)){
     apply();
     addEventListener("mousemove", e=>{ tx = (e.clientX/innerWidth-0.5)*2; ty = (e.clientY/innerHeight-0.5)*2; });
     addEventListener("deviceorientation", e=>{ if(e.gamma!=null){ tx = Math.max(-1,Math.min(1,e.gamma/30)); ty = Math.max(-1,Math.min(1,(e.beta-45)/30)); } });
   }
 })();
 
-/* ================= CARD TILT 3D sotto il dito ================= */
+/* ================= CARD TILT 3D (solo desktop con mouse) ================= */
 (function(){
-  if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const fine = window.matchMedia && matchMedia("(hover:hover) and (pointer:fine)").matches;
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!fine || reduce) return;   // niente tilt su telefono: rovinava scroll e tocchi
   document.addEventListener("pointermove", e=>{
+    if(e.pointerType !== "mouse") return;
     const c = e.target.closest(".card, .trophy");
     if(!c) return;
     const r = c.getBoundingClientRect();
@@ -2739,6 +2817,12 @@ async function initSos(){
     if(c && (!e.relatedTarget || !c.contains(e.relatedTarget))) c.style.transform = "";
   });
 })();
+/* sicurezza touch: nessuna trasformazione residua sulle card */
+if(window.matchMedia && matchMedia("(hover:none)").matches){
+  document.addEventListener("touchend", ()=>{
+    document.querySelectorAll(".card,.trophy").forEach(c=>{ if(c.style.transform) c.style.transform=""; });
+  }, {passive:true});
+}
 
 /* ================= CELEBRAZIONE CAPO NORD a schermo intero ================= */
 window.celebrateNordkapp = function(){
@@ -2804,6 +2888,7 @@ function runGame(){
   function tap(e){ const r=cv.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left; move(x < r.width/2 ? -1 : 1); }
   addEventListener("keydown", key);
   cv.addEventListener("pointerdown", tap);
+  cv.addEventListener("touchmove", e=>e.preventDefault(), {passive:false});
   window.__stopGame = ()=>{ over=true; cancelAnimationFrame(raf); removeEventListener("keydown", key); window.__stopGame=null; };
   function loop(){
     if(over) return;
