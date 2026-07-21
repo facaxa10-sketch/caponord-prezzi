@@ -1,5 +1,5 @@
 /* Capo Nord 2026 · service worker: app installabile e funzionante offline */
-const CACHE = "caponord-v3";
+const CACHE = "caponord-v4";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

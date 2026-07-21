@@ -53,11 +53,11 @@ body{
   filter:blur(90px);opacity:.16;
 }
 .aurora-field::before{
-  background:radial-gradient(circle,var(--aurora-1),transparent 60%);
+  background:radial-gradient(circle,var(--aur1,var(--aurora-1)),transparent 60%);
   top:-30vmax;left:-15vmax;animation:drift1 26s ease-in-out infinite alternate;
 }
 .aurora-field::after{
-  background:radial-gradient(circle,var(--aurora-2),transparent 60%);
+  background:radial-gradient(circle,var(--aur2,var(--aurora-2)),transparent 60%);
   bottom:-35vmax;right:-20vmax;animation:drift2 32s ease-in-out infinite alternate;
 }
 @keyframes drift1{to{transform:translate(12vmax,10vmax) rotate(35deg)}}
@@ -493,10 +493,39 @@ footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);color:v
 .compass-svg{width:min(280px,80vw);height:auto;margin:10px auto;display:block}
 .compass-arrow{transition:transform .25s cubic-bezier(.2,.8,.2,1);transform-origin:100px 100px}
 .fill-entry{display:grid;grid-template-columns:70px 1fr auto auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.85rem}
+
+/* ---------- v8: aurora viva, intro, gioco ---------- */
+#auroraCanvas{position:fixed;top:0;left:0;width:100vw;height:46vh;z-index:0;pointer-events:none;opacity:.85}
+#introOverlay{position:fixed;inset:0;z-index:200;background:#060B15;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;transition:opacity .8s ease}
+#introOverlay.out{opacity:0;pointer-events:none}
+#introOverlay svg{width:min(340px,80vw)}
+#introOverlay .i-star{stroke:#4FE3C1;stroke-width:2;fill:none;stroke-dasharray:400;stroke-dashoffset:400;animation:idraw 1.2s ease forwards}
+#introOverlay .i-route{stroke:url(#igrad);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-dasharray:600;stroke-dashoffset:600;animation:idraw 1.4s ease .7s forwards}
+#introOverlay .i-dot{fill:#FFB454;opacity:0;animation:ifade .4s ease 1.9s forwards}
+@keyframes idraw{to{stroke-dashoffset:0}}
+@keyframes ifade{to{opacity:1}}
+#introOverlay h2{font-family:var(--display);letter-spacing:.3em;color:var(--ice);font-size:1rem;opacity:0;animation:ifade .6s ease 2s forwards}
+#introOverlay small{color:var(--mist);font-size:.65rem;letter-spacing:.2em;opacity:0;animation:ifade .6s ease 2.4s forwards}
+.hero{position:relative}
+#mountains{position:absolute;left:-30px;right:-30px;bottom:-14px;height:120px;z-index:-1;opacity:.5;pointer-events:none}
+#mountains path{transition:transform .2s ease-out}
+.card,.trophy{will-change:transform}
+.wx-ico{display:inline-block;animation:wxfloat 3.4s ease-in-out infinite}
+@keyframes wxfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+#bigCeleb{position:fixed;inset:0;z-index:300;background:radial-gradient(ellipse at 50% 120%,rgba(79,227,193,.25),#060B15 70%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;animation:ifade .5s ease;cursor:pointer}
+#bigCeleb .globe{font-size:6rem;animation:spinSlow 9s linear infinite;filter:drop-shadow(0 0 30px rgba(79,227,193,.8))}
+#bigCeleb h2{font-family:var(--display);font-size:clamp(1.6rem,7vw,3rem);letter-spacing:.15em;color:var(--sun);text-align:center}
+#bigCeleb p{color:var(--ice);letter-spacing:.25em;font-family:var(--display)}
+#bigCeleb .sweep{position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(124,108,255,.25) 45%,rgba(79,227,193,.3) 55%,transparent 70%);animation:sweep 2.6s ease-in-out infinite;pointer-events:none}
+@keyframes sweep{0%{transform:translateX(-60%)}100%{transform:translateX(60%)}}
+#gameCv{width:100%;max-width:340px;border-radius:14px;border:1px solid var(--line);background:#0A101E;display:block;margin:12px auto;touch-action:none}
+.g-score{display:flex;justify-content:space-between;font-family:var(--display);font-size:.8rem;color:var(--sun);max-width:340px;margin:0 auto}
+.g-board li{list-style:none;display:flex;justify-content:space-between;font-size:.85rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)}
 </style>
 </head>
 <body>
 <div class="aurora-field" aria-hidden="true"></div>
+<canvas id="auroraCanvas" aria-hidden="true"></canvas>
 <div class="stars" id="stars" aria-hidden="true"></div>
 
 <div class="shell">
@@ -1389,7 +1418,10 @@ function renderChecklist(){
     it.querySelector(".ck-box").addEventListener("click",()=>{
       st.done = !st.done;
       it.classList.toggle("done", st.done);
-      it.querySelector(".ck-box").setAttribute("aria-pressed", st.done);
+      const box = it.querySelector(".ck-box");
+      box.setAttribute("aria-pressed", st.done);
+      try{ box.animate([{transform:"scale(1.35)"},{transform:"scale(1)"}],{duration:280,easing:"cubic-bezier(.2,.8,.2,1)"}); }catch(e){}
+      if(st.done && navigator.vibrate) try{ navigator.vibrate(14); }catch(e){}
       saveCk();
     });
     it.querySelectorAll(".qty button[data-q]").forEach(b=>b.addEventListener("click",()=>{
@@ -1869,6 +1901,7 @@ let leafMap=null, leafMarkers=[], cityWatch=null;
 function closeModal(){
   if(cityWatch!==null){ try{navigator.geolocation.clearWatch(cityWatch);}catch(e){} cityWatch=null; }
   if(leafMap){ try{leafMap.remove();}catch(e){} leafMap=null; leafMarkers=[]; }
+  if(window.__stopGame) window.__stopGame();
   modal.classList.remove("show"); modalBody.innerHTML="";
 }
 $("#modalX").addEventListener("click", closeModal);
@@ -2086,7 +2119,9 @@ function unlockTrophy(id, silent){
     confettiBurst(el, tr.big);
     setTimeout(()=>el.classList.remove("pop"), 700);
   }
-  if(!silent) toast("🏆 Trofeo sbloccato: "+tr.t);
+  if(navigator.vibrate) try{ navigator.vibrate(tr.big ? [60,40,60,40,120] : [30,30,50]); }catch(e){}
+  if(id === "nordkapp" && window.celebrateNordkapp) window.celebrateNordkapp();
+  else if(!silent) toast("🏆 Trofeo sbloccato: "+tr.t);
 }
 function confettiBurst(el, big){
   const colors = ["#4FE3C1","#7C6CFF","#FFB454","#E9F2F9","#FF6B7A"];
@@ -2251,6 +2286,8 @@ async function loadAurora(){
     out.innerHTML = `NOAA non raggiungibile da questa rete (a volte i firewall o il risparmio dati la bloccano). <button class="btn ghost" style="padding:6px 12px" onclick="loadAurora()">↻ Riprova</button> &nbsp;oppure controlla su <a href="https://www.swpc.noaa.gov/products/planetary-k-index" target="_blank" rel="noopener" style="color:var(--aurora-1)">swpc.noaa.gov</a>.`;
     return;
   }
+  window.__KP = maxKp;
+  try{ window.dispatchEvent(new Event("kpupdate")); }catch(e){}
   let msg, cls;
   if(maxKp >= 5){ msg = "MOLTO ALTA: tempesta geomagnetica, aurora possibile anche a sud del Circolo"; cls="free"; }
   else if(maxKp >= 4){ msg = "ALTA sopra il Circolo Polare: naso all'insù appena è sereno"; cls="free"; }
@@ -2496,6 +2533,254 @@ async function initSos(){
   });
 }
 
+
+/* ================= INTRO CINEMATICA (una volta per sessione) ================= */
+(function(){
+  if(sessionStorage && sessionStorage.getItem("cn-intro")) return;
+  try{ sessionStorage.setItem("cn-intro","1"); }catch(e){}
+  const ov = document.createElement("div");
+  ov.id = "introOverlay";
+  ov.innerHTML = `
+    <svg viewBox="0 0 300 200" aria-hidden="true">
+      <defs><linearGradient id="igrad" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#4FE3C1"/><stop offset="1" stop-color="#7C6CFF"/></linearGradient></defs>
+      <path class="i-star" d="M150 40 L158 74 L192 82 L158 90 L150 124 L142 90 L108 82 L142 74 Z"/>
+      <path class="i-route" d="M120 165 Q100 120 150 95 Q200 70 165 45"/>
+      <circle class="i-dot" cx="120" cy="165" r="4"/>
+      <circle class="i-dot" cx="165" cy="45" r="5"/>
+    </svg>
+    <h2>CAPO NORD 2026</h2>
+    <small>TORINO → 71°10′ N → TORINO</small>`;
+  document.body.appendChild(ov);
+  const done = ()=>{ ov.classList.add("out"); setTimeout(()=>ov.remove(), 850); };
+  ov.addEventListener("click", done);
+  setTimeout(done, 3200);
+})();
+
+/* ================= AURORA VIVA (canvas, intensità = Kp reale) ================= */
+(function(){
+  const cv = document.getElementById("auroraCanvas");
+  if(!cv) return;
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ctx = cv.getContext("2d");
+  let W, H, t = 0, raf = null, visible = true;
+  function size(){ W = cv.width = innerWidth; H = cv.height = Math.round(innerHeight * 0.46); }
+  size(); addEventListener("resize", size);
+  // intensità 0..1 dal Kp (default tenue finché non arriva la NOAA)
+  let intensity = 0.32;
+  function setFromKp(){ const kp = window.__KP; if(typeof kp === "number") intensity = Math.max(0.28, Math.min(1, kp/9 + 0.15)); }
+  addEventListener("kpupdate", setFromKp); setFromKp();
+  const bands = [
+    {col:[79,227,193], y:0.30, amp:0.10, w:0.9, spd:0.16},
+    {col:[124,108,255], y:0.42, amp:0.14, w:1.3, spd:0.11},
+    {col:[95,220,180], y:0.24, amp:0.08, w:0.7, spd:0.21}
+  ];
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.globalCompositeOperation = "lighter";
+    bands.forEach((b,bi)=>{
+      const steps = 26;
+      for(let s=0;s<steps;s++){
+        const x = (s/steps)*W;
+        const wave = Math.sin(x*0.006 + t*b.spd + bi) * Math.cos(x*0.013 - t*b.spd*0.7);
+        const topY = H*b.y + wave*H*b.amp;
+        const h = H*(0.34 + 0.12*Math.sin(x*0.01 + t*0.2));
+        const a = intensity * (0.05 + 0.05*Math.sin(x*0.02 + t*0.5 + bi)) ;
+        const grad = ctx.createLinearGradient(0, topY, 0, topY + h);
+        grad.addColorStop(0, `rgba(${b.col[0]},${b.col[1]},${b.col[2]},0)`);
+        grad.addColorStop(0.4, `rgba(${b.col[0]},${b.col[1]},${b.col[2]},${a})`);
+        grad.addColorStop(1, `rgba(${b.col[0]},${b.col[1]},${b.col[2]},0)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(x-2, topY, (W/steps)+4, h);
+      }
+    });
+    ctx.globalCompositeOperation = "source-over";
+    t += 0.016;
+    if(visible) raf = requestAnimationFrame(draw);
+  }
+  if(reduce){ intensity = 0.4; draw(); if(raf) cancelAnimationFrame(raf); }
+  else{
+    draw();
+    document.addEventListener("visibilitychange", ()=>{
+      visible = !document.hidden;
+      if(visible && !raf){ raf = requestAnimationFrame(draw); }
+      else if(!visible && raf){ cancelAnimationFrame(raf); raf = null; }
+    });
+  }
+})();
+
+/* ================= CIELO DINAMICO (ora + latitudine di oggi) ================= */
+(function(){
+  try{
+    const d = tripDay();
+    const dest = (d>=1 && d<=DESTS.length) ? DESTS[d-1] : "Torino";
+    const lat = (CITYGEO[dest]||{c:[45,7]}).c[0];
+    const hour = new Date().getHours();
+    let top;
+    if(hour < 6 || hour >= 21) top = "#060B15";        // notte artica
+    else if(hour < 9) top = "#0E1A2E";                  // alba
+    else if(hour < 18) top = "#0C1526";                 // giorno
+    else top = "#0B1220";                               // tramonto
+    // più a nord = più scuro e profondo
+    if(lat > 66) top = "#05090F";
+    document.body.style.background = `linear-gradient(180deg, ${top} 0%, var(--night) 60%)`;
+  }catch(e){}
+})();
+
+/* ================= MONTAGNE IN PARALLASSE (giroscopio + mouse) ================= */
+(function(){
+  const hero = document.querySelector(".hero");
+  if(!hero) return;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.id = "mountains"; svg.setAttribute("viewBox","0 0 800 120"); svg.setAttribute("preserveAspectRatio","none");
+  svg.innerHTML = `
+    <path data-depth="0.4" fill="#131E33" d="M0 120 L0 70 L120 40 L240 75 L360 35 L480 80 L600 45 L720 78 L800 55 L800 120 Z"/>
+    <path data-depth="0.8" fill="#0E1729" d="M0 120 L0 90 L100 60 L220 95 L340 62 L460 98 L580 68 L700 100 L800 78 L800 120 Z"/>`;
+  hero.appendChild(svg);
+  const layers = [...svg.querySelectorAll("path")];
+  let tx = 0, ty = 0, cx = 0, cy = 0;
+  function apply(){ cx += (tx-cx)*0.08; cy += (ty-cy)*0.08;
+    layers.forEach(p=>{ const d=+p.dataset.depth; p.style.transform = `translate(${cx*d*20}px, ${cy*d*10}px)`; });
+    requestAnimationFrame(apply); }
+  if(!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)){
+    apply();
+    addEventListener("mousemove", e=>{ tx = (e.clientX/innerWidth-0.5)*2; ty = (e.clientY/innerHeight-0.5)*2; });
+    addEventListener("deviceorientation", e=>{ if(e.gamma!=null){ tx = Math.max(-1,Math.min(1,e.gamma/30)); ty = Math.max(-1,Math.min(1,(e.beta-45)/30)); } });
+  }
+})();
+
+/* ================= CARD TILT 3D sotto il dito ================= */
+(function(){
+  if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  document.addEventListener("pointermove", e=>{
+    const c = e.target.closest(".card, .trophy");
+    if(!c) return;
+    const r = c.getBoundingClientRect();
+    const px = (e.clientX-r.left)/r.width - 0.5, py = (e.clientY-r.top)/r.height - 0.5;
+    c.style.transform = `perspective(700px) rotateX(${(-py*6).toFixed(2)}deg) rotateY(${(px*6).toFixed(2)}deg) translateY(-3px)`;
+  });
+  document.addEventListener("pointerleave", e=>{
+    const c = e.target.closest && e.target.closest(".card, .trophy");
+    if(c) c.style.transform = "";
+  }, true);
+  document.addEventListener("pointerout", e=>{
+    const c = e.target.closest && e.target.closest(".card, .trophy");
+    if(c && (!e.relatedTarget || !c.contains(e.relatedTarget))) c.style.transform = "";
+  });
+})();
+
+/* ================= CELEBRAZIONE CAPO NORD a schermo intero ================= */
+window.celebrateNordkapp = function(){
+  const el = document.createElement("div");
+  el.id = "bigCeleb";
+  el.innerHTML = `<div class="sweep"></div><div class="globe">🌍</div>
+    <h2>CAPO NORD RAGGIUNTO</h2>
+    <p>71°10′21″ N</p>
+    <p style="color:var(--mist);font-size:.8rem;letter-spacing:.15em">STE · VALE · ALE — IL TETTO D'EUROPA È VOSTRO</p>`;
+  document.body.appendChild(el);
+  if(navigator.vibrate) try{ navigator.vibrate([80,50,80,50,80,50,200]); }catch(e){}
+  // pioggia di aurora/coriandoli
+  const colors = ["#4FE3C1","#7C6CFF","#FFB454","#E9F2F9"];
+  for(let i=0;i<70;i++){
+    const c = document.createElement("span");
+    c.className = "confetto";
+    c.style.cssText = `left:${Math.random()*100}%;top:-10px;position:fixed;background:${colors[i%4]};--dx:${(Math.random()*120-60)|0}px;--dy:${(innerHeight*0.9)|0}px;animation-duration:${(1.4+Math.random()*1.4).toFixed(1)}s;animation-delay:${(Math.random()*.6).toFixed(2)}s;z-index:301`;
+    el.appendChild(c); setTimeout(()=>c.remove(), 3200);
+  }
+  const close = ()=> el.remove();
+  el.addEventListener("click", close);
+  setTimeout(close, 6000);
+};
+
+/* ================= EASTER EGG: RENNA RUSH (5 tap sul logo) ================= */
+(function(){
+  const logo = document.querySelector(".logo");
+  if(!logo) return;
+  let taps = 0, tm = null;
+  logo.style.cursor = "pointer";
+  logo.addEventListener("click", ()=>{
+    taps++; clearTimeout(tm); tm = setTimeout(()=>taps=0, 800);
+    if(taps >= 5){ taps = 0; openRennaRush(); }
+  });
+})();
+async function openRennaRush(){
+  let hi = 0;
+  try{ const b = await store.get("caponord-rennarush", true); if(b && b.scores){ hi = Math.max(0,...b.scores.map(s=>s.pts)); } }catch(e){}
+  openModal(`<h3>🦌 Renna Rush <small>schiva le renne sulla E69</small></h3>
+    <div class="g-score"><span id="gS">Punti: 0</span><span>Record: ${hi}</span></div>
+    <canvas id="gameCv" width="340" height="440"></canvas>
+    <p style="color:var(--mist);font-size:.8rem;text-align:center">Tocca a sinistra/destra (o frecce ⬅➡) per sterzare. Più vai avanti, più corri.</p>
+    <ol class="g-board" id="gBoard"></ol>`);
+  renderBoard();
+  runGame();
+}
+async function renderBoard(){
+  const el = document.getElementById("gBoard"); if(!el) return;
+  let scores = [];
+  try{ const b = await store.get("caponord-rennarush", true); if(b && b.scores) scores = b.scores; }catch(e){}
+  scores.sort((a,b)=>b.pts-a.pts);
+  el.innerHTML = scores.slice(0,5).map((s,i)=>`<li><span>${["🥇","🥈","🥉","4.","5."][i]} ${esc(s.who||"?")}</span><span style="color:var(--sun);font-family:var(--display)">${s.pts}</span></li>`).join("") || `<li style="color:var(--mist)">Nessun record ancora: siate i primi!</li>`;
+}
+function runGame(){
+  const cv = document.getElementById("gameCv"); if(!cv) return;
+  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const lanes = [W*0.25, W*0.5, W*0.75];
+  let lane = 1, bikeY = H-70, obs = [], score = 0, speed = 3.2, tick = 0, over = false, raf;
+  let dashY = 0;
+  function spawn(){ obs.push({lane: (Math.random()*3)|0, y: -40, kind: Math.random()<0.82?"🦌":"🪨"}); }
+  function move(dir){ lane = Math.max(0, Math.min(2, lane+dir)); }
+  function key(e){ if(e.key==="ArrowLeft") move(-1); if(e.key==="ArrowRight") move(1); }
+  function tap(e){ const r=cv.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left; move(x < r.width/2 ? -1 : 1); }
+  addEventListener("keydown", key);
+  cv.addEventListener("pointerdown", tap);
+  window.__stopGame = ()=>{ over=true; cancelAnimationFrame(raf); removeEventListener("keydown", key); window.__stopGame=null; };
+  function loop(){
+    if(over) return;
+    tick++; score = Math.floor(tick/6); speed = 3.2 + score*0.02;
+    ctx.fillStyle = "#0A101E"; ctx.fillRect(0,0,W,H);
+    // strada
+    ctx.fillStyle = "#131E33"; ctx.fillRect(W*0.15,0,W*0.7,H);
+    ctx.strokeStyle = "rgba(147,166,194,.5)"; ctx.lineWidth = 3; ctx.setLineDash([18,18]);
+    dashY = (dashY + speed) % 36;
+    [W*0.383, W*0.617].forEach(x=>{ ctx.beginPath(); ctx.moveTo(x,-36+dashY); ctx.lineTo(x,H); ctx.stroke(); });
+    ctx.setLineDash([]);
+    if(tick % Math.max(26, 60-score) === 0) spawn();
+    ctx.font = "30px sans-serif"; ctx.textAlign = "center";
+    obs.forEach(o=>{ o.y += speed; ctx.fillText(o.kind, lanes[o.lane], o.y); });
+    obs = obs.filter(o=>{
+      if(o.y > bikeY-26 && o.y < bikeY+26 && o.lane === lane){ endGame(); return false; }
+      return o.y < H+40;
+    });
+    ctx.font = "34px sans-serif"; ctx.fillText("🏍", lanes[lane], bikeY);
+    const s = document.getElementById("gS"); if(s) s.textContent = "Punti: "+score;
+    raf = requestAnimationFrame(loop);
+  }
+  async function endGame(){
+    over = true; cancelAnimationFrame(raf); removeEventListener("keydown", key);
+    if(navigator.vibrate) try{ navigator.vibrate(120); }catch(e){}
+    ctx.fillStyle = "rgba(6,11,21,.85)"; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = "#FF6B7A"; ctx.font = "700 26px 'Chakra Petch',sans-serif"; ctx.textAlign="center";
+    ctx.fillText("BAM! 🦌", W/2, H/2-30);
+    ctx.fillStyle = "#E9F2F9"; ctx.font = "20px 'Chakra Petch',sans-serif";
+    ctx.fillText("Punti: "+score, W/2, H/2+6);
+    ctx.fillStyle = "#4FE3C1"; ctx.font = "14px Inter"; ctx.fillText("tocca per rigiocare", W/2, H/2+40);
+    // salva punteggio condiviso
+    try{
+      const who = prompt("Renna schivata male! Chi sei? (Ste / Vale / Ale)", "Ste");
+      if(who){
+        const b = (await store.get("caponord-rennarush", true)) || {scores:[]};
+        b.scores = b.scores || []; b.scores.push({who: who.slice(0,12), pts: score, d: new Date().toLocaleDateString("it-IT")});
+        b.scores.sort((a,b)=>b.pts-a.pts); b.scores = b.scores.slice(0,10);
+        await store.set("caponord-rennarush", b, true);
+        renderBoard();
+      }
+    }catch(e){}
+    cv.addEventListener("pointerdown", function again(){ cv.removeEventListener("pointerdown", again); over=false; obs=[]; score=0; tick=0; lane=1; addEventListener("keydown",key); loop(); }, {once:true});
+  }
+  loop();
+}
+
+/* ================= AVVIO ================= */
 initFuel();
 initChecklist();
 initDiary();
