@@ -4,7 +4,7 @@
    - librerie esterne (mappe, globo, font): messe in cache alla prima visita
    - tessere delle mappe: quelle già viste restano leggibili senza rete
    =========================================================================== */
-const VERSION    = "v22";
+const VERSION    = "v25";
 const CACHE_APP  = "caponord-app-"   + VERSION;
 const CACHE_LIB  = "caponord-lib-"   + VERSION;
 const CACHE_TILE = "caponord-tiles-" + VERSION;

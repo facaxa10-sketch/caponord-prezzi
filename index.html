@@ -778,6 +778,25 @@ body.polar-night .stars span{animation-duration:3s}
 .pos-row b{font-family:var(--display);letter-spacing:.03em}
 .pos-row .pr-meta{font-family:var(--mono);font-size:.7rem;color:var(--mist);margin-top:2px}
 .pos-row a{font-size:.78rem}
+
+/* ---------- autonomia e distributori ---------- */
+.leg-box{margin-bottom:18px}
+.leg-title{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--aurora-1);margin:14px 0 8px}
+.seg{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:9px 14px;margin-bottom:6px;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:.85rem}
+.seg.warn{border-color:rgba(255,180,84,.55);background:linear-gradient(90deg,rgba(255,180,84,.10),var(--panel))}
+.seg.bad{border-color:rgba(255,107,122,.6);background:linear-gradient(90deg,rgba(255,107,122,.12),var(--panel))}
+.seg .sd{font-family:var(--mono);color:var(--ice)}
+.seg .sx{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}
+.seg.ok .sx{color:var(--aurora-1)}.seg.warn .sx{color:var(--sun)}.seg.bad .sx{color:var(--alert)}
+.fs-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 14px;margin-bottom:6px;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:.85rem}
+.fs-row .fs-flag{font-size:1.05rem}
+.fs-row .fs-note{font-size:.72rem;color:var(--mist);margin-top:1px}
+.fs-row.key{border-color:rgba(79,227,193,.45)}
+.risk-chip{display:inline-flex;align-items:center;gap:3px;font-size:.6rem;padding:2px 7px;border-radius:99px;
+  border:1px solid currentColor;letter-spacing:.04em;white-space:nowrap}
+.risk-deer{color:#C9A227}.risk-wind{color:#5FB8D8}.risk-fuel{color:#FF8A5B}.risk-cold{color:#8FB7FF}
 </style>
 </head>
 <body>
@@ -1022,6 +1041,23 @@ body.polar-night .stars span{animation-duration:3s}
     </div>
   </div>
 
+  <h2 class="section-title">Autonomia e distributori</h2>
+  <p class="section-sub">Nel Nord i distributori si diradano: sulla E69 c'è carburante solo a Olderfjord e Honningsvåg, poi bisogna scendere ad Alta o Lakselv. Imposta l'autonomia reale delle moto e l'app segnala i tratti in cui rischiate di restare a secco.</p>
+  <div class="card reveal">
+    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:0 0 190px">
+        <label class="f" for="rangeKm">Autonomia per pieno (km)</label>
+        <input type="number" id="rangeKm" min="80" max="600" step="10" value="300">
+      </div>
+      <div style="flex:1;min-width:220px;font-size:.84rem;color:var(--mist)">
+        Regola d'oro artica: <b style="color:var(--ice)">mai sotto un quarto di serbatoio</b>. Molte stazioni sono automatiche 24h a carta, ma alcune chiudono la sera: nel dubbio, fai il pieno quando puoi, non quando serve.
+      </div>
+    </div>
+    <div id="rangeOut" style="margin-top:16px"></div>
+  </div>
+  <h3 class="section-title" style="font-size:.9rem;margin-top:26px">Distributori sui tratti isolati</h3>
+  <div id="fuelStops"></div>
+
   <h2 class="section-title">Registro pieni · consumo reale</h2>
   <p class="section-sub">Registrate ogni pieno: l'app calcola il consumo vero di ciascuna moto, il prezzo medio pagato e il confronto col piano. Condiviso con tutto l'equipaggio.</p>
   <div class="diary-form reveal">
@@ -1051,6 +1087,11 @@ body.polar-night .stars span{animation-duration:3s}
       <div><label class="f" for="exSplit">Diviso tra</label><select id="exSplit"><option>Tutti e 3</option><option>Ste+Vale</option><option>Ste+Ale</option><option>Vale+Ale</option></select></div>
     </div>
     <div style="margin-top:14px"><button class="btn" id="exSave">💶 Aggiungi spesa</button></div>
+  </div>
+  <div class="card reveal" style="border-color:rgba(79,227,193,.35);margin-bottom:16px">
+    <h3>🛣 Pedaggi e traghetti · cosa pagate davvero</h3>
+    <p style="margin-top:6px"><b style="color:var(--aurora-1)">In Norvegia le moto non pagano i pedaggi</b> ai caselli automatici (esenzione ufficiale AutoPASS): quella voce potete toglierla dal budget. Anche il tunnel di Capo Nord è gratuito dal 2012 e il piazzale del Globo è libero.</p>
+    <p style="margin-top:8px">Si paga invece sui <b>traghetti</b>, dove la targa viene letta in automatico e la fattura arriva al proprietario: se ne prevedete, registrate targhe e carta su <a href="https://www.epass24.com" target="_blank" rel="noopener">Epass24</a> o FerryPay prima di partire. Da prenotare a parte il traghetto <b>Helsinki → Tallinn</b> con le moto.</p>
   </div>
   <div id="settleBox"></div>
   <div id="expList"></div>
@@ -1160,6 +1201,11 @@ body.polar-night .stars span{animation-duration:3s}
   <p class="section-sub">La formula segreta: incrocio l'indice Kp con la copertura nuvolosa reale di ogni tappa artica, notte per notte. Verde = <b style="color:var(--ice)">cielo sereno E aurora probabile: esci ADESSO</b>. Nessuna app turistica lo fa.</p>
   <div class="sky-grid" id="skyGrid"><div class="empty-illus"><div class="spinner"></div><p>Carico Kp e nuvole per le tappe del Nord…</p></div></div>
 
+  <div class="card reveal" id="dressCard">
+    <h3>🧥 Vestizione di oggi</h3>
+    <p id="dressOut">Leggo il meteo…</p>
+  </div>
+
   <h2 class="section-title">Previsioni per le tappe</h2>
   <div class="wx-grid" id="wxGrid"><div class="empty-state" id="wxEmpty">Caricamento…</div></div>
   <h2 class="section-title">Ore di luce lungo la rotta</h2>
@@ -1205,6 +1251,7 @@ body.polar-night .stars span{animation-duration:3s}
 <footer>
   <span>CAPO NORD 2026 · 28 AGO → 20 SET · STE + VALE + ALE · 2 MOTO</span>
   <span>Itinerario dal piano ufficiale · prezzi verificati a luglio 2026</span>
+  <span id="appVer" style="opacity:.55">build —</span>
 </footer>
 
 </div>
@@ -2798,7 +2845,7 @@ function drawDaylight(){
   svg.innerHTML = g;
   $("#dayNote").textContent = `Da ${start.h.toFixed(1)} ore di luce alla partenza a ${apex.h.toFixed(1)} nel punto più corto (${apex.dest}), risalendo a ${end.h.toFixed(1)} al rientro: pianificate le partenze di conseguenza.`;
 }
-document.querySelector('.tab[data-view="meteo"]').addEventListener("click", loadMeteo);
+document.querySelector('.tab[data-view="meteo"]').addEventListener("click", ()=>{ loadMeteo(); if(typeof updateDressing==="function") updateDressing(); });
 /* moto dimostrativa alla prima apertura del tab Mappa (prima della partenza) */
 (function(){
   let shown = false;
@@ -3746,6 +3793,14 @@ async function loadSkyHunt(){
   }
   if(!arctic.length){ grid.innerHTML = '<div class="empty-illus"><p>Nessuna tappa artica in elenco.</p></div>'; return; }
   const kp = (typeof window.__KP === "number") ? window.__KP : null;
+  const horizonDays = Math.ceil((new Date(TRIP_START.getTime() + (arctic[0].i)*864e5) - new Date())/864e5);
+  if(horizonDays > 15){
+    grid.innerHTML = `<div class="empty-illus" style="grid-column:1/-1">
+      <p><b style="color:var(--ice)">Le nuvole si sbloccano tra ${horizonDays-15} giorni.</b><br>
+      Le previsioni meteo coprono 16 giorni: l'incrocio Kp × nuvole per le tappe artiche (G13–G16, Skibotn → Muonio)
+      comparirà qui appena la finestra si apre. Intanto l'indice Kp qui sopra è già in diretta dalla NOAA.</p></div>`;
+    return;
+  }
   const cards = [];
   for(const a of arctic){
     const iso = tripDateISO(a.i);
@@ -4355,6 +4410,8 @@ document.querySelector('.tab[data-view="mappa"]')?.addEventListener("click", asy
 });
 
 initCrewPos();
+setTimeout(()=>{ if(typeof updateDressing==="function") updateDressing(); }, 900);
+(function(){ const v=document.getElementById("appVer"); if(v) v.textContent = "build 24 · vestizione+autonomia"; })();
 
 
 
@@ -4367,12 +4424,227 @@ initCrewPos();
     if(!force && Date.now()-last < REFRESH) return;
     last = Date.now();
     try{ if(typeof applyTodayWeatherFx==="function") applyTodayWeatherFx(); }catch(e){}
-    try{ if(typeof loadAurora==="function") loadAurora(); }catch(e){}   // aggiorna il Kp -> intensità aurora
+    try{ if(typeof loadAurora==="function") loadAurora(); }catch(e){}
+    try{ if(typeof updateDressing==="function") updateDressing(); }catch(e){}   // aggiorna il Kp -> intensità aurora
   }
   setTimeout(()=>refresh(true), 3000);          // subito all'avvio, anche senza aprire il tab Meteo
   setInterval(()=>refresh(false), REFRESH);     // e poi ogni mezz'ora
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) refresh(false); });
   addEventListener("online", ()=>refresh(true));
+})();
+
+
+
+/* ================= AUTONOMIA E DISTRIBUTORI NEI TRATTI ISOLATI ================= */
+/* Punti di rifornimento reali lungo la rotta nord. Le distanze sono stimate sulla
+   distanza geografica maggiorata del 22% (fattore strada): servono a capire dove
+   il tratto è lungo, non a sostituire il navigatore. */
+const FUEL_STOPS = [
+  // Lapponia svedese
+  {n:"Umeå",            la:63.826, lo:20.263, c:"🇸🇪", note:"Ultima città grande prima del Nord: fai scorta anche di cibo"},
+  {n:"Luleå",           la:65.584, lo:22.155, c:"🇸🇪", note:"Molte stazioni 24h sulla E4"},
+  {n:"Gällivare",       la:67.135, lo:20.660, c:"🇸🇪", note:"Ultimo centro prima di Kiruna"},
+  {n:"Svappavaara",     la:67.650, lo:21.020, c:"🇸🇪", note:"Bivio E10/E45, stazione automatica"},
+  {n:"Kiruna",          la:67.855, lo:20.225, c:"🇸🇪", note:"Base sicura: pieno completo prima della E10 verso la Norvegia"},
+  {n:"Riksgränsen",     la:68.425, lo:18.129, c:"🇸🇪", note:"Piccola, vicino al confine: non contarci come unica opzione"},
+  // Norvegia settentrionale
+  {n:"Narvik",          la:68.438, lo:17.427, c:"🇳🇴", note:"Città: rifornimento e officine"},
+  {n:"Bjerkvik",        la:68.548, lo:17.548, c:"🇳🇴", note:"Bivio E6/E10, comodo prima delle Lofoten"},
+  {n:"Svolvær",         la:68.234, lo:14.567, c:"🇳🇴", note:"Lofoten est"},
+  {n:"Leknes",          la:68.148, lo:13.612, c:"🇳🇴", note:"Lofoten ovest: ultimo pieno affidabile verso Reine"},
+  {n:"Nordkjosbotn",    la:69.220, lo:19.540, c:"🇳🇴", note:"Nodo E6/E8: stazione grande, aperta a lungo"},
+  {n:"Skibotn",         la:69.390, lo:20.267, c:"🇳🇴", note:"Prima del valico verso la Finlandia"},
+  {n:"Nordreisa/Storslett", la:69.767, lo:21.030, c:"🇳🇴", note:"Tratto lungo e disabitato prima e dopo"},
+  {n:"Alta",            la:69.968, lo:23.271, c:"🇳🇴", note:"Ultima città vera prima del Finnmark interno"},
+  {n:"Skaidi",          la:70.450, lo:24.530, c:"🇳🇴", note:"Bivio per Hammerfest, in mezzo al nulla"},
+  {n:"Olderfjord",      la:70.474, lo:25.071, c:"🇳🇴", note:"⚠️ Ultimo distributore prima della E69: piccolo, orari ridotti"},
+  {n:"Honningsvåg",     la:70.978, lo:25.970, c:"🇳🇴", note:"⚠️ Unico rifornimento sull'isola: a Capo Nord NON c'è benzina"},
+  {n:"Lakselv",         la:70.050, lo:24.973, c:"🇳🇴", note:"Alternativa sulla E6 (YX), utile al ritorno"},
+  {n:"Karasjok",        la:69.472, lo:25.512, c:"🇳🇴", note:"Ultimo pieno norvegese verso il confine finlandese"},
+  // Lapponia finlandese
+  {n:"Karigasniemi",    la:69.399, lo:25.845, c:"🇫🇮", note:"Subito dopo il confine"},
+  {n:"Utsjoki",         la:69.906, lo:27.028, c:"🇫🇮", note:"Sul fiume Teno, stazione piccola"},
+  {n:"Kaamanen",        la:69.114, lo:25.851, c:"🇫🇮", note:"Avamposto sulla E75: stazione + locanda"},
+  {n:"Inari",           la:68.905, lo:27.028, c:"🇫🇮", note:"Museo Siida e rifornimento"},
+  {n:"Ivalo",           la:68.659, lo:27.541, c:"🇫🇮", note:"Centro maggiore della Lapponia nord"},
+  {n:"Kaaresuvanto/Karesuando", la:68.443, lo:22.494, c:"🇫🇮", note:"Doppio paese sul confine, benzina su entrambi i lati"},
+  {n:"Muonio",          la:67.958, lo:23.680, c:"🇫🇮", note:"Nodo importante: fai il pieno"},
+  {n:"Kittilä",         la:67.652, lo:24.901, c:"🇫🇮", note:"Aeroporto e servizi"},
+  {n:"Sodankylä",       la:67.416, lo:26.590, c:"🇫🇮", note:"Sulla E75 verso Rovaniemi"},
+  {n:"Rovaniemi",       la:66.503, lo:25.729, c:"🇫🇮", note:"Città: tutto disponibile"}
+];
+
+/* tratte critiche da controllare, nell'ordine in cui le percorrerete */
+const FUEL_LEGS = [
+  {t:"G10–G12 · Umeå → Kiruna → Lofoten", s:["Umeå","Luleå","Gällivare","Kiruna","Riksgränsen","Narvik","Bjerkvik","Svolvær","Leknes"]},
+  {t:"G13–G14 · Lofoten → Skibotn → CAPO NORD", s:["Leknes","Bjerkvik","Nordkjosbotn","Skibotn","Nordreisa/Storslett","Alta","Skaidi","Olderfjord","Honningsvåg"]},
+  {t:"G15–G16 · Capo Nord → Muonio → Rovaniemi", s:["Honningsvåg","Olderfjord","Lakselv","Karasjok","Karigasniemi","Kaamanen","Inari","Ivalo","Sodankylä","Rovaniemi"]}
+];
+
+function stopByName(n){ return FUEL_STOPS.find(s=>s.n===n); }
+/* distanze stradali reali dei tratti chiave (km): i fiordi allungano molto il percorso */
+const ROAD_KM = {
+  "Umeå|Luleå":260, "Luleå|Gällivare":210, "Gällivare|Kiruna":120, "Kiruna|Riksgränsen":130,
+  "Riksgränsen|Narvik":40, "Narvik|Bjerkvik":15, "Bjerkvik|Svolvær":220, "Svolvær|Leknes":70,
+  "Leknes|Bjerkvik":290, "Bjerkvik|Nordkjosbotn":190, "Nordkjosbotn|Skibotn":60,
+  "Skibotn|Nordreisa/Storslett":95, "Nordreisa/Storslett|Alta":175, "Alta|Skaidi":105,
+  "Skaidi|Olderfjord":25, "Olderfjord|Honningsvåg":95, "Olderfjord|Lakselv":60,
+  "Lakselv|Karasjok":74, "Karasjok|Karigasniemi":18, "Karigasniemi|Kaamanen":100,
+  "Kaamanen|Inari":40, "Inari|Ivalo":40, "Ivalo|Sodankylä":180, "Sodankylä|Rovaniemi":130
+};
+function roadKm(a,b){
+  const k1 = a.n+"|"+b.n, k2 = b.n+"|"+a.n;
+  if(ROAD_KM[k1]) return ROAD_KM[k1];
+  if(ROAD_KM[k2]) return ROAD_KM[k2];
+  return haversine(a.la,a.lo,b.la,b.lo) * 1.32;   // stima prudenziale dove manca il dato
+}
+
+function renderRange(){
+  const out = document.getElementById("rangeOut");
+  if(!out) return;
+  const R = Math.max(80, +($("#rangeKm").value || 300));
+  let html = "", worst = 0;
+  FUEL_LEGS.forEach(leg=>{
+    html += `<div class="leg-box"><div class="leg-title">${esc(leg.t)}</div>`;
+    for(let i=0;i<leg.s.length-1;i++){
+      const a = stopByName(leg.s[i]), b = stopByName(leg.s[i+1]);
+      if(!a||!b) continue;
+      const km = Math.round(roadKm(a,b));
+      worst = Math.max(worst, km);
+      const ratio = km / R;
+      const cls = ratio > 0.9 ? "bad" : (ratio > 0.65 ? "warn" : "ok");
+      const txt = ratio > 0.9 ? "oltre l'autonomia" : (ratio > 0.65 ? "serba margine" : "tranquillo");
+      html += `<div class="seg ${cls}">
+        <span>${a.c} ${esc(a.n)} → ${b.c} ${esc(b.n)}</span>
+        <span class="sd">≈ ${km} km</span>
+        <span class="sx">${txt}</span></div>`;
+    }
+    html += `</div>`;
+  });
+  out.innerHTML = `<div class="seg bad" style="margin-bottom:12px">
+      <span>⚠️ Honningsvåg → CAPO NORD → Honningsvåg</span>
+      <span class="sd">68 km</span><span class="sx">nessun distributore al Capo</span></div>
+    <p style="font-size:.84rem;color:var(--mist);margin-bottom:10px">
+    Con <b style="color:var(--ice)">${R} km</b> di autonomia, il tratto più lungo della rotta nord è di circa <b style="color:var(--sun)">${Math.round(worst)} km</b>.
+    Distanze stimate su percorso stradale: verificate sempre gli orari, molte stazioni nordiche sono automatiche a carta ma non tutte.</p>` + html;
+}
+
+function renderFuelStops(){
+  const box = document.getElementById("fuelStops");
+  if(!box) return;
+  box.innerHTML = FUEL_STOPS.map(s=>{
+    const key = /⚠️/.test(s.note);
+    return `<div class="fs-row ${key?"key":""}">
+      <span class="fs-flag">${s.c}</span>
+      <div><b>${esc(s.n)}</b><div class="fs-note">${esc(s.note)}</div></div>
+      <a href="https://www.google.com/maps/search/?api=1&query=${s.la},${s.lo}" target="_blank" rel="noopener" style="font-size:.78rem">Naviga ↗</a>
+    </div>`;
+  }).join("");
+}
+
+(function(){
+  const inp = document.getElementById("rangeKm");
+  if(!inp) return;
+  store.get("caponord-range", false).then(v=>{ if(v) inp.value = v; renderRange(); });
+  inp.addEventListener("input", ()=>{ renderRange(); store.set("caponord-range", +inp.value, false); });
+  renderFuelStops();
+})();
+
+/* ================= RISCHI DI TAPPA ================= */
+const STAGE_RISKS = {
+  9:["deer"], 10:["deer","fuel"], 11:["wind","deer"], 12:["wind","cold","deer"],
+  13:["wind","cold","fuel","deer"], 14:["deer","fuel","cold"], 15:["deer","fuel"],
+  16:["deer"], 17:["deer"]
+};
+const RISK_LABEL = {
+  deer:["🦌","renne in strada","risk-deer"],
+  wind:["💨","vento forte","risk-wind"],
+  fuel:["⛽","distributori radi","risk-fuel"],
+  cold:["🥶","notte fredda","risk-cold"]
+};
+(function(){
+  setTimeout(()=>{
+    document.querySelectorAll("#dayList .day-row").forEach((row,i)=>{
+      const r = STAGE_RISKS[i+1];
+      if(!r) return;
+      const meta = row.querySelector(".day-meta");
+      if(!meta || meta.dataset.risk) return;
+      meta.dataset.risk = "1";
+      r.forEach(k=>{
+        const [ico,txt,cls] = RISK_LABEL[k];
+        const s = document.createElement("span");
+        s.className = "risk-chip " + cls;
+        s.textContent = ico + " " + txt;
+        meta.appendChild(s);
+      });
+    });
+  }, 800);
+})();
+
+/* ================= VESTIZIONE DEL GIORNO ================= */
+async function updateDressing(){
+  const card = document.getElementById("dressCard"), out = document.getElementById("dressOut");
+  if(!card) return;
+  try{
+    const d = tripDay();
+    let dest, geo, label, iso = isoLocal(new Date());
+    if(d >= 1 && d <= DESTS.length){
+      dest = DESTS[d-1]; geo = CITYGEO[dest];
+      label = `Giorno ${d} · ${dest}`;
+    }else if(d < 1){
+      // prima della partenza: anteprima sulla prima tappa se è nella finestra delle previsioni,
+      // altrimenti sul meteo di oggi a Torino
+      const gg = Math.ceil((TRIP_START - new Date())/864e5);
+      if(gg <= 15){ dest = DESTS[0]; geo = CITYGEO[dest]; iso = tripDateISO(0); label = `Partenza · ${dest}`; }
+      else{ dest = "Torino"; geo = CITYGEO["Torino"]; label = `Anteprima · oggi a Torino (mancano ${gg} giorni)`; }
+    }else{
+      dest = "Torino"; geo = CITYGEO["Torino"]; label = "Rientro · Torino";
+    }
+    if(!geo) return;
+    const u = `https://api.open-meteo.com/v1/forecast?latitude=${geo.c[0]}&longitude=${geo.c[1]}&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,precipitation_probability_max&timezone=auto&start_date=${iso}&end_date=${iso}`;
+    const j = await (await fetch(u)).json();
+    const tmax = j.daily.temperature_2m_max[0], tmin = j.daily.temperature_2m_min[0];
+    const wind = j.daily.wind_speed_10m_max[0], rain = j.daily.precipitation_probability_max[0];
+    let capi = [];
+    if(tmax <= 6) capi.push("termico pesante + sottoguanti", "paracollo", "sottocasco");
+    else if(tmax <= 12) capi.push("termico", "guanti invernali", "paracollo");
+    else if(tmax <= 18) capi.push("felpa sotto la giacca", "guanti mezza stagione");
+    else capi.push("giacca ventilata", "guanti estivi");
+    if(rain >= 40) capi.push("antipioggia a portata di mano");
+    if(wind >= 35) capi.push("visiera ben chiusa: raffiche laterali");
+    if(tmin <= 3) capi.push("occhio al ghiaccio nelle prime ore");
+    out.innerHTML = `<b>${esc(label)}</b> · ${Math.round(tmin)}° / ${Math.round(tmax)}° · 💨 ${Math.round(wind)} km/h · ☔ ${rain ?? "–"}%<br>
+      <span style="color:var(--ice)">${capi.join(" · ")}</span>`;
+    out.dataset.ok = "1";
+    card.style.display = "block";
+  }catch(e){
+    if(out && !out.dataset.ok) out.innerHTML = '<span style="color:var(--mist)">Meteo non raggiungibile ora. ' +
+      '<b style="color:var(--aurora-1);cursor:pointer" onclick="updateDressing()">riprova</b></span>';
+    card.style.display = "block";
+  }
+}
+
+/* ================= AVVISO NUOVA VERSIONE ================= */
+(function(){
+  if(!("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.getRegistration().then(reg=>{
+    if(!reg) return;
+    reg.addEventListener("updatefound", ()=>{
+      const nw = reg.installing;
+      if(!nw) return;
+      nw.addEventListener("statechange", ()=>{
+        if(nw.state === "installed" && navigator.serviceWorker.controller){
+          const t = document.getElementById("toast");
+          if(!t) return;
+          t.innerHTML = '✨ Nuova versione pronta · <b style="text-decoration:underline;cursor:pointer">ricarica</b>';
+          t.classList.add("show");
+          t.style.pointerEvents = "auto";
+          t.querySelector("b").addEventListener("click", ()=>location.reload());
+          setTimeout(()=>{ t.classList.remove("show"); t.style.pointerEvents="none"; }, 12000);
+        }
+      });
+    });
+  }).catch(()=>{});
 })();
 
 </script>
