@@ -825,6 +825,14 @@ body.polar-night .stars span{animation-duration:3s}
 .lg-who button.sel{transform:translateY(-2px)}
 #lgErr{color:var(--alert);font-size:.78rem;min-height:1.2em;margin-top:8px}
 #lgGuestNote{font-size:.72rem;color:var(--mist);margin-top:14px}
+
+/* ---------- modalità ospite: si guarda, non si tocca ---------- */
+body.guest .ck-box,body.guest .qty,body.guest .ck-del,body.guest .diary-form,
+body.guest .checkin-card .btn,body.guest .crew-card .cr-edit,body.guest .foto-tools,
+body.guest #posControls,body.guest .check-tools .btn{opacity:.45}
+body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:120;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;padding:5px 12px;border-radius:99px;
+  background:rgba(24,39,65,.9);border:1px solid var(--line);color:var(--mist);pointer-events:none}
 </style>
 </head>
 <body>
@@ -1487,6 +1495,8 @@ const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbzCQjJpLQ78n1_
 const DEFAULT_FUEL_URL = "https://raw.githubusercontent.com/facaxa10-sketch/caponord-prezzi/refs/heads/main/prices.json";
 let SYNC_URL = (LS && LS.getItem("caponord:syncurl")) || DEFAULT_SYNC_URL;
 /* identità e PIN vivono solo su questo dispositivo; il PIN viene verificato dallo sportello */
+let __gtLast = 0;
+function guestToast(){ const t=Date.now(); if(t-__gtLast<2500) return; __gtLast=t; try{ toast("👀 Modalità ospite: solo visualizzazione"); }catch(e){} }
 let AUTH = null;
 try{ AUTH = LS ? JSON.parse(LS.getItem("caponord:auth")||"null") : null; }catch(e){}
 window.__guest = AUTH ? AUTH.role === "ospite" : false;
@@ -1529,6 +1539,7 @@ const store = {
     return memStore[(shared?"S:":"P:")+key] ?? null;
   },
   async set(key, val, shared=false){
+    if(window.__guest){ guestToast(); return; }
     memStore[(shared?"S:":"P:")+key] = val;
     const s = JSON.stringify(val);
     if(LS){ try{ LS.setItem("caponord:"+key, s); }catch(e){} }
@@ -1540,6 +1551,7 @@ const store = {
     try{ if(window.storage) await window.storage.set(key, s, shared); }catch(e){}
   },
   async del(key, shared=false){
+    if(window.__guest){ guestToast(); return; }
     delete memStore[(shared?"S:":"P:")+key];
     if(LS){ try{ LS.removeItem("caponord:"+key); }catch(e){} }
     if(shared && SYNC_URL){ try{ await driveCall({action:"del", key}); return; }catch(e){} }
@@ -4331,7 +4343,7 @@ let ME = null, crewPos = {}, posBusy = false;
 
 async function initCrewPos(){
   if(!document.getElementById("crewPosCard")) return;
-  ME = await store.get(ME_KEY, false);
+  ME = window.__guest ? null : await store.get(ME_KEY, false);
   crewPos = (await store.get(POS_KEY, true)) || {};
   renderWhoAmI();
   renderCrewPos();
@@ -4345,6 +4357,12 @@ async function initCrewPos(){
 function renderWhoAmI(){
   const box = document.getElementById("whoAmI");
   const ctrl = document.getElementById("posControls");
+  if(window.__guest){
+    ctrl.style.display = "none";
+    box.className = "who-me";
+    box.innerHTML = '<span>👀 Stai guardando come <b>ospite</b>: le posizioni dell\'equipaggio sono visibili, la condivisione è disattivata.</span>';
+    return;
+  }
   if(!ME){
     ctrl.style.display = "none";
     box.className = "who-ask";
@@ -4383,6 +4401,7 @@ function timeAgo(ts){
 }
 
 async function sharePosition(silent){
+  if(window.__guest){ guestToast(); return; }
   if(!ME){ toast("Prima dimmi chi sei 🙂"); return; }
   if(posBusy) return;
   if(!navigator.geolocation){ if(!silent) toast("GPS non disponibile"); return; }
@@ -4786,15 +4805,44 @@ async function updateDressing(){
   });
 
   function afterLogin(role, silent){
-    // l'identità del GPS equipaggio segue il login (l'ospite non condivide)
     if(role !== "ospite"){
       try{ store.set(ME_KEY, role, false); }catch(e){}
+      return;
     }
-    if(role === "ospite"){
-      document.body.classList.add("guest");
-      // nascondo i comandi di condivisione posizione per gli ospiti
-      const pc = document.getElementById("posControls");
-      if(pc) pc.style.display = "none";
+    /* ── OSPITE: nessuna identità, nessun tocco ── */
+    document.body.classList.add("guest");
+    // dimentico qualsiasi identità salvata prima su questo dispositivo (es. "Ste")
+    try{ if(LS){ LS.removeItem("caponord:" + ME_KEY); LS.removeItem("caponord:" + AUTO_KEY); } }catch(e){}
+    try{ ME = null; }catch(e){}
+    try{ renderWhoAmI(); renderCrewPos(); }catch(e){}
+    const pc = document.getElementById("posControls");
+    if(pc) pc.style.display = "none";
+    // targhetta fissa
+    if(!document.querySelector(".guest-badge")){
+      const b = document.createElement("div");
+      b.className = "guest-badge"; b.textContent = "👀 OSPITE · SOLA LETTURA";
+      document.body.appendChild(b);
+    }
+    // scudo: intercetto i tocchi sui comandi di modifica, lasciando liberi quelli di visualizzazione
+    if(!window.__guestShield){
+      window.__guestShield = true;
+      const ALLOW = ".tab,.lang-picker,.p-chip,.day-row,.city-card,.modal-x,.leaflet-container,.fx-row,.lg-box,#lgGuest,#lgOut,a,[data-view]";
+      document.addEventListener("click", e=>{
+        if(!window.__guest) return;
+        const t = e.target;
+        if(t.closest && t.closest(ALLOW)) return;                      // azioni di visualizzazione: ok
+        const edit = t.closest && t.closest("button,.ck-box,.crew-card,.trophy,input[type=checkbox],.slider");
+        if(edit){ e.preventDefault(); e.stopPropagation(); guestToast(); }
+      }, true);
+      // i campi di testo diventano di sola lettura (tranne convertitore e autonomia, che sono strumenti di consultazione)
+      const lockInputs = ()=>{
+        if(!window.__guest) return;
+        document.querySelectorAll("input,textarea,select").forEach(el=>{
+          if(el.closest(".fx-row") || el.id === "rangeKm" || el.id === "lgPin") return;
+          el.disabled = true;
+        });
+      };
+      lockInputs(); setInterval(lockInputs, 2000);
     }
   }
 })();
