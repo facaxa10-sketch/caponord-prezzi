@@ -797,6 +797,34 @@ body.polar-night .stars span{animation-duration:3s}
 .risk-chip{display:inline-flex;align-items:center;gap:3px;font-size:.6rem;padding:2px 7px;border-radius:99px;
   border:1px solid currentColor;letter-spacing:.04em;white-space:nowrap}
 .risk-deer{color:#C9A227}.risk-wind{color:#5FB8D8}.risk-fuel{color:#FF8A5B}.risk-cold{color:#8FB7FF}
+
+/* ---------- accesso ---------- */
+#loginGate{position:fixed;inset:0;z-index:220;background:linear-gradient(180deg,var(--night),var(--deep));
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px}
+#loginGate.show{display:flex}
+#loginGate .lg-box{width:min(400px,92vw);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}
+#loginGate h2{font-family:var(--display);font-size:1.2rem;letter-spacing:.04em;margin-bottom:4px}
+#loginGate p{font-size:.85rem;color:var(--mist);margin-bottom:16px}
+.lg-who{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.lg-who button{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);color:var(--ice);cursor:pointer;font-family:var(--display);transition:all .25s}
+.lg-who button.sel{border-color:var(--aurora-1);background:linear-gradient(135deg,rgba(79,227,193,.2),rgba(124,108,255,.15));box-shadow:0 0 16px rgba(79,227,193,.25)}
+.lg-field{position:relative;margin-top:4px}
+.lg-field .lg-ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:1rem;opacity:.6;pointer-events:none}
+#lgPin{width:100%;text-align:center;font-family:var(--mono);letter-spacing:.35em;font-size:1.15rem;
+  padding:15px 16px 15px 44px;border-radius:14px;
+  background:linear-gradient(160deg,rgba(10,18,33,.95),rgba(14,23,41,.9));
+  border:1.5px solid var(--line);color:var(--ice);
+  transition:border-color .3s,box-shadow .3s,transform .15s}
+#lgPin::placeholder{letter-spacing:.05em;font-size:.85rem;color:var(--mist);opacity:.7}
+#lgPin:focus{outline:none;border-color:var(--aurora-1);
+  box-shadow:0 0 0 3px rgba(79,227,193,.18), 0 0 24px rgba(79,227,193,.15);transform:scale(1.01)}
+#lgGuest{display:inline-block;margin-top:14px;font-size:.8rem;color:var(--mist);text-decoration:none;
+  border-bottom:1px dashed var(--mist);padding-bottom:1px;transition:color .25s,border-color .25s}
+#lgGuest:hover{color:var(--aurora-1);border-color:var(--aurora-1)}
+.lg-who button{min-width:76px;padding:12px 18px;font-size:.95rem}
+.lg-who button.sel{transform:translateY(-2px)}
+#lgErr{color:var(--alert);font-size:.78rem;min-height:1.2em;margin-top:8px}
+#lgGuestNote{font-size:.72rem;color:var(--mist);margin-top:14px}
 </style>
 </head>
 <body>
@@ -805,6 +833,23 @@ body.polar-night .stars span{animation-duration:3s}
 <canvas id="weatherFx" aria-hidden="true"></canvas>
 <canvas id="cartoBg" aria-hidden="true"></canvas>
 <div id="grain" aria-hidden="true"></div>
+<div id="loginGate" aria-hidden="true">
+  <div class="lg-box">
+    <h2>🧭 Chi sale a bordo?</h2>
+    <p>Scegli chi sei e inserisci il tuo PIN. Gli ospiti possono guardare tutto senza modificare nulla.</p>
+    <div class="lg-who" id="lgWho">
+      <button data-w="Ste">Ste</button><button data-w="Vale">Vale</button><button data-w="Ale">Ale</button>
+    </div>
+    <div class="lg-field">
+      <span class="lg-ico">🔑</span>
+      <input type="password" id="lgPin" placeholder="Il tuo PIN" autocomplete="off" inputmode="text">
+    </div>
+    <div id="lgErr"></div>
+    <button class="btn" id="lgGo" style="margin-top:12px;width:100%">Entra</button>
+    <p id="lgGuestNote">Il PIN viene verificato dallo sportello Drive e resta salvato solo su questo dispositivo.</p>
+    <a href="#" id="lgGuest">👀 Entra come ospite · solo visualizzazione</a>
+  </div>
+</div>
 <div id="splash"><svg class="sp-star" viewBox="0 0 64 64"><path d="M32 4 L38 26 L60 32 L38 38 L32 60 L26 38 L4 32 L26 26 Z"/></svg><div class="sp-bar"><div class="sp-fill"></div></div><p id="splashMsg">Sincronizzazione equipaggio…</p></div>
 <div class="stars" id="stars" aria-hidden="true"></div>
 
@@ -948,6 +993,10 @@ body.polar-night .stars span{animation-duration:3s}
   <span class="coord-tag" aria-hidden="true">71°10′N 25°47′E</span>
   <h2 class="section-title">Da fare & vedere · città per città</h2>
   <p class="section-sub">Le tue note dal foglio di viaggio più tutto quello che ho trovato in giro: attrazioni con prezzi verificati, esperienze tipiche e cosa mangiare in ogni sosta.</p>
+    <div class="card reveal" style="border-color:rgba(79,227,193,.3);margin-bottom:14px">
+    <h3>💸 Mangiare senza dissanguarsi nel Nord</h3>
+    <p style="margin-top:6px">I trucchi di chi c'è già stato: nelle cittadine piccole le <b>tavole calde dei distributori</b> sono economiche e sorprendentemente buone; i <b>supermercati</b> (Rema 1000, Kiwi, K-Market) e i 7-Eleven salvano il pranzo; portate una <b>scorta di snack dall'Italia</b> e usate fornello e caffettiera alle soste. Il ristorante tenetelo per le occasioni: king crab a Honningsvåg e salmone, quelli sì.</p>
+  </div>
   <div class="grid-3" id="cityGuide" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))"></div>
 </section>
 
@@ -1216,6 +1265,19 @@ body.polar-night .stars span{animation-duration:3s}
 <!-- ============ SOS ============ -->
 <section class="view" id="view-sos">
   <span class="coord-tag" aria-hidden="true">112 · EMERGENCY</span>
+  <h2 class="section-title">Documenti ed equipaggiamento obbligatorio</h2>
+  <div class="card reveal">
+    <p style="font-size:.9rem"><b style="color:var(--ice)">Da avere a bordo (per legge o quasi):</b></p>
+    <ul style="margin:10px 0 0 18px;font-size:.88rem;line-height:1.8;color:var(--mist)">
+      <li><b style="color:var(--ice)">Triangolo</b> — obbligatorio anche per le moto in <b>Danimarca, Svezia e Finlandia</b>: uno per moto, a portata di mano.</li>
+      <li><b style="color:var(--ice)">Gilet alta visibilità</b> — consigliato ovunque e richiesto in caso di sosta d'emergenza in vari paesi: <b>uno a testa</b>, nel bauletto e non sotto tutto.</li>
+      <li><b style="color:var(--ice)">Kit primo soccorso</b> — non obbligatorio nei paesi che attraversate, ma su queste strade è buon senso: uno per moto.</li>
+      <li><b style="color:var(--ice)">Documenti</b> — patente, libretto, <b>assicurazione valida per Norvegia e Svizzera</b> (di norma sì con targa italiana: verificate), <b>tessera sanitaria TEAM</b> (vale anche in Norvegia e Svizzera), prenotazione del traghetto Helsinki–Tallinn.</li>
+      <li><b style="color:var(--ice)">Luci sempre accese</b> — obbligatorie di giorno su tutta la rotta; con fari LED niente lampadine di scorta richieste.</li>
+      <li><b style="color:var(--ice)">Vignetta svizzera</b> — serve in autostrada al passaggio G1 e G24 (via app o adesivo).</li>
+    </ul>
+  </div>
+
   <h2 class="section-title">SOS · emergenze</h2>
   <p class="section-sub">Questa pagina funziona anche offline. Speriamo resti l'unica mai aperta del sito.</p>
   <div class="card reveal" style="text-align:center;border-color:rgba(255,107,122,.5)">
@@ -1252,6 +1314,7 @@ body.polar-night .stars span{animation-duration:3s}
   <span>CAPO NORD 2026 · 28 AGO → 20 SET · STE + VALE + ALE · 2 MOTO</span>
   <span>Itinerario dal piano ufficiale · prezzi verificati a luglio 2026</span>
   <span id="appVer" style="opacity:.55">build —</span>
+  <a href="#" id="lgOut" style="opacity:.7">cambia utente</a>
 </footer>
 
 </div>
@@ -1339,11 +1402,11 @@ const CITIES = [
   eat:[["💸 Pasta del campeggiatore + caffè della macchinetta","—"]]},
  {city:"CAPO NORD",flag:"🇳🇴",day:"G14 · tenda",lat:71.17,lon:25.78,
   see:[["Il globo sulla scogliera a 71°10'21\"N","plateau GRATIS"],["Tunnel sottomarino di Magerøya (212 m sotto il mare)","GRATIS, pedaggio abolito"],["Monumento dei Bambini del Mondo","gratis"]],
-  do_:[["Notte in tenda sul tetto d'Europa","gratis"],["Certificato del Capo Nord al centro visitatori","facoltativo"],["Granchio reale a Honningsvåg per festeggiare","~€30"]],
-  eat:[["Caffè caldo guardando il Mare di Barents","~€5"],["King crab a Honningsvåg","~€30"],["💸 Panini dal supermercato di Honningsvåg","~€5"]],
+  do_:[["Notte in tenda sul tetto d'Europa","gratis"],["Nordkapphallen (museo, caffè, certificato): facoltativa, il piazzale resta gratis","~€30"],["Granchio reale a Honningsvåg per festeggiare","~€30"]],
+  eat:[["Caffè caldo guardando il Mare di Barents","~€5"],["King crab a Honningsvåg","~€30"],["💸 Panini dal supermercato di Honningsvåg","~€5"],["💸 Lynd & søn a Olderfjord: hotdog e waffle prima della E69, sosta amata dai motociclisti","~€8"],["💸 NOR Mat a Honningsvåg: cena semplice senza prezzi da capolinea turistico","~€15"]],
   gem:[["💎 Knivskjellodden — il vero punto più a nord d'Europa continentale, 71°11′N: 18 km a piedi A/R, gratis e deserto","gratis"],["💎 Kirkeporten — arco di roccia naturale che incornicia il globo del Capo, breve sentiero da Skarsvåg","gratis"],["💎 Sarnes — punto panoramico defilato dove i local guardano il sole di mezzanotte lontano dai bus","gratis"]]},
  {city:"Muonio",flag:"🇫🇮",day:"G15",lat:67.96,lon:23.68,
-  see:[["Parco nazionale Pallas-Yllästunturi","gratis"],["Fiume Muonio al confine con la Svezia","gratis"]],
+  see:[["Parco nazionale Pallas-Yllästunturi","gratis"],["Fiume Muonio al confine con la Svezia","gratis"],["💎 Museo di Alta — pitture rupestri UNESCO in riva al fiordo, sosta perfetta lungo la G13","~€12"],["💎 Porsangerfjord — spiagge di Bjørnnes e Nordmannset: soste foto con le renne sul ciglio della strada","gratis"]],
   do_:[["Visita a una husky farm (fuori stagione slitte: coccole ai cani)","~€10–15"],["Souvenir artici (tappa segnata nel piano)","—"]],
   eat:[["Salmone alla fiamma (loimulohi)","~€18"],["💸 Zuppa di renna in un baari di paese","~€12"]]},
  {city:"Rovaniemi",flag:"🇫🇮",day:"G16",lat:66.50,lon:25.73,
@@ -1423,12 +1486,32 @@ const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbzCQjJpLQ78n1_
 /* link raw del prices.json su GitHub: gia' configurato per l'equipaggio */
 const DEFAULT_FUEL_URL = "https://raw.githubusercontent.com/facaxa10-sketch/caponord-prezzi/refs/heads/main/prices.json";
 let SYNC_URL = (LS && LS.getItem("caponord:syncurl")) || DEFAULT_SYNC_URL;
+/* identità e PIN vivono solo su questo dispositivo; il PIN viene verificato dallo sportello */
+let AUTH = null;
+try{ AUTH = LS ? JSON.parse(LS.getItem("caponord:auth")||"null") : null; }catch(e){}
+window.__guest = AUTH ? AUTH.role === "ospite" : false;
 async function driveCall(payload){
-  const r = await fetch(SYNC_URL, {method:"POST", body: JSON.stringify(Object.assign({pw:"CAPONORD"}, payload))});
+  if(!AUTH) throw new Error("login richiesto");
+  if(window.__guest && (payload.action==="set" || payload.action==="del")) throw new Error("sola lettura");
+  const auth = AUTH.pin ? {pin:AUTH.pin} : {};   // l'ospite legge senza PIN
+  const r = await fetch(SYNC_URL, {method:"POST", body: JSON.stringify(Object.assign(auth, payload))});
   const j = await r.json();
-  if(!j.ok) throw new Error(j.error||"sync");
+  if(!j.ok){
+    if(/PIN non valido/.test(j.error||"")){ try{ LS && LS.removeItem("caponord:auth"); }catch(e){} }
+    throw new Error(j.error||"sync");
+  }
   return j;
 }
+async function loginWith(pin){
+  const r = await fetch(SYNC_URL, {method:"POST", body: JSON.stringify({action:"auth", pin})});
+  const j = await r.json();
+  if(!j.ok) throw new Error(j.error||"PIN non valido");
+  AUTH = {pin, role:j.role};
+  window.__guest = j.role === "ospite";
+  if(LS){ try{ LS.setItem("caponord:auth", JSON.stringify(AUTH)); }catch(e){} }
+  return j.role;
+}
+function logout(){ AUTH=null; window.__guest=false; try{ LS && LS.removeItem("caponord:auth"); }catch(e){} location.reload(); }
 const store = {
   async get(key, shared=false){
     if(shared && SYNC_URL){
@@ -1450,8 +1533,9 @@ const store = {
     const s = JSON.stringify(val);
     if(LS){ try{ LS.setItem("caponord:"+key, s); }catch(e){} }
     if(shared && SYNC_URL){
+      if(window.__guest){ toast("👀 Modalità ospite: sola lettura"); return; }
       try{ await driveCall({action:"set", key, value:s}); return; }
-      catch(e){ toast("⚠️ Drive non raggiungibile: salvato in locale"); }
+      catch(e){ if(/login richiesto|sola lettura/.test(e.message)) toast("👀 Accedi per salvare sul Drive di squadra"); else toast("⚠️ Drive non raggiungibile: salvato in locale"); }
     }
     try{ if(window.storage) await window.storage.set(key, s, shared); }catch(e){}
   },
@@ -2035,7 +2119,9 @@ const CITYGEO = {
   [71.1547,25.656,"💎 Knivskjellodden: il VERO punto piu a nord (trekking)","see","gratis"],[70.977,25.98,"💎 Kirkeporten: arco di roccia col Globo sullo sfondo","see","gratis"],
   
   [71.1700,25.7840,"Il Globo · plateau","see","GRATIS"],[71.1690,25.7830,"Centro visitatori","see","caffè ~€5"],
-  [70.9820,25.9700,"Honningsvåg","eat","king crab ~€30"],[70.9210,25.5950,"Tunnel di Magerøya","see","GRATIS"]]},
+  [70.9820,25.9700,"Honningsvåg","eat","king crab ~€30"],[70.9210,25.5950,"Tunnel di Magerøya","see","GRATIS"],
+  [70.474,25.071,"💎 Lynd & søn: hotdog+waffle dei motociclisti","eat","~€8"],[70.980,25.975,"💎 NOR Mat: cena onesta a Honningsvåg","eat","~€15"],
+  [69.9469,23.2965,"💎 Museo di Alta: pitture rupestri UNESCO","see","~€12"],[70.62,25.35,"💎 Porsangerfjord: spiagge e renne, soste foto","see","gratis"]]},
  "Muonio":{c:[67.9580,23.6900],z:11,pois:[
   [68.054,24.076,"💎 Punto panoramico del Pallas (fjell artico)","see","gratis"],
   
@@ -2418,21 +2504,18 @@ document.querySelectorAll("#dayList .day-row").forEach((row,i)=>{
 });
 
 /* ================= FOTO (album condiviso, protetto da parola d'ordine) ================= */
-const FOTO_PW = "CAPONORD";
+/* l'album si apre col login dell'app: niente più parola d'ordine separata */
 let fotoIndex = [], fotoUnlocked = false;
 $("#fotoPlaces").innerHTML = [...CITIES.map(c=>c.city),"In viaggio","Torino"].map(c=>`<option value="${esc(c)}">`).join("");
 function tryUnlock(){
-  if($("#fotoPw").value.trim().toUpperCase() === FOTO_PW){
-    fotoUnlocked = true;
-    $("#fotoLock").style.display = "none";
-    $("#fotoArea").style.display = "block";
-    $("#fotoPw").value = ""; $("#fotoErr").textContent = "";
-    loadFoto();
-    toast("🔓 Album di equipaggio sbloccato!");
-  }else{
-    $("#fotoErr").textContent = "Parola d'ordine errata. Riprova.";
-  }
+  // con il login attivo l'album è già tuo; il lucchetto resta solo se non sei entrato
+  fotoUnlocked = true;
+  $("#fotoLock").style.display = "none";
+  $("#fotoArea").style.display = "block";
+  loadFoto();
 }
+/* sblocco automatico dopo il login */
+setTimeout(()=>{ try{ if(typeof AUTH!=="undefined" && AUTH) tryUnlock(); }catch(e){} }, 700);
 async function loadFoto(){
   fotoIndex = (await store.get("caponord-foto-index", true)) || [];
   renderGallery(true);
@@ -4646,6 +4729,64 @@ async function updateDressing(){
     });
   }).catch(()=>{});
 })();
+
+
+
+/* ================= ACCESSO: chi sale a bordo ================= */
+(function(){
+  const gate = document.getElementById("loginGate");
+  if(!gate || !SYNC_URL) return;
+  let who = null;
+  const pinI = document.getElementById("lgPin"), err = document.getElementById("lgErr");
+  // già autenticato su questo dispositivo → niente schermata
+  if(AUTH && AUTH.pin){ afterLogin(AUTH.role, true); return; }
+  gate.classList.add("show");
+  document.querySelectorAll("#lgWho button").forEach(b=>b.addEventListener("click", ()=>{
+    document.querySelectorAll("#lgWho button").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel"); who = b.dataset.w; err.textContent = ""; pinI.focus();
+  }));
+  async function go(){
+    if(!who){ err.textContent = "Scegli chi sei."; return; }
+    const pin = pinI.value.trim();
+    if(!pin){ err.textContent = "Inserisci il PIN."; return; }
+    err.textContent = ""; document.getElementById("lgGo").textContent = "Verifico…";
+    try{
+      const role = await loginWith(pin);
+      if(role !== who){ err.textContent = `Questo PIN appartiene a ${role}: entro come ${role}.`; }
+      afterLogin(role, false);
+      gate.classList.remove("show");
+      toast("🏍 Ciao " + role + "!");
+    }catch(e){
+      err.textContent = /PIN/.test(e.message) ? "PIN non riconosciuto." : "Sportello non raggiungibile: riprova.";
+    }finally{ document.getElementById("lgGo").textContent = "Entra"; }
+  }
+  document.getElementById("lgGo").addEventListener("click", go);
+  pinI.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
+  // ingresso ospite: nessun PIN, sola lettura
+  document.getElementById("lgGuest")?.addEventListener("click", e=>{
+    e.preventDefault();
+    AUTH = {pin:"", role:"ospite"};
+    window.__guest = true;
+    if(LS){ try{ LS.setItem("caponord:auth", JSON.stringify(AUTH)); }catch(err2){} }
+    afterLogin("ospite", false);
+    gate.classList.remove("show");
+    toast("👀 Benvenuto a bordo, ospite");
+  });
+
+  function afterLogin(role, silent){
+    // l'identità del GPS equipaggio segue il login (l'ospite non condivide)
+    if(role !== "ospite"){
+      try{ store.set(ME_KEY, role, false); }catch(e){}
+    }
+    if(role === "ospite"){
+      document.body.classList.add("guest");
+      // nascondo i comandi di condivisione posizione per gli ospiti
+      const pc = document.getElementById("posControls");
+      if(pc) pc.style.display = "none";
+    }
+  }
+})();
+document.getElementById("lgOut")?.addEventListener("click", e=>{ e.preventDefault(); if(typeof logout==="function") logout(); });
 
 </script>
 </body>
