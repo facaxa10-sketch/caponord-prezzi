@@ -805,9 +805,9 @@ body.polar-night .stars span{animation-duration:3s}
 #loginGate .lg-box{width:min(400px,92vw);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}
 #loginGate h2{font-family:var(--display);font-size:1.2rem;letter-spacing:.04em;margin-bottom:4px}
 #loginGate p{font-size:.85rem;color:var(--mist);margin-bottom:16px}
-.lg-who{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
-.lg-who button{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);color:var(--ice);cursor:pointer;font-family:var(--display);transition:all .25s}
-.lg-who button.sel{border-color:var(--aurora-1);background:linear-gradient(135deg,rgba(79,227,193,.2),rgba(124,108,255,.15));box-shadow:0 0 16px rgba(79,227,193,.25)}
+
+
+
 .lg-field{position:relative;margin-top:4px}
 .lg-field .lg-ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:1rem;opacity:.6;pointer-events:none}
 #lgPin{width:100%;text-align:center;font-family:var(--mono);letter-spacing:.35em;font-size:1.15rem;
@@ -821,8 +821,8 @@ body.polar-night .stars span{animation-duration:3s}
 #lgGuest{display:inline-block;margin-top:14px;font-size:.8rem;color:var(--mist);text-decoration:none;
   border-bottom:1px dashed var(--mist);padding-bottom:1px;transition:color .25s,border-color .25s}
 #lgGuest:hover{color:var(--aurora-1);border-color:var(--aurora-1)}
-.lg-who button{min-width:76px;padding:12px 18px;font-size:.95rem}
-.lg-who button.sel{transform:translateY(-2px)}
+
+
 #lgErr{color:var(--alert);font-size:.78rem;min-height:1.2em;margin-top:8px}
 #lgGuestNote{font-size:.72rem;color:var(--mist);margin-top:14px}
 
@@ -868,18 +868,15 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 <div id="grain" aria-hidden="true"></div>
 <div id="loginGate" aria-hidden="true">
   <div class="lg-box">
-    <h2>🧭 Chi sale a bordo?</h2>
-    <p>Scegli chi sei e inserisci il tuo PIN. Gli ospiti possono guardare tutto senza modificare nulla.</p>
-    <div class="lg-who" id="lgWho">
-      <button data-w="Ste">Ste</button><button data-w="Vale">Vale</button><button data-w="Ale">Ale</button>
-    </div>
+    <h2>🧭 Capo Nord 2026</h2>
+    <p>Inserisci il tuo PIN: il sistema riconosce da solo chi sei.</p>
     <div class="lg-field">
       <span class="lg-ico">🔑</span>
-      <input type="password" id="lgPin" placeholder="Il tuo PIN" autocomplete="off" inputmode="text">
+      <input type="password" id="lgPin" placeholder="Il tuo PIN" autocomplete="current-password" enterkeyhint="go">
     </div>
     <div id="lgErr"></div>
     <button class="btn" id="lgGo" style="margin-top:12px;width:100%">Entra</button>
-    <p id="lgGuestNote">Il PIN viene verificato dallo sportello Drive e resta salvato solo su questo dispositivo.</p>
+    <p id="lgGuestNote">Il PIN resta salvato solo su questo dispositivo: la prossima volta entri diretto.</p>
     <a href="#" id="lgGuest">👀 Entra come ospite · solo visualizzazione</a>
   </div>
 </div>
@@ -1541,18 +1538,74 @@ async function driveCall(payload){
   }
   return j;
 }
+/* scalda lo sportello Apps Script: il primo accesso a freddo costa secondi */
+function warmSync(){
+  if(!SYNC_URL || window.__warmed) return;
+  window.__warmed = true;
+  try{ fetch(SYNC_URL, {method:"GET"}).catch(()=>{}); }catch(e){}
+}
+async function postWithTimeout(payload, ms){
+  const ac = ("AbortController" in window) ? new AbortController() : null;
+  const t = setTimeout(()=>{ try{ ac && ac.abort(); }catch(e){} }, ms || 12000);
+  try{
+    const r = await fetch(SYNC_URL, {method:"POST", body: JSON.stringify(payload), signal: ac ? ac.signal : undefined});
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
 async function loginWith(pin){
-  const r = await fetch(SYNC_URL, {method:"POST", body: JSON.stringify({action:"auth", pin})});
-  const j = await r.json();
-  if(!j.ok) throw new Error(j.error||"PIN non valido");
+  let j;
+  try{
+    j = await postWithTimeout({action:"auth", pin}, 12000);
+  }catch(e){
+    // una riprova automatica: spesso è solo l'avvio a freddo dello sportello
+    j = await postWithTimeout({action:"auth", pin}, 15000);
+  }
+  if(!j || !j.ok) throw new Error((j && j.error) || "PIN non valido");
   AUTH = {pin, role:j.role};
   window.__guest = j.role === "ospite";
   if(LS){ try{ LS.setItem("caponord:auth", JSON.stringify(AUTH)); }catch(e){} }
   return j.role;
 }
 function logout(){ AUTH=null; window.__guest=false; try{ LS && LS.removeItem("caponord:auth"); }catch(e){} location.reload(); }
+/* cache condivisa a vita breve, per non ripetere le stesse letture su Drive */
+const __sharedCache = {}, __inflight = {};
+async function __getShared(key){
+  try{
+    const j = await driveCall({action:"get", key});
+    let v = null;
+    if(j.value !== null && j.value !== undefined){
+      if(LS){ try{ LS.setItem("caponord:"+key, j.value); }catch(e){} }
+      v = JSON.parse(j.value);
+    }
+    __sharedCache[key] = {v, t: Date.now()};
+    return v;
+  }catch(e){ /* offline: ricado sui livelli locali */ }
+  return await __getLocal(key, true);
+}
+async function __getLocal(key, shared){
+  try{ if(window.storage){ const r = await window.storage.get(key, shared); return r ? JSON.parse(r.value) : null; } }catch(e){}
+  if(LS){ try{ const v = LS.getItem("caponord:"+key); if(v!==null) return JSON.parse(v); }catch(e){} }
+  const m = memStore[(shared?"S:":"P:")+key];
+  return (m === undefined) ? null : m;
+}
 const store = {
   async get(key, shared=false){
+    if(shared && SYNC_URL){
+      /* cache brevissima + unione delle richieste identiche: all'avvio più moduli
+         chiedono la stessa chiave, così parte una sola chiamata invece di N */
+      const now = Date.now();
+      const c = __sharedCache[key];
+      if(c && now - c.t < 8000) return c.v;
+      if(__inflight[key]) return __inflight[key];
+      __inflight[key] = (async ()=>{
+        try{ return await __getShared(key); }
+        finally{ delete __inflight[key]; }
+      })();
+      return __inflight[key];
+    }
+    return await __getLocal(key, shared);
+  },
+  async __never(key, shared=false){
     if(shared && SYNC_URL){
       try{
         const j = await driveCall({action:"get", key});
@@ -1569,6 +1622,7 @@ const store = {
   },
   async set(key, val, shared=false){
     if(window.__guest){ guestToast(); return; }
+    if(shared) __sharedCache[key] = {v: val, t: Date.now()};
     memStore[(shared?"S:":"P:")+key] = val;
     const s = JSON.stringify(val);
     if(LS){ try{ LS.setItem("caponord:"+key, s); }catch(e){} }
@@ -1581,6 +1635,7 @@ const store = {
   },
   async del(key, shared=false){
     if(window.__guest){ guestToast(); return; }
+    if(shared) delete __sharedCache[key];
     delete memStore[(shared?"S:":"P:")+key];
     if(LS){ try{ LS.removeItem("caponord:"+key); }catch(e){} }
     if(shared && SYNC_URL){ try{ await driveCall({action:"del", key}); return; }catch(e){} }
@@ -4511,7 +4566,7 @@ document.querySelector('.tab[data-view="mappa"]')?.addEventListener("click", asy
 
 initCrewPos();
 setTimeout(()=>{ if(typeof updateDressing==="function") updateDressing(); }, 900);
-(function(){ const v=document.getElementById("appVer"); if(v) v.textContent = "build 30 · sole per tappa + geolocalizzazione"; })();
+(function(){ const v=document.getElementById("appVer"); if(v) v.textContent = "build 31 · accesso rapido con PIN"; })();
 
 
 
@@ -4749,49 +4804,73 @@ async function updateDressing(){
 
 
 
-/* ================= ACCESSO: chi sale a bordo ================= */
+/* ================= ACCESSO ================= */
 (function(){
   const gate = document.getElementById("loginGate");
-  if(!gate || !SYNC_URL) return;
-  let who = null;
-  const pinI = document.getElementById("lgPin"), err = document.getElementById("lgErr");
-  // già autenticato su questo dispositivo → niente schermata
+  if(!gate) return;
+  const pinI = document.getElementById("lgPin"),
+        err  = document.getElementById("lgErr"),
+        btn  = document.getElementById("lgGo");
+  if(!SYNC_URL){ /* senza sportello non c'è nulla da verificare */ return; }
+
+  /* già riconosciuto su questo dispositivo → dritto dentro */
   if(AUTH){ afterLogin(AUTH.role, true); return; }
-  // prima lo spettacolo del globo, poi il login: aspetto che lo splash finisca
+
+  /* scaldo lo sportello mentre gira il globo: quando l'utente digita, è già sveglio */
+  warmSync();
+
+  /* mostro il cancello appena lo splash svanisce */
+  let opened = false;
+  function openGate(){
+    if(opened) return; opened = true;
+    gate.classList.add("show");
+    setTimeout(()=>{ try{ pinI.focus(); }catch(e){} }, 120);
+  }
   (function waitSplash(){
     const sp = document.getElementById("splash");
-    if(!sp || sp.classList.contains("out")){ gate.classList.add("show"); setTimeout(()=>pinI && pinI.focus(), 400); }
-    else setTimeout(waitSplash, 250);
+    if(!sp || sp.classList.contains("out") || !sp.isConnected) openGate();
+    else setTimeout(waitSplash, 80);
   })();
-  document.querySelectorAll("#lgWho button").forEach(b=>b.addEventListener("click", ()=>{
-    document.querySelectorAll("#lgWho button").forEach(x=>x.classList.remove("sel"));
-    b.classList.add("sel"); who = b.dataset.w; err.textContent = ""; pinI.focus();
-  }));
+  setTimeout(openGate, 9000);   // rete di sicurezza: il cancello si apre comunque
+
+  let busy = false;
   async function go(){
-    if(!who){ err.textContent = "Scegli chi sei."; return; }
+    if(busy) return;
     const pin = pinI.value.trim();
-    if(!pin){ err.textContent = "Inserisci il PIN."; return; }
-    err.textContent = ""; document.getElementById("lgGo").textContent = "Verifico…";
+    if(!pin){ err.textContent = "Inserisci il tuo PIN."; pinI.focus(); return; }
+    busy = true;
+    err.innerHTML = '<span style="color:var(--mist)">Verifico…</span>';
+    btn.textContent = "Verifico…"; btn.style.opacity = ".7";
     try{
       const role = await loginWith(pin);
-      if(role !== who){ err.textContent = `Questo PIN appartiene a ${role}: entro come ${role}.`; }
+      err.textContent = "";
       afterLogin(role, false);
       gate.classList.remove("show");
       toast("🏍 Ciao " + role + "!");
     }catch(e){
-      const msg = e && e.message ? e.message : "";
-      if(/password errata/i.test(msg)){
-        err.innerHTML = "Lo sportello Drive risponde ancora con la <b>versione vecchia</b>.<br>Su script.google.com: incolla il nuovo Code.gs, esegui una volta <b>setupPins</b>, poi <b>Distribuisci → Gestisci distribuzioni → ✏️ Modifica → Versione: Nuova → Distribuisci</b> (senza creare una distribuzione nuova, o cambia l'indirizzo).";
-      }else if(/PIN non valido/i.test(msg)){
-        err.textContent = "PIN non riconosciuto: controlla quello impostato in setupPins.";
+      const msg = (e && e.message) ? e.message : "";
+      if(/PIN non valido/i.test(msg)){
+        err.textContent = "PIN non riconosciuto.";
+        pinI.value = ""; pinI.focus();
+      }else if(/password errata/i.test(msg)){
+        err.innerHTML = "Lo sportello Drive risponde con la <b>versione vecchia</b>: su script.google.com incolla il nuovo Code.gs, esegui <b>setupPins</b>, poi <b>Distribuisci → Gestisci distribuzioni → ✏️ → Nuova versione</b>.";
+      }else if(/abort/i.test(msg) || /Failed to fetch|NetworkError|Load failed/i.test(msg)){
+        err.innerHTML = 'Sportello lento o non raggiungibile. <b style="color:var(--aurora-1);cursor:pointer" id="lgRetry">riprova</b>';
+        const r = document.getElementById("lgRetry");
+        if(r) r.addEventListener("click", go);
       }else{
-        err.innerHTML = "Sportello non raggiungibile (" + (msg||"rete") + ").<br>Controlla la connessione o l'indirizzo dello sportello.";
+        err.textContent = "Errore: " + (msg || "sconosciuto");
       }
-    }finally{ document.getElementById("lgGo").textContent = "Entra"; }
+    }finally{
+      busy = false; btn.textContent = "Entra"; btn.style.opacity = "";
+    }
   }
-  document.getElementById("lgGo").addEventListener("click", go);
-  pinI.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
-  // ingresso ospite: nessun PIN, sola lettura
+  btn.addEventListener("click", go);
+  pinI.addEventListener("keydown", e=>{ if(e.key === "Enter"){ e.preventDefault(); go(); } });
+  /* al primo tocco sul campo riscaldo comunque, nel caso lo splash sia stato saltato */
+  pinI.addEventListener("focus", warmSync, {once:true});
+
+  /* ospite: nessun PIN, sola lettura, ingresso immediato */
   document.getElementById("lgGuest")?.addEventListener("click", e=>{
     e.preventDefault();
     AUTH = {pin:"", role:"ospite"};
@@ -4805,34 +4884,31 @@ async function updateDressing(){
   function afterLogin(role, silent){
     if(role !== "ospite"){
       try{ store.set(ME_KEY, role, false); }catch(e){}
+      try{ ME = role; renderWhoAmI && renderWhoAmI(); }catch(e){}
       return;
     }
     /* ── OSPITE: nessuna identità, nessun tocco ── */
     document.body.classList.add("guest");
-    // dimentico qualsiasi identità salvata prima su questo dispositivo (es. "Ste")
     try{ if(LS){ LS.removeItem("caponord:" + ME_KEY); LS.removeItem("caponord:" + AUTO_KEY); } }catch(e){}
     try{ ME = null; }catch(e){}
     try{ renderWhoAmI(); renderCrewPos(); }catch(e){}
     const pc = document.getElementById("posControls");
     if(pc) pc.style.display = "none";
-    // targhetta fissa
     if(!document.querySelector(".guest-badge")){
       const b = document.createElement("div");
       b.className = "guest-badge"; b.textContent = "👀 OSPITE · SOLA LETTURA";
       document.body.appendChild(b);
     }
-    // scudo: intercetto i tocchi sui comandi di modifica, lasciando liberi quelli di visualizzazione
     if(!window.__guestShield){
       window.__guestShield = true;
-      const ALLOW = ".tab,.lang-picker,.p-chip,.day-row,.city-card,.modal-x,.leaflet-container,.fx-row,.lg-box,#lgGuest,#lgOut,a,[data-view]";
+      const ALLOW = ".tab,.lang-picker,.p-chip,.day-row,.city-card,.modal-x,.leaflet-container,.fx-row,.lg-box,#lgGuest,#lgOut,.sun-nav,#sunToday,a,[data-view]";
       document.addEventListener("click", e=>{
         if(!window.__guest) return;
         const t = e.target;
-        if(t.closest && t.closest(ALLOW)) return;                      // azioni di visualizzazione: ok
+        if(t.closest && t.closest(ALLOW)) return;
         const edit = t.closest && t.closest("button,.ck-box,.crew-card,.trophy,input[type=checkbox],.slider");
         if(edit){ e.preventDefault(); e.stopPropagation(); guestToast(); }
       }, true);
-      // i campi di testo diventano di sola lettura (tranne convertitore e autonomia, che sono strumenti di consultazione)
       const lockInputs = ()=>{
         if(!window.__guest) return;
         document.querySelectorAll("input,textarea,select").forEach(el=>{
