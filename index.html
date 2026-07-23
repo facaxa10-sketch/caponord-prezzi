@@ -799,7 +799,7 @@ body.polar-night .stars span{animation-duration:3s}
 .risk-deer{color:#C9A227}.risk-wind{color:#5FB8D8}.risk-fuel{color:#FF8A5B}.risk-cold{color:#8FB7FF}
 
 /* ---------- accesso ---------- */
-#loginGate{position:fixed;inset:0;z-index:220;background:linear-gradient(180deg,var(--night),var(--deep));
+#loginGate{position:fixed;inset:0;z-index:205;background:linear-gradient(180deg,var(--night),var(--deep));
   display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px}
 #loginGate.show{display:flex}
 #loginGate .lg-box{width:min(400px,92vw);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}
@@ -4739,8 +4739,13 @@ async function updateDressing(){
   let who = null;
   const pinI = document.getElementById("lgPin"), err = document.getElementById("lgErr");
   // già autenticato su questo dispositivo → niente schermata
-  if(AUTH && AUTH.pin){ afterLogin(AUTH.role, true); return; }
-  gate.classList.add("show");
+  if(AUTH){ afterLogin(AUTH.role, true); return; }
+  // prima lo spettacolo del globo, poi il login: aspetto che lo splash finisca
+  (function waitSplash(){
+    const sp = document.getElementById("splash");
+    if(!sp || sp.classList.contains("out")){ gate.classList.add("show"); setTimeout(()=>pinI && pinI.focus(), 400); }
+    else setTimeout(waitSplash, 250);
+  })();
   document.querySelectorAll("#lgWho button").forEach(b=>b.addEventListener("click", ()=>{
     document.querySelectorAll("#lgWho button").forEach(x=>x.classList.remove("sel"));
     b.classList.add("sel"); who = b.dataset.w; err.textContent = ""; pinI.focus();
@@ -4757,7 +4762,14 @@ async function updateDressing(){
       gate.classList.remove("show");
       toast("🏍 Ciao " + role + "!");
     }catch(e){
-      err.textContent = /PIN/.test(e.message) ? "PIN non riconosciuto." : "Sportello non raggiungibile: riprova.";
+      const msg = e && e.message ? e.message : "";
+      if(/password errata/i.test(msg)){
+        err.innerHTML = "Lo sportello Drive risponde ancora con la <b>versione vecchia</b>.<br>Su script.google.com: incolla il nuovo Code.gs, esegui una volta <b>setupPins</b>, poi <b>Distribuisci → Gestisci distribuzioni → ✏️ Modifica → Versione: Nuova → Distribuisci</b> (senza creare una distribuzione nuova, o cambia l'indirizzo).";
+      }else if(/PIN non valido/i.test(msg)){
+        err.textContent = "PIN non riconosciuto: controlla quello impostato in setupPins.";
+      }else{
+        err.innerHTML = "Sportello non raggiungibile (" + (msg||"rete") + ").<br>Controlla la connessione o l'indirizzo dello sportello.";
+      }
     }finally{ document.getElementById("lgGo").textContent = "Entra"; }
   }
   document.getElementById("lgGo").addEventListener("click", go);
