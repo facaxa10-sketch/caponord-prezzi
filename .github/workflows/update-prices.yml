@@ -1,7 +1,7 @@
 name: Aggiorna prezzi benzina
 on:
   schedule:
-    - cron: "30 5 * * *"   # ogni giorno alle 07:30 italiane (05:30 UTC)
+    - cron: "47 4 * * *"   # 06:47 italiane: minuto insolito, niente coda
   workflow_dispatch:        # pulsante per lanciarlo a mano
 permissions:
   contents: write
