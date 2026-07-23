@@ -833,6 +833,31 @@ body.guest #posControls,body.guest .check-tools .btn{opacity:.45}
 body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:120;
   font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;padding:5px 12px;border-radius:99px;
   background:rgba(24,39,65,.9);border:1px solid var(--line);color:var(--mist);pointer-events:none}
+
+/* ---------- pannello sole ---------- */
+.sun-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.sun-nav{padding:6px 14px;font-size:1.1rem;line-height:1;min-width:40px}
+.sun-title{flex:1;text-align:center;min-width:0}
+.sun-title b{display:block;font-family:var(--display);font-size:1.05rem;letter-spacing:.04em;color:var(--ice)}
+.sun-title span{font-size:.82rem;color:var(--mist)}
+.sun-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.sun-cols{grid-template-columns:1fr}}
+.sun-col{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.sun-col .sc-k{font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mist)}
+.sun-col .sc-city{display:block;font-family:var(--display);font-size:1.02rem;color:var(--ice);margin:2px 0 10px}
+.sun-col .sc-city i{font-style:normal;font-size:.78rem;color:var(--mist);margin-left:4px}
+.sun-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-size:.88rem}
+.sun-row span{color:var(--mist);font-size:.8rem}
+.sun-row b{font-family:var(--mono);color:var(--ice)}
+.sun-row.hi b{color:var(--sun)}
+.sun-col .sc-len{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-family:var(--mono);font-size:.9rem;color:var(--aurora-1)}
+.sun-bar-wrap{margin-top:16px}
+.sun-bar{height:14px;border-radius:99px;overflow:hidden;border:1px solid var(--line);position:relative}
+.sun-bar .now{position:absolute;top:-4px;bottom:-4px;width:2px;background:#fff;box-shadow:0 0 8px #fff}
+.sun-bar-lab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.58rem;color:var(--mist);margin-top:5px}
+.sun-tip{margin-top:14px;font-size:.86rem;color:var(--ice);background:rgba(255,180,84,.08);
+  border-left:3px solid var(--sun);border-radius:0 8px 8px 0;padding:10px 14px}
+.pos-near{font-family:var(--mono);font-size:.7rem;color:var(--aurora-1);margin-top:2px}
 </style>
 </head>
 <body>
@@ -1206,25 +1231,16 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 
 <!-- ============ FOTO ============ -->
 <section class="view" id="view-foto">
-  <span class="coord-tag" aria-hidden="true">ALBUM · PRIVATE</span>
-  <h2 class="section-title">Album di viaggio · riservato</h2>
-  <div id="fotoLock" class="lock-box reveal">
-    <div class="ico">🔐</div>
-    <h3 style="font-family:var(--display);letter-spacing:.12em;margin-bottom:6px">AREA PROTETTA</h3>
-    <p style="color:var(--mist);font-size:.88rem;margin-bottom:16px">Le foto dell'equipaggio sono visibili solo con la parola d'ordine.</p>
-    <input type="password" id="fotoPw" placeholder="Parola d'ordine" autocomplete="off" style="text-align:center;letter-spacing:.3em">
-    <div style="margin-top:14px"><button class="btn" id="fotoUnlock">Sblocca</button></div>
-    <p id="fotoErr" style="color:var(--alert);font-size:.8rem;margin-top:10px;min-height:1em"></p>
-  </div>
-  <div id="fotoArea" style="display:none">
-    <p class="section-sub">Album condiviso dell'equipaggio: chiunque conosca la parola d'ordine vede e aggiunge le stesse foto. Vengono compresse e salvate in modo permanente. Clicca su una foto per ingrandirla.</p>
+  <span class="coord-tag" aria-hidden="true">ALBUM · EQUIPAGGIO</span>
+  <h2 class="section-title">Album di viaggio</h2>
+  <div id="fotoArea">
+    <p class="section-sub">Album condiviso dell'equipaggio: Ste, Vale e Ale vedono e aggiungono le stesse foto. Vengono compresse e salvate in modo permanente. Clicca su una foto per ingrandirla.</p>
     <div class="foto-tools reveal">
       <input type="file" id="fotoFile" accept="image/*" multiple style="flex:1;min-width:200px;color:var(--mist)">
       <input type="text" id="fotoCap" placeholder="Didascalia (facoltativa)" style="flex:1;min-width:160px">
       <input type="text" id="fotoLoc" list="fotoPlaces" placeholder="📍 Dove è stata scattata" style="flex:1;min-width:170px">
       <datalist id="fotoPlaces"></datalist>
       <button class="btn" id="fotoUpload">📷 Carica</button>
-      <button class="btn ghost" id="fotoRelock">🔒 Blocca</button>
     </div>
     <div class="gallery" id="gallery"></div>
     <div class="empty-state" id="fotoEmpty" style="margin-top:20px">📷 Ancora nessuna foto. Il primo scatto ufficiale spetta alla partenza del 28 agosto!</div>
@@ -1265,9 +1281,22 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 
   <h2 class="section-title">Previsioni per le tappe</h2>
   <div class="wx-grid" id="wxGrid"><div class="empty-state" id="wxEmpty">Caricamento…</div></div>
-  <h2 class="section-title">Ore di luce lungo la rotta</h2>
-  <p class="section-sub" id="dayNote"></p>
-  <div class="card reveal"><svg id="daylightChart" viewBox="0 0 720 260" style="width:100%;height:auto"></svg></div>
+  <h2 class="section-title">Sole e luce · tappa per tappa</h2>
+  <p class="section-sub">Alba, tramonto e fine del crepuscolo calcolati per la città di partenza e per quella di arrivo di ogni giornata. Usali per decidere a che ora partire.</p>
+  <div class="card reveal" id="sunCard">
+    <div class="sun-head">
+      <button class="btn ghost sun-nav" id="sunPrev" aria-label="Tappa precedente">‹</button>
+      <div class="sun-title">
+        <b id="sunDay">—</b>
+        <span id="sunRoute"></span>
+      </div>
+      <button class="btn ghost sun-nav" id="sunNext" aria-label="Tappa successiva">›</button>
+    </div>
+    <div class="sun-cols" id="sunCols"></div>
+    <div class="sun-bar-wrap"><div class="sun-bar" id="sunBar"></div><div class="sun-bar-lab" id="sunBarLab"></div></div>
+    <p class="sun-tip" id="sunTip"></p>
+    <button class="btn ghost" id="sunToday" style="margin-top:12px;padding:6px 14px;font-size:.76rem">↩︎ Torna a oggi</button>
+  </div>
 </section>
 
 <!-- ============ SOS ============ -->
@@ -2517,17 +2546,10 @@ document.querySelectorAll("#dayList .day-row").forEach((row,i)=>{
 
 /* ================= FOTO (album condiviso, protetto da parola d'ordine) ================= */
 /* l'album si apre col login dell'app: niente più parola d'ordine separata */
-let fotoIndex = [], fotoUnlocked = false;
+let fotoIndex = [], fotoUnlocked = true;
+document.querySelector('.tab[data-view="foto"]')?.addEventListener("click", ()=>{ try{ loadFoto(); }catch(e){} });
 $("#fotoPlaces").innerHTML = [...CITIES.map(c=>c.city),"In viaggio","Torino"].map(c=>`<option value="${esc(c)}">`).join("");
-function tryUnlock(){
-  // con il login attivo l'album è già tuo; il lucchetto resta solo se non sei entrato
-  fotoUnlocked = true;
-  $("#fotoLock").style.display = "none";
-  $("#fotoArea").style.display = "block";
-  loadFoto();
-}
-/* sblocco automatico dopo il login */
-setTimeout(()=>{ try{ if(typeof AUTH!=="undefined" && AUTH) tryUnlock(); }catch(e){} }, 700);
+/* l'album è protetto dall'accesso all'app: nessun lucchetto separato */
 async function loadFoto(){
   fotoIndex = (await store.get("caponord-foto-index", true)) || [];
   renderGallery(true);
@@ -2601,15 +2623,7 @@ async function uploadFoto(){
   renderGallery(false);
   if(ok) toast(`📷 ${ok} foto nell'album di equipaggio`);
 }
-$("#fotoUnlock").addEventListener("click", tryUnlock);
-$("#fotoPw").addEventListener("keydown", e=>{ if(e.key==="Enter") tryUnlock(); });
 $("#fotoUpload").addEventListener("click", uploadFoto);
-$("#fotoRelock").addEventListener("click", ()=>{
-  fotoUnlocked = false;
-  $("#fotoArea").style.display = "none";
-  $("#fotoLock").style.display = "block";
-  toast("🔒 Album bloccato");
-});
 
 /* ---- collegamento Drive ---- */
 (function(){
@@ -2819,7 +2833,6 @@ async function loadMeteo(){
   if(wxLoadedDay === todayKey) return;   // già caricato oggi
   wxLoadedDay = todayKey;
   loadAurora();
-  drawDaylight();
   const grid = $("#wxGrid"), today = new Date(); today.setHours(0,0,0,0);
   const horizon = new Date(today.getTime() + 15*864e5);
   const slots = [];
@@ -2919,26 +2932,6 @@ function dayLenHours(lat, date){
   const x = -Math.tan(lat*Math.PI/180) * Math.tan(decl*Math.PI/180);
   if(x <= -1) return 24; if(x >= 1) return 0;
   return 2 * (Math.acos(x)*180/Math.PI) / 15;
-}
-function drawDaylight(){
-  const svg = $("#daylightChart");
-  const pts = [];
-  for(let i=0;i<DAYS.length;i++){
-    const dest = DESTS[i], geo = CITYGEO[dest]; if(!geo) continue;
-    pts.push({i, h: dayLenHours(geo.c[0], new Date(TRIP_START.getTime()+i*864e5)), dest});
-  }
-  const X = i => 50 + i*(650/(DAYS.length-1));
-  const Y = h => 230 - (h-8)*(200/10);   // scala 8h→18h
-  let g = `<defs><linearGradient id="dlGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFB454"/><stop offset=".5" stop-color="#4FE3C1"/><stop offset="1" stop-color="#7C6CFF"/></linearGradient></defs>`;
-  [10,12,14,16].forEach(h=>{ g += `<line class="axis" x1="50" x2="700" y1="${Y(h)}" y2="${Y(h)}"/><text x="8" y="${Y(h)+4}">${h} h</text>`; });
-  g += `<path class="dl-line" d="${pts.map((p,k)=>(k?"L":"M")+X(p.i).toFixed(0)+" "+Y(p.h).toFixed(1)).join(" ")}"/>`;
-  const apex = pts.reduce((a,b)=> b.h<a.h?b:a);
-  const start = pts[0], end = pts[pts.length-1];
-  g += `<circle class="dl-dot" r="5" cx="${X(apex.i)}" cy="${Y(apex.h)}"/>`;
-  g += `<text x="${X(apex.i)}" y="${Y(apex.h)-12}" text-anchor="middle" style="fill:#FFB454">${apex.dest} · ${apex.h.toFixed(1)} h</text>`;
-  [ [0,"G1"], [13,"CAPO NORD"], [DAYS.length-1,"G24"] ].forEach(([i,l])=>{ g += `<text x="${X(i)}" y="252" text-anchor="middle">${l}</text>`; });
-  svg.innerHTML = g;
-  $("#dayNote").textContent = `Da ${start.h.toFixed(1)} ore di luce alla partenza a ${apex.h.toFixed(1)} nel punto più corto (${apex.dest}), risalendo a ${end.h.toFixed(1)} al rientro: pianificate le partenze di conseguenza.`;
 }
 document.querySelector('.tab[data-view="meteo"]').addEventListener("click", ()=>{ loadMeteo(); if(typeof updateDressing==="function") updateDressing(); });
 /* moto dimostrativa alla prima apertura del tab Mappa (prima della partenza) */
@@ -4478,10 +4471,15 @@ function renderCrewPos(){
       const d = haversine(mine.lat, mine.lon, p.lat, p.lon);
       dist = ` · ${d < 1 ? "a pochi metri da te" : fmtDist(d)+" da te"}`;
     }
+    const near = (typeof nearestCity==="function") ? nearestCity(p.lat, p.lon) : null;
+    const nearTxt = near
+      ? `<div class="pos-near">📍 ${near.dist < 3 ? "a" : fmtDist(near.dist)+" da"} ${esc(near.name)} ${near.flag} ${esc(near.country)}</div>`
+      : "";
     return `<div class="pos-row ${fresh?"fresh":""} ${n===ME?"me":""}">
       <span class="pr-dot"></span>
       <div>
         <b>${n}</b>${n===ME?' <span style="font-size:.7rem;color:var(--sun)">(tu)</span>':''}
+        ${nearTxt}
         <div class="pr-meta">${p.lat.toFixed(3)}°N ${p.lon.toFixed(3)}°E · ${timeAgo(p.ts)}${dist}</div>
         <div class="pr-meta">${fmtDist(toNK)} dal Capo Nord</div>
       </div>
@@ -4513,7 +4511,7 @@ document.querySelector('.tab[data-view="mappa"]')?.addEventListener("click", asy
 
 initCrewPos();
 setTimeout(()=>{ if(typeof updateDressing==="function") updateDressing(); }, 900);
-(function(){ const v=document.getElementById("appVer"); if(v) v.textContent = "build 24 · vestizione+autonomia"; })();
+(function(){ const v=document.getElementById("appVer"); if(v) v.textContent = "build 30 · sole per tappa + geolocalizzazione"; })();
 
 
 
@@ -4847,6 +4845,266 @@ async function updateDressing(){
   }
 })();
 document.getElementById("lgOut")?.addEventListener("click", e=>{ e.preventDefault(); if(typeof logout==="function") logout(); });
+
+
+
+/* ================= GEOGRAFIA: città della rotta con paese e fuso ================= */
+const COUNTRIES = {
+  IT:["🇮🇹","Italia",2], CH:["🇨🇭","Svizzera",2], DE:["🇩🇪","Germania",2], DK:["🇩🇰","Danimarca",2],
+  SE:["🇸🇪","Svezia",2], NO:["🇳🇴","Norvegia",2], FI:["🇫🇮","Finlandia",3], EE:["🇪🇪","Estonia",3],
+  LV:["🇱🇻","Lettonia",3], LT:["🇱🇹","Lituania",3], PL:["🇵🇱","Polonia",2]
+};
+/* [nome, lat, lon, paese] — copertura lungo tutto il corridoio, per "città più vicina" e fusi */
+const GEO_CITIES = [
+["Torino",45.0703,7.6869,"IT"],["Novara",45.4469,8.6222,"IT"],["Milano",45.4642,9.1900,"IT"],
+["Como",45.8081,9.0852,"IT"],["Verbania",45.9211,8.5518,"IT"],["Domodossola",46.1161,8.2924,"IT"],["Aosta",45.7350,7.3130,"IT"],
+["Lugano",46.0050,8.9510,"CH"],["Bellinzona",46.1950,9.0240,"CH"],["Airolo",46.5290,8.6110,"CH"],
+["Andermatt",46.6340,8.5940,"CH"],["Altdorf",46.8810,8.6440,"CH"],["Lucerna",47.0500,8.3090,"CH"],
+["Zurigo",47.3769,8.5417,"CH"],["Winterthur",47.5000,8.7240,"CH"],["Basilea",47.5590,7.5880,"CH"],["Sciaffusa",47.6970,8.6340,"CH"],
+["Stoccarda",48.7758,9.1829,"DE"],["Ulma",48.4010,9.9870,"DE"],["Karlsruhe",49.0070,8.4040,"DE"],
+["Heilbronn",49.1420,9.2110,"DE"],["Norimberga",49.4520,11.0770,"DE"],["Würzburg",49.7910,9.9530,"DE"],
+["Francoforte",50.1100,8.6820,"DE"],["Kassel",51.3120,9.4800,"DE"],["Gottinga",51.5340,9.9360,"DE"],
+["Hannover",52.3759,9.7320,"DE"],["Brema",53.0790,8.8020,"DE"],["Amburgo",53.5510,9.9940,"DE"],
+["Lubecca",53.8660,10.6850,"DE"],["Kiel",54.3230,10.1350,"DE"],["Flensburg",54.7830,9.4370,"DE"],
+["Puttgarden",54.5000,11.2220,"DE"],["Rostock",54.0930,12.0990,"DE"],["Berlino",52.5200,13.4050,"DE"],
+["Magdeburgo",52.1200,11.6270,"DE"],["Lipsia",51.3400,12.3750,"DE"],["Dresda",51.0504,13.7373,"DE"],
+["Rødby",54.6940,11.3530,"DK"],["Nykøbing F",54.7690,11.8740,"DK"],["Vordingborg",55.0080,11.9100,"DK"],
+["Copenaghen",55.6761,12.5683,"DK"],["Roskilde",55.6420,12.0880,"DK"],["Helsingør",56.0360,12.6130,"DK"],
+["Odense",55.4030,10.4020,"DK"],["Aarhus",56.1630,10.2040,"DK"],["Aalborg",57.0480,9.9190,"DK"],
+["Helsingborg",56.0460,12.6940,"SE"],["Halmstad",56.6740,12.8570,"SE"],["Göteborg",57.7089,11.9746,"SE"],
+["Trollhättan",58.2830,12.2890,"SE"],["Karlstad",59.3790,13.5040,"SE"],["Örebro",59.2750,15.2130,"SE"],
+["Stoccolma",59.3293,18.0686,"SE"],["Uppsala",59.8580,17.6450,"SE"],["Gävle",60.6740,17.1410,"SE"],
+["Sundsvall",62.3900,17.3060,"SE"],["Örnsköldsvik",63.2900,18.7160,"SE"],["Umeå",63.8258,20.2630,"SE"],
+["Skellefteå",64.7500,20.9530,"SE"],["Luleå",65.5848,22.1547,"SE"],["Boden",65.8260,21.6880,"SE"],
+["Jokkmokk",66.6060,19.8280,"SE"],["Gällivare",67.1350,20.6600,"SE"],["Kiruna",67.8558,20.2253,"SE"],
+["Riksgränsen",68.4250,18.1290,"SE"],["Karesuando",68.4430,22.4940,"SE"],
+["Oslo",59.9139,10.7522,"NO"],["Moss",59.4340,10.6580,"NO"],["Fredrikstad",59.2200,10.9390,"NO"],
+["Halden",59.1290,11.3870,"NO"],["Lillehammer",61.1150,10.4660,"NO"],["Trondheim",63.4300,10.3950,"NO"],
+["Bodø",67.2800,14.4050,"NO"],["Narvik",68.4385,17.4272,"NO"],["Bjerkvik",68.5480,17.5480,"NO"],
+["Svolvær",68.2340,14.5670,"NO"],["Leknes",68.1479,13.6120,"NO"],["Reine",67.9330,13.0890,"NO"],
+["Å i Lofoten",67.8810,12.9780,"NO"],["Harstad",68.7990,16.5410,"NO"],["Andenes",69.3150,16.1200,"NO"],
+["Tromsø",69.6492,18.9553,"NO"],["Nordkjosbotn",69.2200,19.5400,"NO"],["Skibotn",69.3905,20.2665,"NO"],
+["Storslett",69.7670,21.0300,"NO"],["Alta",69.9689,23.2717,"NO"],["Skaidi",70.4500,24.5300,"NO"],
+["Olderfjord",70.4740,25.0710,"NO"],["Lakselv",70.0500,24.9730,"NO"],["Karasjok",69.4720,25.5120,"NO"],
+["Honningsvåg",70.9821,25.9704,"NO"],["Skarsvåg",71.1090,25.8220,"NO"],["CAPO NORD",71.1703,25.7833,"NO"],
+["Hammerfest",70.6630,23.6820,"NO"],["Kirkenes",69.7270,30.0450,"NO"],
+["Karigasniemi",69.3990,25.8450,"FI"],["Utsjoki",69.9060,27.0280,"FI"],["Kaamanen",69.1140,25.8510,"FI"],
+["Inari",68.9050,27.0280,"FI"],["Ivalo",68.6590,27.5410,"FI"],["Hetta",68.3860,23.6290,"FI"],
+["Muonio",67.9581,23.6800,"FI"],["Kittilä",67.6520,24.9010,"FI"],["Sodankylä",67.4160,26.5900,"FI"],
+["Rovaniemi",66.5039,25.7294,"FI"],["Kemi",65.7360,24.5640,"FI"],["Oulu",65.0120,25.4720,"FI"],
+["Kuopio",62.8920,27.6780,"FI"],["Jyväskylä",62.2426,25.7473,"FI"],["Tampere",61.4980,23.7610,"FI"],
+["Lahti",60.9830,25.6550,"FI"],["Turku",60.4510,22.2670,"FI"],["Helsinki",60.1699,24.9384,"FI"],
+["Tallinn",59.4370,24.7536,"EE"],["Pärnu",58.3860,24.4970,"EE"],["Tartu",58.3780,26.7290,"EE"],
+["Riga",56.9496,24.1052,"LV"],["Jelgava",56.6520,23.7130,"LV"],["Daugavpils",55.8750,26.5360,"LV"],
+["Panevėžys",55.7320,24.3600,"LT"],["Kaunas",54.8980,23.9040,"LT"],["Vilnius",54.6870,25.2800,"LT"],
+["Marijampolė",54.5590,23.3540,"LT"],
+["Suwałki",54.1010,22.9300,"PL"],["Augustów",53.8440,22.9800,"PL"],["Białystok",53.1320,23.1690,"PL"],
+["Varsavia",52.2297,21.0122,"PL"],["Łódź",51.7590,19.4560,"PL"],["Poznań",52.4070,16.9250,"PL"],
+["Wrocław",51.1080,17.0380,"PL"],["Zielona Góra",51.9390,15.5050,"PL"]
+];
+function cityInfo(name){
+  if(!name) return null;
+  const n = name.trim().toLowerCase();
+  let hit = GEO_CITIES.find(c=>c[0].toLowerCase()===n);
+  if(!hit) hit = GEO_CITIES.find(c=>c[0].toLowerCase().startsWith(n.split("/")[0].trim()));
+  if(!hit){
+    const g = (typeof CITYGEO!=="undefined") ? CITYGEO[name] : null;
+    if(g) return {name, lat:g.c[0], lon:g.c[1], cc:"NO", flag:"", country:"", tz:2};
+    return null;
+  }
+  const C = COUNTRIES[hit[3]] || ["","",2];
+  return {name:hit[0], lat:hit[1], lon:hit[2], cc:hit[3], flag:C[0], country:C[1], tz:C[2]};
+}
+function nearestCity(lat, lon){
+  let best = null, bd = Infinity;
+  for(const c of GEO_CITIES){
+    const d = haversine(lat, lon, c[1], c[2]);
+    if(d < bd){ bd = d; best = c; }
+  }
+  if(!best) return null;
+  const C = COUNTRIES[best[3]] || ["","",2];
+  return {name:best[0], dist:bd, flag:C[0], country:C[1], cc:best[3]};
+}
+
+/* ================= SOLE: alba, tramonto, crepuscolo (algoritmo NOAA) ================= */
+const SUN = (function(){
+  const rad=Math.PI/180, dayMs=864e5, J1970=2440588, J2000=2451545, ecl=rad*23.4397;
+  const toJulian=d=>d.valueOf()/dayMs-0.5+J1970;
+  const fromJulian=j=>new Date((j+0.5-J1970)*dayMs);
+  const toDays=d=>toJulian(d)-J2000;
+  const sMA=d=>rad*(357.5291+0.98560028*d);
+  const eLo=M=>M+rad*(1.9148*Math.sin(M)+0.02*Math.sin(2*M)+0.0003*Math.sin(3*M))+rad*102.9372+Math.PI;
+  const decl=l=>Math.asin(Math.sin(ecl)*Math.sin(l));
+  const J0=0.0009;
+  const jCyc=(d,lw)=>Math.round(d-J0-lw/(2*Math.PI));
+  const aTr=(Ht,lw,n)=>J0+(Ht+lw)/(2*Math.PI)+n;
+  const sTr=(ds,M,L)=>J2000+ds+0.0053*Math.sin(M)-0.0069*Math.sin(2*L);
+  function times(date, lat, lon, angle){
+    const lw=rad*-lon, phi=rad*lat, d=toDays(date), n=jCyc(d,lw), ds=aTr(0,lw,n);
+    const M=sMA(ds), L=eLo(M), dec=decl(L), Jnoon=sTr(ds,M,L);
+    const h=angle*rad;
+    const cosW=(Math.sin(h)-Math.sin(phi)*Math.sin(dec))/(Math.cos(phi)*Math.cos(dec));
+    if(cosW>1)  return {polar:"night", noon:fromJulian(Jnoon)};
+    if(cosW<-1) return {polar:"day",   noon:fromJulian(Jnoon)};
+    const w=Math.acos(cosW), a=aTr(w,lw,n), Jset=sTr(a,M,L);
+    return {rise:fromJulian(Jnoon-(Jset-Jnoon)), set:fromJulian(Jset), noon:fromJulian(Jnoon)};
+  }
+  return {times};
+})();
+function hhmm(d, tz){
+  const t = new Date(d.getTime() + tz*36e5);
+  return String(t.getUTCHours()).padStart(2,"0")+":"+String(t.getUTCMinutes()).padStart(2,"0");
+}
+function minOfDay(d, tz){
+  const t = new Date(d.getTime() + tz*36e5);
+  return t.getUTCHours()*60 + t.getUTCMinutes();
+}
+function durTxt(ms){
+  const m = Math.round(ms/60000);
+  return Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m";
+}
+
+/* ================= PANNELLO SOLE PER TAPPA ================= */
+let sunStage = null;   // 1..24
+function stageCities(n){
+  const to = DESTS[n-1];
+  const from = n===1 ? "Torino" : DESTS[n-2];
+  return {from, to, rest: from === to};
+}
+function sunColHtml(kind, info, date){
+  if(!info) return "";
+  const t  = SUN.times(date, info.lat, info.lon, -0.833);
+  const tw = SUN.times(date, info.lat, info.lon, -6);
+  const head = `<div class="sc-k">${kind}</div><span class="sc-city">${esc(info.name)} <i>${info.flag} ${esc(info.country)}</i></span>`;
+  if(t.polar){
+    return `<div class="sun-col">${head}<div class="sun-row"><span>${t.polar==="day"?"Sole sempre sopra l'orizzonte":"Sole sempre sotto l'orizzonte"}</span></div>
+      <div class="sc-len">${t.polar==="day"?"24h 00m di luce":"0h 00m di luce"}</div></div>`;
+  }
+  const len = durTxt(t.set - t.rise);
+  const darkTxt = tw.polar ? "—" : hhmm(tw.set, info.tz);
+  const lightTxt = tw.polar ? "—" : hhmm(tw.rise, info.tz);
+  return `<div class="sun-col">${head}
+    <div class="sun-row"><span>🌄 Prime luci</span><b>${lightTxt}</b></div>
+    <div class="sun-row hi"><span>🌅 Alba</span><b>${hhmm(t.rise, info.tz)}</b></div>
+    <div class="sun-row hi"><span>🌇 Tramonto</span><b>${hhmm(t.set, info.tz)}</b></div>
+    <div class="sun-row"><span>🌆 Buio</span><b>${darkTxt}</b></div>
+    <div class="sc-len">☀️ ${len} di luce</div></div>`;
+}
+function renderSun(){
+  const card = document.getElementById("sunCard");
+  if(!card || typeof DAYS==="undefined") return;
+  if(sunStage === null){
+    const d = tripDay();
+    sunStage = (d>=1 && d<=DAYS.length) ? d : 1;
+  }
+  const n = sunStage, day = DAYS[n-1];
+  const date = new Date(TRIP_START.getTime() + (n-1)*864e5);
+  const {from, to, rest} = stageCities(n);
+  const fi = cityInfo(from), ti = cityInfo(to);
+
+  document.getElementById("sunDay").textContent = `G${n} · ${day.d} ${day.w ? "("+day.w+")" : ""}`;
+  document.getElementById("sunRoute").textContent = rest ? `Sosta a ${to}` : `${from} → ${to}`;
+  document.getElementById("sunCols").innerHTML =
+    rest ? sunColHtml("Giornata di sosta", ti, date)
+         : sunColHtml("Partenza", fi, date) + sunColHtml("Arrivo", ti, date);
+
+  /* barra 24h della città di arrivo */
+  const bar = document.getElementById("sunBar"), lab = document.getElementById("sunBarLab");
+  if(ti){
+    const t = SUN.times(date, ti.lat, ti.lon, -0.833);
+    const tw = SUN.times(date, ti.lat, ti.lon, -6);
+    let css;
+    if(t.polar === "day") css = "background:linear-gradient(90deg,#FFB454,#FFD79A)";
+    else if(t.polar === "night") css = "background:#0B1220";
+    else{
+      const p = m => (m/1440*100).toFixed(1)+"%";
+      const r = minOfDay(t.rise, ti.tz), s = minOfDay(t.set, ti.tz);
+      const tr = tw.polar ? r : minOfDay(tw.rise, ti.tz), ts = tw.polar ? s : minOfDay(tw.set, ti.tz);
+      css = `background:linear-gradient(90deg,
+        #0B1220 0%, #0B1220 ${p(tr)},
+        #24406B ${p(tr)}, #24406B ${p(r)},
+        #FFB454 ${p(r)}, #FFD79A 50%, #FFB454 ${p(s)},
+        #24406B ${p(s)}, #24406B ${p(ts)},
+        #0B1220 ${p(ts)}, #0B1220 100%)`;
+    }
+    bar.style.cssText = "height:14px;border-radius:99px;overflow:hidden;border:1px solid var(--line);position:relative;" + css;
+    /* indicatore "adesso" solo se la tappa è oggi */
+    bar.innerHTML = "";
+    if(tripDay() === n){
+      const now = new Date();
+      const mins = (now.getUTCHours()*60 + now.getUTCMinutes() + ti.tz*60 + 1440) % 1440;
+      const mk = document.createElement("div");
+      mk.className = "now"; mk.style.left = (mins/1440*100).toFixed(1)+"%";
+      bar.appendChild(mk);
+    }
+    lab.innerHTML = `<span>00</span><span>06</span><span>12</span><span>18</span><span>24</span>`;
+  }
+
+  /* consiglio pratico: entro che ora partire per arrivare con la luce */
+  const tip = document.getElementById("sunTip");
+  if(rest || !ti){ tip.textContent = "Giornata di sosta: nessun trasferimento da programmare."; }
+  else{
+    const t = SUN.times(date, ti.lat, ti.lon, -0.833);
+    if(t.polar === "day") tip.textContent = "Sole sempre sopra l'orizzonte: potete viaggiare a qualsiasi ora.";
+    else if(t.polar === "night") tip.textContent = "Sole sempre sotto l'orizzonte: viaggerete al buio, massima prudenza con le renne.";
+    else{
+      const guida = (day.h || Math.round((day.km||400)/70));
+      const marg = 1;                          // un'ora fra soste e imprevisti
+      const lim = new Date(t.set.getTime() - (guida+marg)*36e5);
+      const fiTz = fi ? fi.tz : ti.tz;
+      tip.innerHTML = `Tramonto a <b>${esc(ti.name)}</b> alle <b>${hhmm(t.set, ti.tz)}</b> (ora locale). Con ${guida} h di guida più le soste, ` +
+        `per arrivare con la luce partite entro le <b>${hhmm(lim, fiTz)}</b>` +
+        (fiTz !== ti.tz ? ` (ora di ${esc(fi.name)}: lì c'è un'ora in meno)` : "") + ".";
+    }
+  }
+}
+document.getElementById("sunPrev")?.addEventListener("click", ()=>{ sunStage = Math.max(1, (sunStage||1)-1); renderSun(); });
+document.getElementById("sunNext")?.addEventListener("click", ()=>{ sunStage = Math.min(DAYS.length, (sunStage||1)+1); renderSun(); });
+document.getElementById("sunToday")?.addEventListener("click", ()=>{ sunStage = null; renderSun(); });
+document.querySelector('.tab[data-view="meteo"]')?.addEventListener("click", ()=>setTimeout(renderSun, 60));
+setTimeout(renderSun, 1000);
+
+
+
+/* ================= MAPPA: indicatore di avanzamento del viaggio ================= */
+function drawTripProgress(){
+  const svg = window.__mapSvg || document.getElementById("routeSvg");
+  if(!svg || !window.__mapProject || typeof DAYS==="undefined") return;
+  let layer = svg.querySelector("#progressLayer");
+  if(!layer){
+    layer = document.createElementNS("http://www.w3.org/2000/svg","g");
+    layer.setAttribute("id","progressLayer");
+    svg.appendChild(layer);
+  }
+  const d = tripDay();
+  const inTrip = d>=1 && d<=DAYS.length;
+  const idx = inTrip ? d : (d<1 ? 1 : DAYS.length);
+  const dest = DESTS[idx-1];
+  const info = cityInfo(dest);
+  if(!info) return;
+  const [ , y] = window.__mapProject(info.lat, info.lon);
+  const pct = Math.round((idx/DAYS.length)*100);
+  const label = inTrip ? `SIETE QUI · G${d} · ${dest.toUpperCase()}`
+                       : (d<1 ? `PARTENZA · G1 · ${dest.toUpperCase()}` : `VIAGGIO COMPLETATO`);
+  layer.innerHTML =
+    `<line x1="0" x2="420" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}"
+       stroke="#FFB454" stroke-width="1.2" stroke-dasharray="7 5" opacity=".75"/>
+     <rect x="0" y="${(y-15).toFixed(1)}" width="420" height="15" fill="url(#hereFade)" opacity=".35"/>
+     <text x="414" y="${(y-6).toFixed(1)}" text-anchor="end"
+       font-family="Chakra Petch,monospace" font-size="8.5" letter-spacing="1.4"
+       fill="#FFB454" stroke="#0B1220" stroke-width="2.4" paint-order="stroke">${esc(label)}</text>
+     <text x="6" y="20" font-family="Chakra Petch,monospace" font-size="9" letter-spacing="1.2"
+       fill="#93A6C2">TAPPA ${idx}/${DAYS.length} · ${pct}%</text>`;
+  if(!svg.querySelector("#hereFade")){
+    const defs = svg.querySelector("defs") || svg.insertBefore(document.createElementNS("http://www.w3.org/2000/svg","defs"), svg.firstChild);
+    const lg = document.createElementNS("http://www.w3.org/2000/svg","linearGradient");
+    lg.id = "hereFade"; lg.setAttribute("x1","0"); lg.setAttribute("x2","1"); lg.setAttribute("y1","0"); lg.setAttribute("y2","0");
+    lg.innerHTML = '<stop offset="0" stop-color="#FFB454" stop-opacity="0"/><stop offset="1" stop-color="#FFB454" stop-opacity=".55"/>';
+    defs.appendChild(lg);
+  }
+}
+document.querySelector('.tab[data-view="mappa"]')?.addEventListener("click", ()=>setTimeout(drawTripProgress, 120));
+setTimeout(drawTripProgress, 1400);
 
 </script>
 </body>
