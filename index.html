@@ -885,6 +885,71 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
   color:var(--mist);cursor:pointer;transition:all .25s;font-family:var(--display);white-space:nowrap}
 .doc-chip.on{color:var(--night);background:var(--aurora-1);border-color:var(--aurora-1);font-weight:600}
 .modal-card iframe.pdfview{width:100%;height:72vh;border:1px solid var(--line);border-radius:12px;margin-top:10px;background:#fff}
+
+/* ===== Cruscotto Oggi (solo equipaggio) ===== */
+#cruscotto .today{position:relative;overflow:hidden;border-radius:22px;border:1px solid var(--line);background:linear-gradient(160deg,var(--panel),var(--deep));box-shadow:var(--shadow);padding:26px 28px}
+#cruscotto .today.apex{border-color:rgba(255,180,84,.45)}
+#cruscotto .sky{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.9}
+#cruscotto .today>*{position:relative;z-index:1}
+#cruscotto .sky.aurora::before,#cruscotto .sky.aurora::after{content:"";position:absolute;left:-20%;right:-20%;height:150px;filter:blur(26px);opacity:.5;border-radius:50%}
+#cruscotto .sky.aurora::before{top:-40px;background:linear-gradient(90deg,transparent,var(--aurora-1),var(--aurora-2),transparent);animation:cruWave1 12s ease-in-out infinite alternate}
+#cruscotto .sky.aurora::after{top:10px;background:linear-gradient(90deg,transparent,var(--aurora-2),var(--aurora-1),transparent);opacity:.32;animation:cruWave2 16s ease-in-out infinite alternate}
+@keyframes cruWave1{from{transform:translateX(-6%) skewY(-2deg)}to{transform:translateX(6%) skewY(3deg)}}
+@keyframes cruWave2{from{transform:translateX(5%) skewY(2deg)}to{transform:translateX(-7%) skewY(-3deg)}}
+#cruscotto .sky.rain{background:repeating-linear-gradient(102deg,transparent 0 7px,rgba(147,166,194,.16) 7px 8px);animation:cruRain .5s linear infinite;opacity:.35}
+@keyframes cruRain{to{background-position:0 60px}}
+#cruscotto .sky.clear::before{content:"";position:absolute;top:-70px;right:-40px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,rgba(255,180,84,.28),transparent 65%);filter:blur(20px)}
+#cruscotto .t-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#cruscotto .t-day{font-family:var(--mono);letter-spacing:.22em;text-transform:uppercase;font-size:.68rem;color:var(--aurora-1);border:1px solid rgba(79,227,193,.35);border-radius:999px;padding:5px 12px;background:rgba(79,227,193,.06)}
+#cruscotto .t-date{font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;font-size:.72rem;color:var(--mist)}
+#cruscotto .t-apexbadge{margin-left:auto;font-family:var(--display);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sun);border:1px solid rgba(255,180,84,.5);border-radius:999px;padding:5px 12px;background:rgba(255,180,84,.08)}
+#cruscotto .t-route{font-family:var(--display);font-weight:700;line-height:1.05;margin:16px 0 2px;font-size:clamp(1.7rem,4vw,2.6rem);text-transform:uppercase;letter-spacing:.01em}
+#cruscotto .t-route .grad{background:linear-gradient(100deg,var(--aurora-1) 10%,var(--aurora-2) 60%,var(--sun) 105%);-webkit-background-clip:text;background-clip:text;color:transparent}
+#cruscotto .t-poi{color:var(--mist);font-size:.95rem;margin:0}
+#cruscotto .t-divider{height:1px;background:linear-gradient(90deg,var(--line),transparent);margin:20px 0}
+#cruscotto .t-stats{display:flex;gap:26px;flex-wrap:wrap}
+#cruscotto .t-stat b{font-family:var(--display);font-size:1.45rem;display:block;line-height:1}
+#cruscotto .t-stat span{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mist)}
+#cruscotto .t-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+#cruscotto .t-tag{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;border:1px solid var(--line);border-radius:12px;padding:8px 13px;background:rgba(19,30,51,.5)}
+#cruscotto .t-tag.sleep{border-color:rgba(79,227,193,.4);color:var(--aurora-1)}
+#cruscotto .t-tag.tent{border-color:rgba(255,180,84,.4);color:var(--sun)}
+#cruscotto .t-sky{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;align-items:center}
+#cruscotto .t-sky .item{display:flex;align-items:center;gap:9px;font-size:.92rem}
+#cruscotto .t-sky .item small{display:block;font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mist)}
+#cruscotto .kp{margin-left:auto;display:inline-flex;align-items:center;gap:9px;font-family:var(--display);border:1px solid rgba(79,227,193,.4);border-radius:999px;padding:7px 15px;background:rgba(79,227,193,.08);color:var(--aurora-1);font-size:.88rem}
+#cruscotto .kp.rain{border-color:rgba(124,108,255,.4);background:rgba(124,108,255,.1);color:#b3a8ff}
+#cruscotto .kp .dot{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+#cruscotto .t-note{margin:18px 0 0;font-size:.9rem;color:var(--ice);background:rgba(255,180,84,.08);border-left:3px solid var(--sun);border-radius:0 8px 8px 0;padding:10px 14px}
+@media(max-width:560px){#cruscotto .kp{margin-left:0}#cruscotto .t-stats{gap:18px}}
+
+/* ===== Scheda Paese (solo equipaggio) ===== */
+#schedaPaese .flags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+#schedaPaese .flag{font-size:1.35rem;line-height:1;cursor:pointer;border:1px solid var(--line);border-radius:12px;padding:8px 11px;background:var(--panel);transition:all .25s;filter:grayscale(.4);opacity:.7}
+#schedaPaese .flag:hover{opacity:1;filter:none;transform:translateY(-2px)}
+#schedaPaese .flag.on{opacity:1;filter:none;border-color:var(--aurora-1);background:rgba(79,227,193,.1);box-shadow:0 0 18px rgba(79,227,193,.15)}
+#schedaPaese .country{background:linear-gradient(150deg,rgba(24,39,65,.72),rgba(14,23,41,.66));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(147,166,194,.16);border-top-color:rgba(147,166,194,.3);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+#schedaPaese .country::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(79,227,193,.5),transparent);opacity:.6}
+#schedaPaese .c-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+#schedaPaese .c-head .fl{font-size:2rem;line-height:1}
+#schedaPaese .c-head h3{font-family:var(--display);font-size:1.5rem;letter-spacing:.05em;text-transform:uppercase;margin:0}
+#schedaPaese .c-head .cur{margin-left:auto;font-family:var(--mono);font-size:.78rem;color:var(--sun);border:1px solid rgba(255,180,84,.35);border-radius:999px;padding:5px 12px;background:rgba(255,180,84,.06)}
+#schedaPaese .c-rows{display:grid;grid-template-columns:1fr 1fr;gap:2px 26px;margin-top:20px}
+@media(max-width:560px){#schedaPaese .c-rows{grid-template-columns:1fr}}
+#schedaPaese .c-row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid rgba(34,49,79,.6)}
+#schedaPaese .c-row .ic{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
+#schedaPaese .c-row .lb{font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mist)}
+#schedaPaese .c-row .vl{font-size:.92rem;color:var(--ice);margin-top:2px;line-height:1.35}
+#schedaPaese .c-row .vl b{color:var(--aurora-1);font-weight:600}
+#schedaPaese .c-row .vl .live{font-family:var(--mono);font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--aurora-1);border:1px solid rgba(79,227,193,.35);border-radius:999px;padding:1px 7px;margin-left:6px}
+#schedaPaese .c-row.alert .ic{color:var(--alert)}
+#schedaPaese .c-conv{margin-top:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(11,18,32,.5);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+#schedaPaese .c-conv input{width:110px;background:var(--night);border:1px solid var(--line);border-radius:10px;color:var(--ice);font-family:var(--display);font-size:1.1rem;padding:8px 12px}
+#schedaPaese .c-conv .eq{font-family:var(--display);font-size:1.2rem;color:var(--ice)}
+#schedaPaese .c-conv .res{font-family:var(--display);font-size:1.2rem;color:var(--aurora-1);font-weight:700}
+#schedaPaese .c-conv small{font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mist)}
+#schedaPaese .c-foot{margin-top:14px;font-size:.76rem;color:var(--mist)}
+
 </style>
 </head>
 <body>
@@ -987,29 +1052,45 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
     <div class="card reveal"><h3>📓 Diario di bordo</h3><div class="big" id="dashDiary">0</div><p>Pagine scritte finora. Ogni tappa merita il suo racconto.</p></div>
   </div>
 
-  <h2 class="section-title">Budget di viaggio · dal piano ufficiale</h2>
-  <p class="section-sub">I numeri del foglio di pianificazione: 3 persone, 2 moto, 21 notti in casa (1 extra a Zurigo da prenotare) e 2 in tenda.</p>
-  <div class="grid-3">
-    <div class="card reveal"><h3>💶 Totale a persona</h3><div class="big" style="color:var(--sun)">€1.856</div><p>Stima completa con alloggi (case + tende), dal foglio di calcolo del viaggio.</p></div>
-    <div class="card reveal"><h3>🍝 Cibo stimato</h3><div class="big">€500</div><p>A persona per 23 giorni: ~€22 al giorno tra supermercati, cucina da campo e qualche ristorante.</p></div>
-    <div class="card reveal"><h3>⛽ Benzina da piano</h3><div class="big">€633</div><p>A persona (€1.900 totali per 2 moto). Confrontala con il calcolatore aggiornato nella sezione Benzina.</p></div>
-    <div class="card reveal"><h3>🇨🇭 Bollo Svizzera</h3><div class="big">€90</div><p>€45 a moto per la vignetta autostradale (andata e ritorno passano da Zurigo).</p></div>
-    <div class="card reveal"><h3>🌉 Ponte & traghetti</h3><div class="big">€242</div><p>Ponte Øresund €70 (2 moto) + traghetto Rødby €72 + traghetto Helsinki–Tallinn €100.</p></div>
-    <div class="card reveal"><h3>🛣 EPASS pedaggi</h3><div class="big">Da fare</div><p>Registra le targhe su EPC/AutoPASS prima di partire: i pedaggi di Svezia e Norvegia sono automatici.</p></div>
-  </div>
+  <!-- ============ CRUSCOTTO OGGI (solo equipaggio) ============ -->
+  <section class="guest-hidden" id="cruscotto" aria-label="Cruscotto di oggi">
+    <h2 class="section-title">Cruscotto · Oggi</h2>
+    <p class="section-sub">La tappa di oggi a colpo d'occhio: strada, km, dove si dorme, alba/tramonto e aurora. Lo sfondo si accende se stanotte c'è aurora o se piove.</p>
+    <div class="today">
+      <div class="sky clear" id="cruSky"></div>
+      <div class="t-top">
+        <span class="t-day" id="cruDay">—</span>
+        <span class="t-date" id="cruDate">—</span>
+        <span class="t-apexbadge" id="cruApex" style="display:none">◆ Obiettivo di oggi</span>
+      </div>
+      <h1 class="t-route" id="cruRoute">—</h1>
+      <p class="t-poi" id="cruPoi"></p>
+      <div class="t-divider"></div>
+      <div class="t-stats">
+        <div class="t-stat"><b id="cruKm">—</b><span>km oggi</span></div>
+        <div class="t-stat"><b id="cruH">—</b><span>in sella</span></div>
+        <div class="t-stat"><b id="cruOra">—</b><span>orari</span></div>
+        <div class="t-stat"><b id="cruPp">—</b><span>a persona</span></div>
+      </div>
+      <div class="t-tags" id="cruTags"></div>
+      <div class="t-sky">
+        <div class="item">☀️ <div><small>Alba</small><b id="cruSunrise">—</b></div></div>
+        <div class="item">🌙 <div><small>Tramonto</small><b id="cruSunset">—</b></div></div>
+        <span class="kp" id="cruKp"><span class="dot"></span> —</span>
+      </div>
+      <p class="t-note" id="cruNote" style="display:none"></p>
+    </div>
+  </section>
 
-  <h2 class="section-title">Da sapere prima di partire</h2>
-  <p class="section-sub">Le verifiche fatte sui costi hanno rovesciato alcune convinzioni del foglio: risparmi veri, da segnare.</p>
-  <div class="grid-3">
-    <div class="card reveal"><h3>Capo Nord</h3><p><span class="chip free">GRATIS</span>&nbsp; L'accesso al plateau non richiede più il vecchio biglietto e anche il tunnel sottomarino di Magerøya è ora esente da pedaggio.</p></div>
-    <div class="card reveal"><h3>Oslo · Forsvarsmuseet</h3><p><span class="chip free">GRATIS</span>&nbsp; Nel foglio è segnato €14, ma il museo delle forze armate risulta a ingresso libero. Gratis anche Vigeland, Ekebergparken e il lungomare.</p></div>
-    <div class="card reveal"><h3>Stoccolma · Moderna Museet</h3><p><span class="chip free">GRATIS</span>&nbsp; Nel foglio è segnato €15, ma la collezione permanente non si paga. Il Vasa invece resta a pagamento (~€19).</p></div>
-    <div class="card reveal"><h3>Helsinki · Temppeliaukio</h3><p><span class="chip paid">~€10</span>&nbsp; La chiesa nella roccia ha introdotto il biglietto: mettila in budget, ne vale comunque la pena.</p></div>
-    <div class="card reveal"><h3>Svezia = pieno furbo</h3><p><span class="chip free">€1,33/L</span>&nbsp; La benzina più economica della rotta, e ci passate 5 giorni. Pieno prima della Danimarca e prima della Norvegia.</p></div>
-    <div class="card reveal"><h3>Meteo artico</h3><p><span class="chip">SET</span>&nbsp; Le due notti in tenda (Skibotn e Capo Nord) saranno tra 0 e 8°C: termico, sacco a pelo serio e antipioggia a portata. Bonus: stagione di aurore già aperta.</p></div>
-  </div>
+  <!-- ============ SCHEDA PAESE (solo equipaggio) ============ -->
+  <section class="guest-hidden" id="schedaPaese" aria-label="Scheda paese">
+    <h2 class="section-title">Scheda Paese</h2>
+    <p class="section-sub">Un colpo d'occhio per ogni frontiera: valuta, emergenze, benzina (dal tuo prices.json), pedaggi, limiti e alcol. Tocca una bandiera.</p>
+    <div class="flags" id="spFlags"></div>
+    <div class="country" id="spCountry"></div>
+  </section>
 
-  <h2 class="section-title">Sincronizzazione equipaggio</h2>
+    <h2 class="section-title">Sincronizzazione equipaggio</h2>
   <p class="section-sub">Collega lo sportello Google Apps Script (istruzioni nel kit): checklist, diario, foto e prezzi diventano condivisi davvero tra i telefoni di Ste, Vale e Ale, salvati nella cartella del tuo Drive.</p>
   <div class="foto-tools reveal">
     <input type="text" id="syncUrl" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;min-width:250px">
@@ -1112,7 +1193,7 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 <section class="view" id="view-benzina">
   <span class="coord-tag" aria-hidden="true">FUEL LOG</span>
   <h2 class="section-title">Carburante · prezzi modificabili</h2>
-  <p class="section-sub">Verificato: le 20 tappe sommano esattamente 9.754 km e 128,5 ore, come da foglio. Prezzi benzina 95 self rilevati a luglio 2026: <b style="color:var(--ice)">modificali liberamente</b> — ora sono <b style="color:var(--ice)">condivisi</b>: la correzione di uno vale per tutto l'equipaggio, e la media ponderata si ricalcola da sola. In fondo puoi collegare un file prices.json su GitHub per l'aggiornamento automatico giornaliero.</p>
+  <p class="section-sub">Verificato: le 20 tappe sommano esattamente 9.754 km e 128,5 ore, come da foglio. Prezzi benzina 95 self <b style="color:var(--ice)">aggiornati al 27 luglio 2026</b> (fonti: Bollettino Petrolifero UE + MIMIT per l'Italia): <b style="color:var(--ice)">modificali liberamente</b> — ora sono <b style="color:var(--ice)">condivisi</b>: la correzione di uno vale per tutto l'equipaggio, e la media ponderata si ricalcola da sola. In fondo puoi collegare un file prices.json su GitHub per l'aggiornamento automatico giornaliero.</p>
   <div class="card reveal" style="overflow-x:auto">
     <table class="fuel-table" id="fuelTable">
       <thead><tr><th>Paese</th><th>Km sulla rotta</th><th>€ / litro</th><th></th><th>Consiglio</th></tr></thead>
@@ -1535,17 +1616,17 @@ const CITIES = [
 
 /* ================= BENZINA (prezzi modificabili, km per paese stimati) ================= */
 const FUEL_DEFAULT = [
- {code:"IT",c:"🇮🇹 Italia", km:300, p:1.89, tip:"Pieno alla partenza"},
- {code:"CH",c:"🇨🇭 Svizzera", km:560, p:1.89, tip:"Vignetta €45/moto, prezzi simili all'Italia"},
- {code:"DE",c:"🇩🇪 Germania", km:1730, p:1.85, tip:"Pieno OBBLIGATORIO prima della Danimarca"},
- {code:"DK",c:"🇩🇰 Danimarca", km:180, p:2.13, tip:"La più cara: solo rabbocchi"},
- {code:"SE",c:"🇸🇪 Svezia", km:2270, p:1.33, tip:"LA PIÙ ECONOMICA: riempite tutto qui"},
- {code:"NO",c:"🇳🇴 Norvegia", km:1770, p:1.79, tip:"Ok in città, cara nelle aree remote"},
- {code:"FI",c:"🇫🇮 Finlandia", km:1340, p:1.90, tip:"Arrivate dal Capo col pieno svedese"},
- {code:"EE",c:"🇪🇪 Estonia", km:250, p:1.65, tip:"Nella media, comoda dopo il traghetto"},
- {code:"LV",c:"🇱🇻 Lettonia", km:210, p:1.64, tip:"Nella media"},
- {code:"LT",c:"🇱🇹 Lituania", km:270, p:1.59, tip:"Conveniente in transito"},
- {code:"PL",c:"🇵🇱 Polonia", km:874, p:1.35, tip:"Economica: pieno prima di Dresda"}
+ {code:"IT",c:"🇮🇹 Italia", km:300, p:1.98, tip:"Pieno alla partenza (media nazionale self 27 lug)"},
+ {code:"CH",c:"🇨🇭 Svizzera", km:560, p:1.96, tip:"Vignetta €45/moto; poco più dell'Italia"},
+ {code:"DE",c:"🇩🇪 Germania", km:1730, p:2.19, tip:"Cara: pieno leggero, riempirete in Svezia"},
+ {code:"DK",c:"🇩🇰 Danimarca", km:180, p:2.46, tip:"La PIÙ CARA della rotta: solo rabbocchi"},
+ {code:"SE",c:"🇸🇪 Svezia", km:2270, p:1.44, tip:"LA PIÙ ECONOMICA: riempite tutto qui"},
+ {code:"NO",c:"🇳🇴 Norvegia", km:1770, p:1.88, tip:"Cicli settimanali; cara nelle aree remote della E69"},
+ {code:"FI",c:"🇫🇮 Finlandia", km:1340, p:2.16, tip:"Cara: arrivate dal Capo col pieno svedese/norvegese"},
+ {code:"EE",c:"🇪🇪 Estonia", km:250, p:1.74, tip:"Nella media, comoda dopo il traghetto"},
+ {code:"LV",c:"🇱🇻 Lettonia", km:210, p:1.81, tip:"Nella media"},
+ {code:"LT",c:"🇱🇹 Lituania", km:270, p:1.77, tip:"In transito verso la Polonia"},
+ {code:"PL",c:"🇵🇱 Polonia", km:874, p:1.68, tip:"Più economica di Germania: pieno prima di Dresda"}
 ];
 
 /* ================= CHECKLIST (comune + 3 persone) ================= */
@@ -2060,6 +2141,7 @@ async function fetchRemoteFuel(loud){
     });
     calcState.remoteUpdated = (j.updated||"") + (n?" ("+n+" prezzi cambiati)":" (nessuna variazione)");
     renderFuel(); persistFuel(); updateRemoteStatus();
+    if(typeof spRefresh === "function") spRefresh();
     if(loud) toast("⛽ Prezzi sincronizzati da GitHub");
   }catch(e){
     if(o) o.textContent = "Impossibile leggere l'URL (controlla che sia il link RAW di prices.json).";
@@ -5437,6 +5519,174 @@ function drawTripProgress(){
 }
 document.querySelector('.tab[data-view="mappa"]')?.addEventListener("click", ()=>setTimeout(drawTripProgress, 120));
 setTimeout(drawTripProgress, 1400);
+
+
+/* ================= CRUSCOTTO OGGI ================= */
+async function initCruscotto(){
+  const host = document.getElementById("cruscotto"); if(!host) return;
+  const n = DAYS.length, d = tripDay();
+  let idx, phase;
+  if(d < 1){ idx = 0; phase = "pre"; }
+  else if(d > n){ idx = n-1; phase = "post"; }
+  else { idx = d-1; phase = "live"; }
+  const day = DAYS[idx], dest = DESTS[idx];
+
+  const parts = String(day.route).split("→");
+  document.getElementById("cruRoute").innerHTML = parts.length > 1
+    ? esc(parts.slice(0,-1).join("→").trim()) + " → <span class='grad'>" + esc(parts[parts.length-1].trim()) + "</span>"
+    : "<span class='grad'>" + esc(day.route) + "</span>";
+
+  const legDate = new Date(TRIP_START.getTime() + idx*864e5);
+  document.getElementById("cruDate").textContent =
+    legDate.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"});
+
+  let dl;
+  if(phase === "pre"){ const gg = Math.max(0, Math.ceil((TRIP_START - Date.now())/864e5)); dl = "Si parte tra " + gg + " " + (gg===1?"giorno":"giorni"); }
+  else if(phase === "post") dl = "Missione compiuta";
+  else dl = "Oggi · Giorno " + d + " / " + n;
+  document.getElementById("cruDay").textContent = dl;
+
+  document.getElementById("cruApex").style.display = day.apex ? "inline-block" : "none";
+  host.querySelector(".today").classList.toggle("apex", !!day.apex);
+
+  document.getElementById("cruPoi").textContent = day.note || (day.rest ? "Giornata di sosta" : (dest ? "Destinazione: " + dest : ""));
+  document.getElementById("cruKm").textContent  = day.km ? day.km.toLocaleString("it-IT") : "—";
+  document.getElementById("cruH").textContent   = day.h ? (String(day.h).replace(".",",") + " h") : "—";
+  document.getElementById("cruOra").textContent = day.orari || "—";
+  document.getElementById("cruPp").textContent  = day.pp || "—";
+
+  const sleep = day.sleep || "";
+  let sleepTag = "";
+  if(sleep === "TENDA") sleepTag = '<span class="t-tag tent">⛺ TENDA stanotte</span>';
+  else if(sleep === "ARRIVO") sleepTag = '<span class="t-tag sleep">🏁 Arrivo a casa</span>';
+  else if(sleep) sleepTag = '<span class="t-tag sleep">🛏 ' + esc(sleep) + ' stanotte</span>';
+  document.getElementById("cruTags").innerHTML = sleepTag + (dest ? '<span class="t-tag">📍 ' + esc(dest) + '</span>' : "");
+
+  const noteEl = document.getElementById("cruNote");
+  noteEl.textContent = day.note || "";
+  noteEl.style.display = day.note ? "block" : "none";
+
+  /* ---- meteo + aurora come sfondo: riusa la logica esistente ---- */
+  const sky = document.getElementById("cruSky"), kpChip = document.getElementById("cruKp");
+  try{ await loadAurora(); }catch(e){}
+  const kp = (typeof window.__KP === "number") ? window.__KP : null;
+
+  let mode = "clear", weatherTxt = null, rise = null, set = null;
+  const geo = CITYGEO[dest];
+  const iso = (phase === "live") ? isoLocal(new Date()) : tripDateISO(idx);
+  if(geo){
+    try{
+      const u = `https://api.open-meteo.com/v1/forecast?latitude=${geo.c[0]}&longitude=${geo.c[1]}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset&timezone=auto&start_date=${iso}&end_date=${iso}`;
+      const j = await fetchJson(u);
+      const dd = j && j.daily;
+      if(dd && dd.time && dd.time.length){
+        rise = (dd.sunrise[0]||"").slice(11,16);
+        set  = (dd.sunset[0]||"").slice(11,16);
+        const wc = dd.weather_code[0], pp = dd.precipitation_probability_max[0], wind = Math.round(dd.wind_speed_10m_max[0]);
+        const tmin = Math.round(dd.temperature_2m_min[0]), tmax = Math.round(dd.temperature_2m_max[0]);
+        const rainy = (pp >= 50) || [51,53,55,61,63,65,80,81,82,95,96,99].includes(wc);
+        const snowy = [71,73,75,77,85,86].includes(wc);
+        weatherTxt = `${WX_ICO[wc]||"🌡"} ${tmin}° / ${tmax}° · ☔ ${pp==null?"–":pp}% · 💨 ${wind} km/h`;
+        if(rainy || snowy) mode = "rain";
+      }
+    }catch(e){}
+  }
+  if(kp !== null && kp >= 4) mode = "aurora";   // aurora ha priorità come sfondo
+  sky.className = "sky " + mode;
+
+  document.getElementById("cruSunrise").textContent = rise || "—";
+  document.getElementById("cruSunset").textContent  = set  || "—";
+
+  if(mode === "aurora" && kp !== null){
+    kpChip.className = "kp";
+    kpChip.innerHTML = `<span class="dot"></span> Kp ${kp.toFixed(1)} · ${kp>=5?"aurora molto probabile":"aurora probabile a nord"}`;
+  } else if(weatherTxt){
+    kpChip.className = "kp rain";
+    kpChip.innerHTML = `<span class="dot"></span> ${weatherTxt}`;
+  } else if(kp !== null){
+    kpChip.className = "kp";
+    kpChip.innerHTML = `<span class="dot"></span> Kp ${kp.toFixed(1)}`;
+  } else {
+    kpChip.style.display = "none";
+  }
+}
+
+/* ================= SCHEDA PAESE ================= */
+const SP_META = {
+  IT:{fl:"🇮🇹",name:"Italia",cur:"EUR",sos:"112 · <b>118</b> medica · <b>115</b> pompieri",toll:"Autostrade a pedaggio (casello)",speed:"50 · 90 · <b>130</b>",alc:"0,5 ‰",plug:"230V · prese F/L"},
+  CH:{fl:"🇨🇭",name:"Svizzera",cur:"CHF",sos:"112 · <b>117</b> polizia · <b>144</b> medica",toll:"Vignetta autostradale <b>obbligatoria</b> · €45 a moto",speed:"50 · 80 · <b>120</b>",alc:"0,5 ‰",plug:"230V · presa J"},
+  DE:{fl:"🇩🇪",name:"Germania",cur:"EUR",sos:"112 · <b>110</b> polizia",toll:"Nessun pedaggio per le moto",speed:"50 · 100 · <b>illimitata*</b>",alc:"0,5 ‰",plug:"230V · presa F"},
+  DK:{fl:"🇩🇰",name:"Danimarca",cur:"DKK",sos:"112",toll:"Ponti a pagamento: <b>Øresund €35/moto</b>, Storebælt",speed:"50 · 80 · <b>130</b>",alc:"0,5 ‰",plug:"230V · presa F"},
+  SE:{fl:"🇸🇪",name:"Svezia",cur:"SEK",sos:"112",toll:"Pedaggi urbani + tratti EPASS (targhe da registrare)",speed:"50 · 70–90 · <b>110–120</b>",alc:"<b>0,2 ‰</b>",plug:"230V · presa F"},
+  NO:{fl:"🇳🇴",name:"Norvegia",cur:"NOK",sos:"112 · <b>113</b> medica · <b>110</b> pompieri",toll:"<b>AutoPASS automatico</b> · tunnel Magerøya gratis",speed:"50 · 80 · <b>90–110</b>",alc:"<b>0,2 ‰</b>",plug:"230V · presa F"},
+  FI:{fl:"🇫🇮",name:"Finlandia",cur:"EUR",sos:"112",toll:"Nessun pedaggio autostradale",speed:"50 · 80–100 · <b>120</b>",alc:"0,5 ‰",plug:"230V · presa F"},
+  EE:{fl:"🇪🇪",name:"Estonia",cur:"EUR",sos:"112",toll:"Nessun pedaggio autostradale",speed:"50 · 90 · <b>110</b>",alc:"<b>0,2 ‰</b>",plug:"230V · presa F"},
+  LV:{fl:"🇱🇻",name:"Lettonia",cur:"EUR",sos:"112",toll:"Nessun pedaggio per le moto",speed:"50 · 90 · <b>110</b>",alc:"0,5 ‰",plug:"230V · presa F"},
+  LT:{fl:"🇱🇹",name:"Lituania",cur:"EUR",sos:"112",toll:"Nessun pedaggio per le moto",speed:"50 · 90 · <b>110–130</b>",alc:"<b>0,4 ‰</b>",plug:"230V · presa F"},
+  PL:{fl:"🇵🇱",name:"Polonia",cur:"PLN",sos:"112",toll:"e-TOLL su alcune tratte (moto spesso esenti)",speed:"50 · 90–100 · <b>140</b>",alc:"<b>0,2 ‰</b>",plug:"230V · presa E"}
+};
+const SP_ORDER = ["IT","CH","DE","DK","SE","NO","FI","EE","LV","LT","PL"];
+const SP_DEST2CC = {"Zurigo":"CH","Stoccarda":"DE","Hannover":"DE","Copenaghen":"DK","Oslo":"NO","Stoccolma":"SE","Umeå":"SE","Kiruna":"SE","Leknes":"NO","Skibotn":"NO","CAPO NORD":"NO","Muonio":"FI","Rovaniemi":"FI","Jyväskylä":"FI","Helsinki":"FI","Riga":"LV","Varsavia":"PL","Dresda":"DE","Torino":"IT"};
+const SP_FX = {};
+async function spRate(cur){
+  if(cur === "EUR") return 1;
+  if(SP_FX[cur]) return SP_FX[cur];
+  try{ const j = await fetchJson("https://api.frankfurter.app/latest?from=" + cur + "&to=EUR"); const v = j && j.rates && j.rates.EUR; if(v){ SP_FX[cur] = v; return v; } }catch(e){}
+  return null;
+}
+function spFuel(code){
+  const arr = (typeof fuel !== "undefined" && fuel) ? fuel : FUEL_DEFAULT;
+  const f = arr.find(x => x.code === code);
+  return f ? f.p : null;
+}
+function spRenderCountry(code){
+  const c = SP_META[code]; if(!c) return;
+  const host = document.getElementById("spCountry"); if(!host) return;
+  const p = spFuel(code);
+  const fuelStr = (p != null) ? "€" + p.toFixed(2).replace(".",",") + "/L" : "—";
+  const isEuro = c.cur === "EUR";
+  const curLabel = isEuro ? "Euro · EUR" : ({CHF:"Franco · CHF",DKK:"Corona · DKK",SEK:"Corona · SEK",NOK:"Corona · NOK",PLN:"Złoty · PLN"}[c.cur] || c.cur);
+  host.innerHTML = `
+    <div class="c-head"><span class="fl">${c.fl}</span><h3>${esc(c.name)}</h3><span class="cur">${curLabel}</span></div>
+    <div class="c-rows">
+      <div class="c-row alert"><span class="ic">🆘</span><div><div class="lb">Emergenze</div><div class="vl">${c.sos}</div></div></div>
+      <div class="c-row"><span class="ic">⛽</span><div><div class="lb">Benzina 95</div><div class="vl">${fuelStr}<span class="live">sync</span></div></div></div>
+      <div class="c-row"><span class="ic">🛣️</span><div><div class="lb">Pedaggi &amp; vignette</div><div class="vl">${c.toll}</div></div></div>
+      <div class="c-row"><span class="ic">🚗</span><div><div class="lb">Limiti km/h · città/extra/auto</div><div class="vl">${c.speed}</div></div></div>
+      <div class="c-row"><span class="ic">🍺</span><div><div class="lb">Tasso alcolemico</div><div class="vl">${c.alc}</div></div></div>
+      <div class="c-row"><span class="ic">🔌</span><div><div class="lb">Corrente</div><div class="vl">${c.plug}</div></div></div>
+    </div>
+    ${isEuro
+      ? `<div class="c-conv"><small>Valuta</small><span class="eq" style="font-size:.95rem;color:var(--mist)">Qui si paga in <b style="color:var(--aurora-1)">euro</b> — nessuna conversione.</span></div>`
+      : `<div class="c-conv"><small>Convertitore</small><input type="number" id="spConvIn" value="100"><span class="eq">${c.cur} =</span><span class="res" id="spConvOut">€ …</span><small style="margin-left:auto" id="spRate">cambio live…</small></div>`}
+    <p class="c-foot">⛽ Prezzo benzina uguale al tuo prices.json (sezione Benzina). 🆘 Emergenze, limiti e alcol da conoscenza generale: verifica prima di partire. 💱 Cambio live BCE con rete.</p>`;
+  if(!isEuro){
+    const inp = document.getElementById("spConvIn"), out = document.getElementById("spConvOut"), rl = document.getElementById("spRate");
+    spRate(c.cur).then(rate => {
+      const calc = () => { const v = parseFloat(inp.value || 0); out.textContent = rate ? ("€ " + (v*rate).toFixed(2).replace(".",",")) : "€ — (offline)"; };
+      rl.textContent = rate ? ("1 " + c.cur + " = € " + rate.toFixed(4).replace(".",",")) : "cambio non disponibile offline";
+      inp.addEventListener("input", calc); calc();
+    });
+  }
+  document.querySelectorAll("#spFlags .flag").forEach(b => b.classList.toggle("on", b.dataset.cc === code));
+}
+function initSchedaPaese(){
+  const box = document.getElementById("spFlags"); if(!box) return;
+  box.innerHTML = SP_ORDER.map(cc => `<button class="flag" data-cc="${cc}" title="${esc(SP_META[cc].name)}">${SP_META[cc].fl}</button>`).join("");
+  box.querySelectorAll(".flag").forEach(b => b.addEventListener("click", () => spRenderCountry(b.dataset.cc)));
+  let def = "IT";
+  const d = tripDay();
+  if(d >= 1 && d <= DAYS.length) def = SP_DEST2CC[DESTS[d-1]] || "IT";
+  spRenderCountry(def);
+}
+
+function spRefresh(){
+  const on = document.querySelector("#spFlags .flag.on");
+  if(on) spRenderCountry(on.dataset.cc);
+}
+
+try{ initCruscotto(); }catch(e){}
+try{ initSchedaPaese(); }catch(e){}
 
 </script>
 </body>
