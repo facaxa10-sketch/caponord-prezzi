@@ -830,6 +830,7 @@ body.polar-night .stars span{animation-duration:3s}
 body.guest .ck-box,body.guest .qty,body.guest .ck-del,body.guest .diary-form,
 body.guest .checkin-card .btn,body.guest .crew-card .cr-edit,body.guest .foto-tools,
 body.guest #posControls,body.guest .check-tools .btn{opacity:.45}
+body.guest .guest-hidden { display: none; }
 body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:120;
   font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;padding:5px 12px;border-radius:99px;
   background:rgba(24,39,65,.9);border:1px solid var(--line);color:var(--mist);pointer-events:none}
@@ -858,6 +859,32 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 .sun-tip{margin-top:14px;font-size:.86rem;color:var(--ice);background:rgba(255,180,84,.08);
   border-left:3px solid var(--sun);border-radius:0 8px 8px 0;padding:10px 14px}
 .pos-near{font-family:var(--mono);font-size:.7rem;color:var(--aurora-1);margin-top:2px}
+
+/* ---------- Biglietti & documenti ---------- */
+.doc-card .doc-ico{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:170px;
+  background:linear-gradient(160deg,var(--panel-2),var(--deep));cursor:pointer;position:relative}
+.doc-card .doc-ico .big{font-size:2.6rem;line-height:1}
+.doc-card .doc-ico .ext{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;color:var(--mist);
+  border:1px solid var(--line);border-radius:999px;padding:2px 8px;text-transform:uppercase}
+.doc-card .doc-open{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:14px;font-size:.72rem;color:var(--aurora-1);opacity:0;transition:opacity .25s;
+  background:linear-gradient(0deg,rgba(11,18,32,.55),transparent 55%)}
+.doc-card:hover .doc-open{opacity:1}
+.doc-badge{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--mist);margin-bottom:4px}
+.doc-badge.traghetto{color:#7FC7FF;border-color:rgba(127,199,255,.4);background:rgba(127,199,255,.1)}
+.doc-badge.hotel{color:var(--aurora-1);border-color:rgba(79,227,193,.4);background:rgba(79,227,193,.1)}
+.doc-badge.prenotazione{color:#A99CFF;border-color:rgba(124,108,255,.4);background:rgba(124,108,255,.12)}
+.doc-badge.assicurazione{color:var(--sun);border-color:rgba(255,180,84,.4);background:rgba(255,180,84,.1)}
+.doc-badge.documento{color:#FF9DB0;border-color:rgba(255,107,122,.4);background:rgba(255,107,122,.1)}
+.doc-badge.altro{color:var(--mist)}
+.doc-card .dl{position:absolute;top:8px;right:42px;width:28px;height:28px;border-radius:50%;border:0;
+  background:rgba(5,9,18,.7);color:var(--aurora-1);cursor:pointer;opacity:0;transition:opacity .2s;font-size:.8rem}
+.doc-card:hover .dl{opacity:1}
+.doc-chip{padding:7px 13px;font-size:.76rem;border-radius:999px;background:var(--panel);border:1px solid var(--line);
+  color:var(--mist);cursor:pointer;transition:all .25s;font-family:var(--display);white-space:nowrap}
+.doc-chip.on{color:var(--night);background:var(--aurora-1);border-color:var(--aurora-1);font-weight:600}
+.modal-card iframe.pdfview{width:100%;height:72vh;border:1px solid var(--line);border-radius:12px;margin-top:10px;background:#fff}
 </style>
 </head>
 <body>
@@ -900,13 +927,14 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
     <button class="tab" data-view="vedere"><span class="ti">💎</span>Da fare &amp; vedere</button>
     <button class="tab" data-view="mappa"><span class="ti">🧭</span>Mappa</button>
     <button class="tab" data-view="meteo"><span class="ti">🌌</span>Meteo</button>
-    <button class="tab" data-view="benzina"><span class="ti">⛽</span>Benzina</button>
-    <button class="tab" data-view="spese"><span class="ti">💶</span>Spese</button>
-    <button class="tab" data-view="checklist"><span class="ti">🎒</span>Checklist</button>
-    <button class="tab" data-view="diario"><span class="ti">📓</span>Diario</button>
-    <button class="tab" data-view="foto"><span class="ti">📷</span>Foto</button>
+    <button class="tab guest-hidden" data-view="benzina"><span class="ti">⛽</span>Benzina</button>
+    <button class="tab guest-hidden" data-view="spese"><span class="ti">💶</span>Spese</button>
+    <button class="tab guest-hidden" data-view="checklist"><span class="ti">🎒</span>Checklist</button>
+    <button class="tab guest-hidden" data-view="diario"><span class="ti">📓</span>Diario</button>
+    <button class="tab guest-hidden" data-view="foto"><span class="ti">📷</span>Foto</button>
+    <button class="tab guest-hidden" data-view="docs"><span class="ti">🎫</span>Biglietti</button>
     <button class="tab" data-view="trofei"><span class="ti">🏆</span>Trofei</button>
-    <button class="tab" data-view="sos"><span class="ti">🚨</span>SOS</button>
+    <button class="tab guest-hidden" data-view="sos"><span class="ti">🚨</span>SOS</button>
   </nav>
 </header>
 
@@ -1242,6 +1270,32 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
     <div class="gallery" id="gallery"></div>
     <div class="empty-state" id="fotoEmpty" style="margin-top:20px">📷 Ancora nessuna foto. Il primo scatto ufficiale spetta alla partenza del 28 agosto!</div>
   </div>
+</section>
+
+<!-- ============ BIGLIETTI & DOCUMENTI ============ -->
+<section class="view" id="view-docs">
+  <span class="coord-tag" aria-hidden="true">DOCS · EQUIPAGGIO</span>
+  <h2 class="section-title">Biglietti &amp; documenti</h2>
+  <p class="section-sub">Cartella condivisa dell'equipaggio: biglietti dei traghetti, prenotazioni di hotel e campeggi, assicurazioni, carta verde e documenti. Ste, Vale e Ale caricano e vedono gli stessi file, salvati in modo permanente via Drive. Immagini e PDF: tocca un file per aprirlo, anche offline una volta scaricato.</p>
+
+  <div class="foto-tools reveal">
+    <input type="file" id="docFile" accept="image/*,application/pdf" multiple style="flex:1;min-width:190px;color:var(--mist)">
+    <select id="docCat" style="flex:0 0 auto;min-width:150px">
+      <option value="traghetto">🚢 Traghetto</option>
+      <option value="hotel">🛏️ Hotel / Camping</option>
+      <option value="prenotazione">🎫 Prenotazione</option>
+      <option value="assicurazione">🛡️ Assicurazione</option>
+      <option value="documento">🪪 Documento</option>
+      <option value="altro">📎 Altro</option>
+    </select>
+    <input type="text" id="docNote" placeholder="Etichetta (es. Traghetto Kiel→Oslo)" style="flex:1;min-width:170px">
+    <button class="btn" id="docUpload">🎫 Carica</button>
+  </div>
+
+  <div class="check-tools" id="docFilters" style="margin-top:16px"></div>
+
+  <div class="gallery" id="docGrid"></div>
+  <div class="empty-state" id="docEmpty" style="margin-top:20px">🎫 Ancora nessun documento. Carica qui i biglietti dei traghetti, le conferme degli alloggi e i documenti da avere sempre a portata di mano.</div>
 </section>
 
 <!-- ============ TROFEI ============ -->
@@ -2679,6 +2733,208 @@ async function uploadFoto(){
   if(ok) toast(`📷 ${ok} foto nell'album di equipaggio`);
 }
 $("#fotoUpload").addEventListener("click", uploadFoto);
+
+/* ================= BIGLIETTI & DOCUMENTI ================= */
+const DOC_CATS = {
+  traghetto:    {ico:"🚢", label:"Traghetti"},
+  hotel:        {ico:"🛏️", label:"Hotel / Camping"},
+  prenotazione: {ico:"🎫", label:"Prenotazioni"},
+  assicurazione:{ico:"🛡️", label:"Assicurazioni"},
+  documento:    {ico:"🪪", label:"Documenti"},
+  altro:        {ico:"📎", label:"Altro"}
+};
+let docsIndex = [];
+let docFilter = "all";
+const DOC_LIMIT = 4_600_000;   // ~3,4 MB reali: oltre, lo sportello Drive non regge
+
+function fileToDataURL(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>res(r.result);
+    r.onerror = ()=>rej(r.error);
+    r.readAsDataURL(file);
+  });
+}
+/* riduce un'immagine solo se troppo pesante, tenendo alta la risoluzione
+   così QR e codici a barre dei biglietti restano leggibili */
+function shrinkImg(file, maxPx, q){
+  return new Promise((res,rej)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const r = Math.min(1, maxPx/Math.max(img.width,img.height));
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(img.width*r); cv.height = Math.round(img.height*r);
+      cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+      URL.revokeObjectURL(img.src);
+      res(cv.toDataURL("image/jpeg", q));
+    };
+    img.onerror = rej;
+    img.src = URL.createObjectURL(file);
+  });
+}
+function dataURLtoBlob(dataURL){
+  const [head, b64] = dataURL.split(",");
+  const mime = (head.match(/data:([^;]+)/) || [])[1] || "application/octet-stream";
+  const bin = atob(b64), arr = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], {type:mime});
+}
+async function readDoc(file){
+  const isImg = /^image\//.test(file.type);
+  const isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+  let data;
+  if(isImg){
+    data = await fileToDataURL(file);
+    if(data.length > DOC_LIMIT) data = await shrinkImg(file, 2200, .88);
+    if(data.length > DOC_LIMIT) data = await shrinkImg(file, 1600, .8);
+  } else {
+    data = await fileToDataURL(file);   // PDF o altro: nessuna compressione
+  }
+  return { data, kind: isImg ? "img" : (isPdf ? "pdf" : "file"),
+           mime: file.type || (isPdf ? "application/pdf" : "application/octet-stream") };
+}
+
+async function loadDocs(){
+  docsIndex = (await store.get("caponord-docs-index", true)) || [];
+  renderDocFilters();
+  renderDocs(true);
+}
+function renderDocFilters(){
+  const box = $("#docFilters"); if(!box) return;
+  const present = {};
+  docsIndex.forEach(d => { present[d.cat] = (present[d.cat]||0) + 1; });
+  let html = `<button class="doc-chip${docFilter==="all"?" on":""}" data-f="all">Tutti · ${docsIndex.length}</button>`;
+  Object.keys(DOC_CATS).forEach(k=>{
+    if(present[k]) html += `<button class="doc-chip${docFilter===k?" on":""}" data-f="${k}">${DOC_CATS[k].ico} ${DOC_CATS[k].label} · ${present[k]}</button>`;
+  });
+  box.innerHTML = html;
+  box.querySelectorAll(".doc-chip").forEach(b=>b.addEventListener("click",()=>{
+    docFilter = b.dataset.f; renderDocFilters(); renderDocs(false);
+  }));
+}
+async function renderDocs(fetchData){
+  const grid = $("#docGrid");
+  const list = docFilter === "all" ? docsIndex : docsIndex.filter(d=>d.cat===docFilter);
+  $("#docEmpty").style.display = docsIndex.length ? "none" : "block";
+  if(docsIndex.length && !list.length){
+    grid.innerHTML = `<p class="section-sub" style="grid-column:1/-1">Nessun documento in questa categoria.</p>`;
+    return;
+  }
+  grid.innerHTML = list.map(d=>{
+    const cat = DOC_CATS[d.cat] || DOC_CATS.altro;
+    const cap = `<span class="doc-badge ${d.cat}">${cat.ico} ${cat.label}</span><br>${esc(d.name||"Documento")}${d.date?` · <span style="color:var(--mist)">${esc(d.date)}</span>`:""}`;
+    const thumb = d.kind === "img"
+      ? `<img id="doc-img-${d.id}" alt="${esc(d.name||"")}" src="${d.src||""}">`
+      : `<div class="doc-ico">
+           <span class="big">${d.kind==="pdf"?"📄":"📎"}</span>
+           <span class="ext">${d.kind==="pdf"?"PDF":"FILE"}</span>
+           <span class="doc-open">👁 Tocca per aprire</span>
+         </div>`;
+    return `<figure class="ph doc-card" data-id="${d.id}">
+      ${thumb}
+      <button class="dl" title="Scarica" aria-label="Scarica">⬇</button>
+      <button class="del" title="Elimina" aria-label="Elimina documento">✕</button>
+      <span class="cap">${cap}</span>
+    </figure>`;
+  }).join("");
+
+  if(fetchData){
+    for(const d of docsIndex){
+      if(!d.src){
+        try{
+          const data = await store.get("caponord-doc-"+d.id, true);
+          if(data){ d.src = data; const im = document.getElementById("doc-img-"+d.id); if(im) im.src = data; }
+        }catch(e){}
+      }
+    }
+  }
+
+  grid.querySelectorAll(".doc-card").forEach(card=>{
+    const id = card.dataset.id;
+    const d = docsIndex.find(x=>String(x.id)===String(id));
+    const open = ()=>openDoc(d);
+    card.querySelector("img")?.addEventListener("click", open);
+    card.querySelector(".doc-ico")?.addEventListener("click", open);
+    card.querySelector(".dl").addEventListener("click", async e=>{
+      e.stopPropagation(); await downloadDoc(d);
+    });
+    card.querySelector(".del").addEventListener("click", async e=>{
+      e.stopPropagation();
+      if(window.__guest){ guestToast(); return; }
+      if(!confirm("Eliminare questo documento per tutto l'equipaggio?")) return;
+      docsIndex = docsIndex.filter(x=>String(x.id)!==String(id));
+      await store.del("caponord-doc-"+id, true);
+      await store.set("caponord-docs-index", docsIndex.map(({id,name,cat,kind,mime,date})=>({id,name,cat,kind,mime,date})), true);
+      renderDocFilters(); renderDocs(false); toast("Documento eliminato");
+    });
+  });
+}
+async function ensureDocData(d){
+  if(!d.src){
+    try{ d.src = await store.get("caponord-doc-"+d.id, true); }catch(e){}
+  }
+  return d.src;
+}
+async function openDoc(d){
+  const src = await ensureDocData(d);
+  if(!src){ toast("File non ancora scaricato, riprova"); return; }
+  const cat = DOC_CATS[d.cat] || DOC_CATS.altro;
+  if(d.kind === "img"){
+    openModal(`<h3>${cat.ico} ${esc(d.name||cat.label)}</h3>
+      <p style="color:var(--mist);font-size:.82rem;margin-top:4px">${cat.label}${d.date?" · "+esc(d.date):""}</p>
+      <img class="zoom" src="${src}" alt="">`);
+  } else if(d.kind === "pdf"){
+    const url = URL.createObjectURL(dataURLtoBlob(src));
+    openModal(`<h3>${cat.ico} ${esc(d.name||cat.label)}</h3>
+      <p style="color:var(--mist);font-size:.82rem;margin:4px 0 10px">${cat.label}${d.date?" · "+esc(d.date):""}</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+        <a class="btn" href="${url}" target="_blank" rel="noopener">🔎 Apri a schermo intero</a>
+        <button class="btn ghost" id="docDlModal">⬇ Scarica</button>
+      </div>
+      <iframe class="pdfview" src="${url}"></iframe>`);
+    $("#docDlModal")?.addEventListener("click", ()=>downloadDoc(d));
+  } else {
+    downloadDoc(d);
+  }
+}
+async function downloadDoc(d){
+  const src = await ensureDocData(d);
+  if(!src){ toast("File non disponibile"); return; }
+  const ext = d.kind==="pdf" ? ".pdf" : (d.kind==="img" ? (/(png|webp|gif)/.test(d.mime)? "."+d.mime.split("/")[1] : ".jpg") : "");
+  let fname = (d.name || DOC_CATS[d.cat]?.label || "documento").replace(/[\\/:*?"<>|]+/g,"-").trim();
+  if(ext && !fname.toLowerCase().endsWith(ext)) fname += ext;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(dataURLtoBlob(src));
+  a.download = fname;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+async function uploadDocs(){
+  if(window.__guest){ guestToast(); return; }
+  const files = [...($("#docFile").files || [])];
+  if(!files.length){ toast("Scegli prima uno o più file 🎫"); return; }
+  const cat  = $("#docCat").value;
+  const note = $("#docNote").value.trim();
+  let ok = 0;
+  for(const f of files){
+    try{
+      const { data, kind, mime } = await readDoc(f);
+      if(data.length > DOC_LIMIT){ toast(`"${f.name}" è troppo grande per il Drive di squadra, saltato`); continue; }
+      const id = Date.now() + "-" + Math.random().toString(36).slice(2,7);
+      const name = note || f.name.replace(/\.[^.]+$/,"");
+      await store.set("caponord-doc-"+id, data, true);
+      docsIndex.unshift({ id, name, cat, kind, mime,
+        date:new Date().toLocaleDateString("it-IT",{day:"numeric",month:"short"}), src:data });
+      ok++;
+    }catch(e){ toast(`Errore su "${f.name}", saltato`); }
+  }
+  await store.set("caponord-docs-index", docsIndex.map(({id,name,cat,kind,mime,date})=>({id,name,cat,kind,mime,date})), true);
+  $("#docFile").value = ""; $("#docNote").value = "";
+  renderDocFilters(); renderDocs(false);
+  if(ok) toast(`🎫 ${ok} ${ok===1?"documento aggiunto":"documenti aggiunti"} alla cartella di squadra`);
+}
+$("#docUpload")?.addEventListener("click", uploadDocs);
+document.querySelector('.tab[data-view="docs"]')?.addEventListener("click", ()=>{ try{ loadDocs(); }catch(e){} });
 
 /* ---- collegamento Drive ---- */
 (function(){
