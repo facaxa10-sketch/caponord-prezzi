@@ -1,26 +1,43 @@
 name: Aggiorna prezzi benzina
+
 on:
+  workflow_dispatch:          # ← pulsante "Run workflow" (lo lanci a mano quando vuoi)
   schedule:
-    - cron: "47 4 * * *"   # 06:47 italiane: minuto insolito, niente coda
-  workflow_dispatch:        # pulsante per lanciarlo a mano
+    - cron: "17 6 * * *"      # ogni giorno alle 06:17 UTC (evita il minuto :00 congestionato)
+
 permissions:
-  contents: write
+  contents: write             # serve per ricommittare prices.json
+
+concurrency:                  # niente run sovrapposte
+  group: update-prices
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Dipendenze
-        run: pip install requests openpyxl
-      - name: Aggiorna i prezzi
+
+      - name: Installa dipendenze
+        run: pip install requests
+
+      - name: Aggiorna prezzi
         run: python scripts/update_prices.py
-      - name: Commit se qualcosa è cambiato
+
+      - name: Commit e push (se cambiato qualcosa)
         run: |
-          git config user.name "caponord-bot"
-          git config user.email "bot@users.noreply.github.com"
+          git config user.name  "caponord-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add prices.json
-          git diff --cached --quiet || git commit -m "Prezzi benzina $(date -u +%F)"
-          git push
+          if git diff --staged --quiet; then
+            echo "Nessuna variazione di prezzo: niente commit."
+          else
+            git commit -m "Aggiorna prezzi benzina ($(date -u +%F))"
+            git push
+          fi
