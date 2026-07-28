@@ -1,17 +1,30 @@
 {
-  "updated": "27 luglio 2026",
-  "note": "Benzina 95 (Euro-super 95), prezzo medio nazionale in EUR/L, tasse incluse. Fonti: Bollettino Petrolifero settimanale UE (20/07/2026) per i paesi UE; MIMIT (27/07/2026) per l'Italia; TCS per la Svizzera; media stazioni per la Norvegia. Prezzi volatili in rialzo: aggiorna quando vuoi.",
-  "prices": {
-    "IT": 1.98,
-    "CH": 1.96,
-    "DE": 2.19,
-    "DK": 2.46,
-    "SE": 1.44,
-    "NO": 1.88,
-    "FI": 2.16,
-    "EE": 1.74,
-    "LV": 1.81,
-    "LT": 1.77,
-    "PL": 1.68
-  }
+ "updated": "2026-07-28",
+ "prices": {
+  "IT": 1.983,
+  "CH": 1.96,
+  "DE": 2.192,
+  "DK": 2.459,
+  "SE": 1.439,
+  "NO": 1.88,
+  "FI": 2.163,
+  "EE": 1.742,
+  "LV": 1.812,
+  "LT": 1.769,
+  "PL": 1.682
+ },
+ "sources": {
+  "IT": "MIMIT media su 20335 impianti self",
+  "EE": "Bollettino UE via fuel-prices.eu",
+  "FI": "Bollettino UE via fuel-prices.eu",
+  "DK": "Bollettino UE via fuel-prices.eu",
+  "DE": "Bollettino UE via fuel-prices.eu",
+  "LT": "Bollettino UE via fuel-prices.eu",
+  "PL": "Bollettino UE via fuel-prices.eu",
+  "SE": "Bollettino UE via fuel-prices.eu",
+  "LV": "Bollettino UE via fuel-prices.eu",
+  "NO": "manuale (sito)",
+  "CH": "manuale (sito)"
+ },
+ "note": "Benzina 95 in EUR/L, tasse incluse. IT: MIMIT giornaliero; UE: Bollettino settimanale via fuel-prices.eu; NO e CH senza fonte automatica gratuita: correggili a mano nel sito."
 }
