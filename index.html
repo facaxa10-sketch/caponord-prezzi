@@ -1298,7 +1298,7 @@ body.guest .entry .del, body.guest .ph .del, body.guest .doc-card .del, body.gue
 <section class="view" id="view-benzina">
   <span class="coord-tag" aria-hidden="true">FUEL LOG</span>
   <h2 class="section-title">Carburante · prezzi modificabili</h2>
-  <p class="section-sub">Verificato: le 20 tappe sommano esattamente 9.754 km e 128,5 ore, come da foglio. Prezzi benzina 95 self <b style="color:var(--ice)">aggiornati al 27 luglio 2026</b> (fonti: Bollettino Petrolifero UE + MIMIT per l'Italia): <b style="color:var(--ice)">modificali liberamente</b> — ora sono <b style="color:var(--ice)">condivisi</b>: la correzione di uno vale per tutto l'equipaggio, e la media ponderata si ricalcola da sola. Il collegamento al file prices.json è ora nelle Impostazioni.</p>
+  <p class="section-sub">Verificato: le 20 tappe sommano esattamente 9.754 km e 128,5 ore, come da foglio. Prezzi benzina 95 self <b style="color:var(--ice)">aggiornati al <span id="fuelUpdatedDate">—</span></b> (fonti: Bollettino Petrolifero UE + MIMIT per l'Italia): <b style="color:var(--ice)">modificali liberamente</b> — ora sono <b style="color:var(--ice)">condivisi</b>: la correzione di uno vale per tutto l'equipaggio, e la media ponderata si ricalcola da sola. Il collegamento al file prices.json è ora nelle Impostazioni.</p>
   <div class="card reveal" style="overflow-x:auto">
     <table class="fuel-table" id="fuelTable">
       <thead><tr><th>Paese</th><th>Km sulla rotta</th><th>€ / litro</th><th></th><th>Consiglio</th></tr></thead>
@@ -2248,7 +2248,7 @@ function calc(){
 async function initFuel(){
   const saved = await store.get("caponord-fuel", true);
   fuel = FUEL_DEFAULT.map(f=>({...f}));
-  calcState = {km:9754, cons:20, moto:2, price:null, priceManual:false};
+  calcState = {km:9754, cons:20, moto:2, price:null, priceManual:false, updated:"2026-07-27"};
   if(saved){
     if(saved.prices && saved.prices.length===fuel.length) saved.prices.forEach((p,i)=>fuel[i].p=p);
     if(saved.calc) Object.assign(calcState, saved.calc);
@@ -2276,7 +2276,18 @@ async function initFuel(){
   });
   if(calcState.remoteUrl) fetchRemoteFuel(false);
 }
+function fmtUpdated(s){
+  if(!s) return "";
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s).trim());
+  if(m) return new Date(+m[1], +m[2]-1, +m[3]).toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
+  return String(s).trim();
+}
+function setFuelUpdatedLabel(){
+  const el = document.getElementById("fuelUpdatedDate");
+  if(el) el.textContent = fmtUpdated(calcState && calcState.updated) || "—";
+}
 function updateRemoteStatus(){
+  setFuelUpdatedLabel();
   const o = $("#fuelRemoteOut");
   if(o) o.textContent = calcState.remoteUpdated ? "Ultimo aggiornamento automatico: "+calcState.remoteUpdated : "";
 }
@@ -2285,9 +2296,11 @@ async function fetchRemoteFuel(loud){
   if(!u) return;
   const o = $("#fuelRemoteOut");
   try{
-    const r = await fetch(u, {cache:"no-store"});
+    const bust = u + (u.includes("?") ? "&" : "?") + "t=" + Date.now();   // batte la cache CDN di GitHub
+    const r = await fetch(bust, {cache:"no-store"});
     if(!r.ok) throw new Error(r.status);
     const j = await r.json();
+    if(j && j.updated) calcState.updated = j.updated;
     let n = 0;
     if(j && j.prices) fuel.forEach(f=>{
       const v = parseFloat(j.prices[f.code]);
