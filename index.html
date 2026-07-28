@@ -966,6 +966,37 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 #schedaPaese .c-conv small{font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mist)}
 #schedaPaese .c-foot{margin-top:14px;font-size:.76rem;color:var(--mist)}
 
+
+/* ===== Menu laterale (drawer) ===== */
+.menu-btn{display:flex;flex-direction:column;justify-content:center;gap:5px;width:42px;height:42px;flex-shrink:0;
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);cursor:pointer;padding:0 10px}
+.menu-btn span{display:block;height:2px;background:var(--ice);border-radius:2px;transition:transform .3s,opacity .3s}
+.menu-btn[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn[aria-expanded="true"] span:nth-child(2){opacity:0}
+.menu-btn[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+#drawerScrim{position:fixed;inset:0;background:rgba(4,7,14,.6);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  z-index:98;opacity:0;pointer-events:none;transition:opacity .3s}
+#drawerScrim.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(300px,84vw);z-index:99;
+  background:linear-gradient(180deg,rgba(14,23,41,.98),rgba(11,18,32,.98));-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-right:1px solid var(--line);box-shadow:14px 0 40px rgba(3,8,20,.5);
+  transform:translateX(-105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);
+  display:flex;flex-direction:column;padding:calc(16px + env(safe-area-inset-top)) 14px 20px;overflow-y:auto}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:2px 6px 12px;border-bottom:1px solid var(--line)}
+.dh-title{font-family:var(--display);font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--aurora-1)}
+.drawer-close{background:none;border:none;color:var(--mist);font-size:1.15rem;cursor:pointer;padding:6px;line-height:1}
+.drawer-list{display:flex;flex-direction:column;gap:4px}
+.drawer-sep{height:1px;background:var(--line);margin:8px 4px}
+.drawer .tab{display:flex;width:100%;justify-content:flex-start;border-radius:12px;padding:12px 14px;font-size:.86rem;letter-spacing:.05em}
+.drawer .tab .ti{font-size:1.2em;width:24px;text-align:center}
+.drawer-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.drawer-account{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--mist);
+  padding:13px;cursor:pointer;font-family:var(--display);font-size:.82rem;letter-spacing:.06em;transition:all .25s}
+.drawer-account:hover{color:var(--ice);border-color:var(--aurora-1);background:var(--panel-2)}
+@media(min-width:1080px){.drawer{width:300px}}
+
 </style>
 </head>
 <body>
@@ -991,17 +1022,25 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 <div id="splash"><svg class="sp-star" viewBox="0 0 64 64"><path d="M32 4 L38 26 L60 32 L38 38 L32 60 L26 38 L4 32 L26 26 Z"/></svg><div class="sp-bar"><div class="sp-fill"></div></div><p id="splashMsg">Sincronizzazione equipaggio…</p></div>
 <div class="stars" id="stars" aria-hidden="true"></div>
 
-<div id="routeThread" aria-hidden="true"><div class="rt-glow"></div><div class="rt-track"><div class="rt-fill" id="rtFill"></div></div><div id="rtNodes"></div><div class="rt-bike" id="rtBike">🏍</div></div>
 <div class="shell">
 
 <header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Apri menu" aria-expanded="false"><span></span><span></span><span></span></button>
   <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
     <circle cx="32" cy="32" r="30" fill="none" stroke="#22314F" stroke-width="2"/>
     <path d="M32 8 L36 26 L54 32 L36 38 L32 56 L28 38 L10 32 L28 26 Z" fill="#4FE3C1"/>
     <circle cx="32" cy="32" r="4" fill="#FFB454"/>
   </svg>
   <div class="brand">Capo Nord 2026<small>Mission Control · 71°10'21"N</small></div>
-  <nav class="tabs" role="tablist" aria-label="Sezioni del sito">
+</header>
+
+<div id="drawerScrim" aria-hidden="true"></div>
+<nav class="drawer" id="drawer" role="tablist" aria-label="Sezioni del sito">
+  <div class="drawer-head">
+    <span class="dh-title">Mission Control</span>
+    <button class="drawer-close" id="drawerClose" aria-label="Chiudi menu">✕</button>
+  </div>
+  <div class="drawer-list">
     <button class="tab active" data-view="dash"><span class="ti">🛰</span>Dashboard</button>
     <button class="tab" data-view="crew"><span class="ti">👥</span>Equipaggio</button>
     <button class="tab" data-view="tappe"><span class="ti">⛺</span>Tappe</button>
@@ -1016,8 +1055,14 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
     <button class="tab guest-hidden" data-view="docs"><span class="ti">🎫</span>Biglietti</button>
     <button class="tab" data-view="trofei"><span class="ti">🏆</span>Trofei</button>
     <button class="tab guest-hidden" data-view="sos"><span class="ti">🚨</span>SOS</button>
-  </nav>
-</header>
+    <div class="drawer-sep"></div>
+    <button class="tab guest-hidden" data-view="settings"><span class="ti">⚙️</span>Impostazioni</button>
+  </div>
+  <div class="drawer-foot">
+    <button class="drawer-account" id="drawerLogout">🔓 Cambia account</button>
+  </div>
+</nav>
+
 
 <!-- ============ DASHBOARD ============ -->
 <section class="view active" id="view-dash">
@@ -1106,13 +1151,7 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
     <div class="country" id="spCountry"></div>
   </section>
 
-    <h2 class="section-title">Sincronizzazione equipaggio</h2>
-  <p class="section-sub">Collega lo sportello Google Apps Script (istruzioni nel kit): checklist, diario, foto e prezzi diventano condivisi davvero tra i telefoni di Ste, Vale e Ale, salvati nella cartella del tuo Drive.</p>
-  <div class="foto-tools reveal">
-    <input type="text" id="syncUrl" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;min-width:250px">
-    <button class="btn" id="syncBtn">🔗 Collega Drive</button>
-    <span id="syncOut" style="font-size:.82rem;color:var(--mist)"></span>
-  </div>
+
 </section>
 
 <!-- ============ EQUIPAGGIO ============ -->
@@ -1202,7 +1241,7 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 <section class="view" id="view-benzina">
   <span class="coord-tag" aria-hidden="true">FUEL LOG</span>
   <h2 class="section-title">Carburante · prezzi modificabili</h2>
-  <p class="section-sub">Verificato: le 20 tappe sommano esattamente 9.754 km e 128,5 ore, come da foglio. Prezzi benzina 95 self <b style="color:var(--ice)">aggiornati al 27 luglio 2026</b> (fonti: Bollettino Petrolifero UE + MIMIT per l'Italia): <b style="color:var(--ice)">modificali liberamente</b> — ora sono <b style="color:var(--ice)">condivisi</b>: la correzione di uno vale per tutto l'equipaggio, e la media ponderata si ricalcola da sola. In fondo puoi collegare un file prices.json su GitHub per l'aggiornamento automatico giornaliero.</p>
+  <p class="section-sub">Verificato: le 20 tappe sommano esattamente 9.754 km e 128,5 ore, come da foglio. Prezzi benzina 95 self <b style="color:var(--ice)">aggiornati al 27 luglio 2026</b> (fonti: Bollettino Petrolifero UE + MIMIT per l'Italia): <b style="color:var(--ice)">modificali liberamente</b> — ora sono <b style="color:var(--ice)">condivisi</b>: la correzione di uno vale per tutto l'equipaggio, e la media ponderata si ricalcola da sola. Il collegamento al file prices.json è ora nelle Impostazioni.</p>
   <div class="card reveal" style="overflow-x:auto">
     <table class="fuel-table" id="fuelTable">
       <thead><tr><th>Paese</th><th>Km sulla rotta</th><th>€ / litro</th><th></th><th>Consiglio</th></tr></thead>
@@ -1211,11 +1250,6 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
     <div style="margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
       <span style="font-size:.85rem;color:var(--mist)">Media ponderata sulla rotta: <b class="fuel-price" id="fuelAvg" style="font-size:1.05rem">—</b></span>
       <button class="btn ghost" id="fuelResetBtn" style="margin-left:auto">Ripristina prezzi luglio 2026</button>
-    </div>
-    <div class="geo-line" style="margin-top:14px;border-top:1px dashed var(--line);padding-top:14px">
-      <input type="text" id="fuelUrl" placeholder="🔄 URL di prices.json su GitHub (raw) per aggiornamento automatico" style="flex:1;min-width:250px">
-      <button class="btn ghost" id="fuelUrlBtn">🔗 Collega</button>
-      <span id="fuelRemoteOut"></span>
     </div>
   </div>
   <div class="calc-grid">
@@ -1485,6 +1519,37 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
         <tr><td>Dov'è il benzinaio?</td><td>Hvor er bensinstasjonen?</td><td>Missä on huoltoasema?</td><td>Var är bensinstationen?</td><td>Wo ist die Tankstelle?</td><td>Gdzie jest stacja benzynowa?</td></tr>
       </tbody>
     </table>
+  </div>
+</section>
+
+<!-- ============ IMPOSTAZIONI ============ -->
+<section class="view guest-hidden" id="view-settings">
+  <span class="coord-tag" aria-hidden="true">SETTINGS</span>
+  <h2 class="section-title">Impostazioni</h2>
+  <p class="section-sub">Sincronizzazioni e gestione dell'account dell'equipaggio, raccolte in un unico posto.</p>
+
+  <h2 class="section-title">Sincronizzazione equipaggio</h2>
+  <p class="section-sub">Collega lo sportello Google Apps Script (istruzioni nel kit): checklist, diario, foto e prezzi diventano condivisi davvero tra i telefoni di Ste, Vale e Ale, salvati nella cartella del tuo Drive.</p>
+  <div class="foto-tools reveal">
+    <input type="text" id="syncUrl" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;min-width:250px">
+    <button class="btn" id="syncBtn">🔗 Collega Drive</button>
+    <span id="syncOut" style="font-size:.82rem;color:var(--mist)"></span>
+  </div>
+
+  <h2 class="section-title">Aggiornamento prezzi benzina</h2>
+  <p class="section-sub">Collega il file prices.json su GitHub: i prezzi si aggiornano da soli per tutto l'equipaggio e la media ponderata si ricalcola in automatico.</p>
+  <div class="card reveal">
+    <div class="geo-line" style="margin-top:14px;border-top:1px dashed var(--line);padding-top:14px">
+      <input type="text" id="fuelUrl" placeholder="🔄 URL di prices.json su GitHub (raw) per aggiornamento automatico" style="flex:1;min-width:250px">
+      <button class="btn ghost" id="fuelUrlBtn">🔗 Collega</button>
+      <span id="fuelRemoteOut"></span>
+    </div>
+  </div>
+
+  <h2 class="section-title">Sessione</h2>
+  <div class="card reveal" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+    <button class="btn ghost" id="setLogout">🔓 Cambia utente / esci</button>
+    <span style="font-size:.82rem;color:var(--mist)">Le sincronizzazioni sono condivise con Ste, Vale e Ale via Drive.</span>
   </div>
 </section>
 
@@ -5248,7 +5313,7 @@ async function updateDressing(){
     }
     if(!window.__guestShield){
       window.__guestShield = true;
-      const ALLOW = ".tab,.lang-picker,.p-chip,.day-row,.city-card,.modal-x,.leaflet-container,.fx-row,.lg-box,#lgGuest,#lgOut,.sun-nav,#sunToday,a,[data-view]";
+      const ALLOW = ".tab,.menu-btn,.drawer-close,.drawer-account,#drawerScrim,.lang-picker,.p-chip,.day-row,.city-card,.modal-x,.leaflet-container,.fx-row,.lg-box,#lgGuest,#lgOut,.sun-nav,#sunToday,a,[data-view]";
       document.addEventListener("click", e=>{
         if(!window.__guest) return;
         const t = e.target;
@@ -5717,6 +5782,24 @@ function spRefresh(){
 
 try{ initCruscotto(); }catch(e){}
 try{ initSchedaPaese(); }catch(e){}
+
+
+/* ================= MENU LATERALE (drawer) ================= */
+(function(){
+  const drawer = document.getElementById("drawer");
+  const scrim  = document.getElementById("drawerScrim");
+  const btn    = document.getElementById("menuBtn");
+  if(!drawer || !btn) return;
+  const open  = ()=>{ drawer.classList.add("open"); scrim.classList.add("show"); btn.setAttribute("aria-expanded","true"); };
+  const close = ()=>{ drawer.classList.remove("open"); scrim.classList.remove("show"); btn.setAttribute("aria-expanded","false"); };
+  btn.addEventListener("click", ()=> drawer.classList.contains("open") ? close() : open());
+  scrim.addEventListener("click", close);
+  document.getElementById("drawerClose")?.addEventListener("click", close);
+  document.addEventListener("keydown", e=>{ if(e.key === "Escape") close(); });
+  drawer.querySelectorAll(".tab").forEach(t=> t.addEventListener("click", close));
+  document.getElementById("setLogout")?.addEventListener("click", ()=>{ if(typeof logout === "function") logout(); });
+  document.getElementById("drawerLogout")?.addEventListener("click", ()=>{ if(typeof logout === "function") logout(); });
+})();
 
 </script>
 </body>
