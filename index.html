@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>CAPO NORD 2026 · Mission Control</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0B1220">
@@ -39,6 +40,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{
   font-family:var(--body);
   background:var(--night);
@@ -46,6 +48,7 @@ body{
   min-height:100vh;
   overflow-x:hidden;
   line-height:1.55;
+  touch-action:manipulation;      /* niente zoom da doppio tap */
 }
 ::selection{background:rgba(79,227,193,.35)}
 
@@ -388,8 +391,21 @@ footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);color:v
   .foto-tools .btn,.check-tools .btn,.geo-line .btn{width:100%}
   input,select,textarea,.btn{font-size:16px}  /* 16px = niente zoom automatico iOS */
   .btn{padding:13px 20px}
-  /* tabelle scrollabili invece che schiacciate */
-  .fuel-table,table{font-size:.82rem}
+  /* benzina: da tabella schiacciata a card leggibili, prezzo grande */
+  .fuel-table{font-size:.9rem}
+  .fuel-table thead{display:none}
+  .fuel-table tbody,.fuel-table tr,.fuel-table td{display:block;width:100%}
+  .fuel-table tr{border:1px solid var(--line);border-radius:14px;background:var(--panel);
+    padding:12px 14px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center}
+  .fuel-table tr:hover td{background:transparent}
+  .fuel-table td{border:none;padding:0}
+  .fuel-table td:nth-child(1){grid-column:1;grid-row:1;font-family:var(--display);font-size:1.05rem;font-weight:600;color:var(--ice)}
+  .fuel-table td:nth-child(2){grid-column:1;grid-row:2;color:var(--mist);font-size:.8rem}
+  .fuel-table td:nth-child(3){grid-column:2;grid-row:1/span 2;align-self:center}
+  .fuel-table td:nth-child(4){display:none}
+  .fuel-table td:nth-child(5){grid-column:1/-1;grid-row:3;color:var(--mist);font-size:.82rem;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.05)}
+  .fuel-table .fuel-in{font-family:var(--display);font-weight:700;font-size:1.4rem;color:var(--sun);
+    width:96px;text-align:right;padding:6px 8px;background:rgba(255,180,84,.06);border-color:rgba(255,180,84,.3)}
   /* meteo e grafici */
   .wx-grid{grid-template-columns:1fr 1fr!important}
   footer{flex-direction:column;gap:6px;font-size:.72rem}
@@ -1105,13 +1121,6 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
   <h2 class="section-title">Il muro dell'equipaggio</h2>
   <p class="section-sub">Chi sale a Capo Nord. Tocca una scheda per modificarla: motto, ruolo e specialità sono condivisi con tutti via Drive.</p>
   <div class="crew-grid" id="crewGrid"></div>
-
-  <h2 class="section-title">Convertitore valute</h2>
-  <p class="section-sub">Quattro valute lungo la rotta oltre all'euro. Tassi aggiornati automaticamente ogni giorno. Digita un importo in qualsiasi campo.</p>
-  <div class="card reveal" id="fxCard">
-    <div class="fx-grid" id="fxGrid"></div>
-    <div class="fx-note" id="fxNote">Carico i tassi di cambio…</div>
-  </div>
 
   <h2 class="section-title">Libretto frasi</h2>
   <p class="section-sub">Il minimo per cavarsela, anche offline. Scegli la lingua del paese che stai attraversando.</p>
@@ -4561,7 +4570,7 @@ function renderPhrases(){
   let once=false;
   t.addEventListener("click", ()=>{
     if(once) return; once=true;
-    initCrew(); initFx(); initPhrases();
+    initCrew(); initPhrases();
   });
 })();
 initCrew();
@@ -5628,10 +5637,30 @@ const SP_META = {
 const SP_ORDER = ["IT","CH","DE","DK","SE","NO","FI","EE","LV","LT","PL"];
 const SP_DEST2CC = {"Zurigo":"CH","Stoccarda":"DE","Hannover":"DE","Copenaghen":"DK","Oslo":"NO","Stoccolma":"SE","Umeå":"SE","Kiruna":"SE","Leknes":"NO","Skibotn":"NO","CAPO NORD":"NO","Muonio":"FI","Rovaniemi":"FI","Jyväskylä":"FI","Helsinki":"FI","Riga":"LV","Varsavia":"PL","Dresda":"DE","Torino":"IT"};
 const SP_FX = {};
+const SP_FALLBACK = {NOK:0.0855, SEK:0.089, DKK:0.134, PLN:0.235, CHF:1.06};  // ~ indicativi, offline
 async function spRate(cur){
-  if(cur === "EUR") return 1;
-  if(SP_FX[cur]) return SP_FX[cur];
-  try{ const j = await fetchJson("https://api.frankfurter.app/latest?from=" + cur + "&to=EUR"); const v = j && j.rates && j.rates.EUR; if(v){ SP_FX[cur] = v; return v; } }catch(e){}
+  if(cur === "EUR") return {rate:1, tag:""};
+  if(SP_FX[cur]) return {rate:SP_FX[cur], tag:""};
+  const urls = [
+    "https://api.frankfurter.dev/v1/latest?base=" + cur + "&symbols=EUR",
+    "https://open.er-api.com/v6/latest/" + cur
+  ];
+  for(const u of urls){
+    try{
+      const j = await fetchJson(u);
+      const v = j && j.rates && j.rates.EUR;
+      if(v){
+        SP_FX[cur] = v;
+        try{ localStorage.setItem("sp-fx-" + cur, JSON.stringify({v, t:Date.now()})); }catch(e){}
+        return {rate:v, tag:""};
+      }
+    }catch(e){}
+  }
+  try{  // ultima cache salvata
+    const c = JSON.parse(localStorage.getItem("sp-fx-" + cur) || "null");
+    if(c && c.v){ SP_FX[cur] = c.v; return {rate:c.v, tag:" · salvato"}; }
+  }catch(e){}
+  if(SP_FALLBACK[cur]) return {rate:SP_FALLBACK[cur], tag:" · offline (~)"};
   return null;
 }
 function spFuel(code){
@@ -5662,9 +5691,10 @@ function spRenderCountry(code){
     <p class="c-foot">⛽ Prezzo benzina uguale al tuo prices.json (sezione Benzina). 🆘 Emergenze, limiti e alcol da conoscenza generale: verifica prima di partire. 💱 Cambio live BCE con rete.</p>`;
   if(!isEuro){
     const inp = document.getElementById("spConvIn"), out = document.getElementById("spConvOut"), rl = document.getElementById("spRate");
-    spRate(c.cur).then(rate => {
-      const calc = () => { const v = parseFloat(inp.value || 0); out.textContent = rate ? ("€ " + (v*rate).toFixed(2).replace(".",",")) : "€ — (offline)"; };
-      rl.textContent = rate ? ("1 " + c.cur + " = € " + rate.toFixed(4).replace(".",",")) : "cambio non disponibile offline";
+    spRate(c.cur).then(res => {
+      const rate = res ? res.rate : null;
+      const calc = () => { const v = parseFloat(inp.value || 0); out.textContent = rate ? ("€ " + (v*rate).toFixed(2).replace(".",",")) : "€ —"; };
+      rl.textContent = rate ? ("1 " + c.cur + " = € " + rate.toFixed(4).replace(".",",") + (res.tag||"")) : "cambio non disponibile";
       inp.addEventListener("input", calc); calc();
     });
   }
