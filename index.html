@@ -997,6 +997,40 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 .drawer-account:hover{color:var(--ice);border-color:var(--aurora-1);background:var(--panel-2)}
 @media(min-width:1080px){.drawer{width:300px}}
 
+
+/* ===== Vetrina ospite / sponsor ===== */
+.guest-only{display:none}
+body.guest .guest-only{display:block}
+body.guest .diary-form, body.guest .foto-tools{display:none !important}
+body.guest .entry .del, body.guest .ph .del, body.guest .doc-card .del, body.guest .doc-card .dl{display:none !important}
+.showcase-hero{position:relative;overflow:hidden;border-radius:22px;border:1px solid var(--line);
+  background:linear-gradient(150deg,var(--panel),var(--deep));box-shadow:var(--shadow);padding:30px 28px;margin-bottom:22px}
+.showcase-hero .eyebrow{font-family:var(--mono);letter-spacing:.24em;text-transform:uppercase;font-size:.64rem;color:var(--aurora-1)}
+.showcase-hero h1{font-family:var(--display);font-weight:700;text-transform:uppercase;line-height:1.02;font-size:clamp(1.9rem,5vw,3rem);margin:10px 0 8px}
+.showcase-hero h1 .grad{background:linear-gradient(100deg,var(--aurora-1),var(--aurora-2) 60%,var(--sun));-webkit-background-clip:text;background-clip:text;color:transparent}
+.showcase-hero p{color:var(--mist);font-size:.98rem;max-width:60ch;margin:0}
+.showcase-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:20px}
+.showcase-stats b{font-family:var(--display);font-size:1.5rem;display:block;line-height:1;color:var(--ice)}
+.showcase-stats span{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mist)}
+#guestMap{height:400px;border-radius:16px;overflow:hidden;border:1px solid var(--line);margin:6px 0 12px}
+.crew-tip{background:var(--panel);border:1px solid var(--line);color:var(--ice);font-family:var(--display);font-size:.72rem;border-radius:8px}
+.city-label{background:transparent!important;border:none!important;box-shadow:none!important;color:#E9F2F9;
+  font-family:var(--display);font-weight:600;font-size:.6rem;padding:0;white-space:nowrap;
+  text-shadow:0 1px 3px #060B15,0 0 5px #060B15,0 0 6px #060B15}
+.city-label::before{display:none!important}
+.city-label-nk{color:#FFB454;font-size:.72rem;font-weight:700}
+.mini-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.mini-gallery figure{margin:0;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
+.mini-gallery img{width:100%;height:100%;object-fit:cover;display:block}
+.mini-diary .entry{margin-bottom:12px}
+/* pagina sponsor */
+.spons-wrap{max-width:760px;margin:0 auto}
+.spons-badge{display:inline-block;font-family:var(--mono);letter-spacing:.2em;text-transform:uppercase;font-size:.62rem;color:var(--sun);border:1px solid rgba(255,180,84,.4);border-radius:99px;padding:6px 14px;background:rgba(255,180,84,.07)}
+.spons-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin:26px 0}
+.spons-slot{aspect-ratio:16/9;border:1px dashed var(--line);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--mist);font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;background:rgba(19,30,51,.4)}
+.spons-why{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-top:22px;text-align:left}
+.spons-why .card h3{margin:0 0 6px;font-size:1rem}
+
 </style>
 </head>
 <body>
@@ -1050,11 +1084,12 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
     <button class="tab guest-hidden" data-view="benzina"><span class="ti">⛽</span>Benzina</button>
     <button class="tab guest-hidden" data-view="spese"><span class="ti">💶</span>Spese</button>
     <button class="tab guest-hidden" data-view="checklist"><span class="ti">🎒</span>Checklist</button>
-    <button class="tab guest-hidden" data-view="diario"><span class="ti">📓</span>Diario</button>
-    <button class="tab guest-hidden" data-view="foto"><span class="ti">📷</span>Foto</button>
+    <button class="tab" data-view="diario"><span class="ti">📓</span>Diario</button>
+    <button class="tab" data-view="foto"><span class="ti">📷</span>Foto</button>
     <button class="tab guest-hidden" data-view="docs"><span class="ti">🎫</span>Biglietti</button>
     <button class="tab" data-view="trofei"><span class="ti">🏆</span>Trofei</button>
     <button class="tab guest-hidden" data-view="sos"><span class="ti">🚨</span>SOS</button>
+    <button class="tab" data-view="sponsor"><span class="ti">🤝</span>Sponsor</button>
     <div class="drawer-sep"></div>
     <button class="tab guest-hidden" data-view="settings"><span class="ti">⚙️</span>Impostazioni</button>
   </div>
@@ -1066,6 +1101,7 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
 
 <!-- ============ DASHBOARD ============ -->
 <section class="view active" id="view-dash">
+  <!-- ===== VETRINA OSPITE (solo modalità ospite) ===== -->
   <svg id="windRose" viewBox="0 0 200 200" aria-hidden="true">
     <circle cx="100" cy="100" r="96" fill="none" stroke="#4FE3C1" stroke-width="0.5"/>
     <circle cx="100" cy="100" r="72" fill="none" stroke="#93A6C2" stroke-width="0.4"/>
@@ -1099,6 +1135,27 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
         <div class="odo-mini"><b data-count="20">0</b><span>Tappe in moto</span></div>
         <div class="odo-mini"><b>128,5</b><span>Ore in sella</span></div>
       </div>
+    </div>
+  </div>
+
+  <div class="guest-only" id="guestShowcase">
+    <h2 class="section-title">Dove siamo adesso</h2>
+    <p class="section-sub">La posizione dell'equipaggio lungo la rotta, aggiornata quando c'è campo.</p>
+    <div id="guestMap"></div>
+    <div id="guestPosList" style="margin-bottom:22px"></div>
+
+    <h2 class="section-title">Ultime foto</h2>
+    <div class="mini-gallery" id="guestGallery"></div>
+    <div id="guestGalleryEmpty" class="section-sub" style="display:none">Le prime foto arriveranno dalla strada.</div>
+
+    <h2 class="section-title" style="margin-top:26px">Dal diario di bordo</h2>
+    <div class="mini-diary" id="guestDiary"></div>
+
+    <div class="showcase-hero" style="margin-top:22px;text-align:center">
+      <div class="eyebrow">Sostieni la spedizione</div>
+      <h1 style="font-size:clamp(1.4rem,4vw,2rem)">Diventa <span class="grad">sponsor</span></h1>
+      <p style="margin:0 auto 16px">Il tuo marchio a bordo, dal Circolo Polare Artico fino a Capo Nord.</p>
+      <button class="btn" id="goSponsor" data-view="sponsor">🤝 Scopri lo spazio sponsor</button>
     </div>
   </div>
 
@@ -1550,6 +1607,29 @@ body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top))
   <div class="card reveal" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
     <button class="btn ghost" id="setLogout">🔓 Cambia utente / esci</button>
     <span style="font-size:.82rem;color:var(--mist)">Le sincronizzazioni sono condivise con Ste, Vale e Ale via Drive.</span>
+  </div>
+</section>
+
+<!-- ============ SPONSOR ============ -->
+<section class="view" id="view-sponsor">
+  <span class="coord-tag" aria-hidden="true">PARTNERS</span>
+  <div class="spons-wrap">
+    <span class="spons-badge">Spazio sponsor</span>
+    <h2 class="section-title" style="margin-top:16px">I nostri sponsor</h2>
+    <p class="section-sub">Questo spazio è dedicato alle aziende che rendono possibile la spedizione Torino–Capo Nord. Per ora è vuoto: speriamo si riempia presto del vostro marchio.</p>
+    <div class="spons-slots">
+      <div class="spons-slot">Il tuo logo qui</div>
+      <div class="spons-slot">Il tuo logo qui</div>
+      <div class="spons-slot">Il tuo logo qui</div>
+      <div class="spons-slot">Il tuo logo qui</div>
+    </div>
+    <h2 class="section-title">Perché salire a bordo</h2>
+    <div class="spons-why">
+      <div class="card"><h3>📣 Visibilità</h3><p>Il marchio su moto, caschi, foto e diario, seguiti giorno per giorno lungo 9.754 km attraverso 8 paesi fino a Capo Nord.</p></div>
+      <div class="card"><h3>📍 Una storia vera</h3><p>Una spedizione autentica, non pubblicità patinata: contenuti genuini dalla strada, dal Circolo Polare Artico al punto più a nord d'Europa.</p></div>
+      <div class="card"><h3>🤝 Collaboriamo</h3><p>Dal semplice logo in questa pagina a partnership su misura, per questo viaggio e per il prossimo.</p></div>
+    </div>
+    <p class="section-sub" style="margin-top:24px">Interessati a far parte del viaggio? Scriveteci — questo spazio crescerà con voi.</p>
   </div>
 </section>
 
@@ -2324,7 +2404,7 @@ function saveCk(delay=350){
 /* ================= DIARIO ================= */
 let diary = [];
 async function initDiary(){
-  diary = (await store.get("caponord-diario")) || [];
+  diary = (await store.get("caponord-diario", true)) || [];
   $("#dStage").innerHTML = CITIES.map(c=>`<option>${esc(c.city)}</option>`).join("") + `<option>In viaggio</option>`;
   $("#dDate").value = isoLocal(new Date());
   renderDiary();
@@ -2349,7 +2429,7 @@ function renderDiary(){
     </article>`).join("");
   box.querySelectorAll(".del").forEach(b=>b.addEventListener("click",()=>{
     diary.splice(+b.dataset.i,1);
-    store.set("caponord-diario", diary);
+    store.set("caponord-diario", diary, true);
     renderDiary(); toast("Pagina eliminata");
   }));
 }
@@ -2357,7 +2437,7 @@ $("#dSave").addEventListener("click",()=>{
   const text = $("#dText").value.trim();
   if(!text){ toast("Scrivi qualcosa prima di salvare ✍️"); return; }
   diary.unshift({date:$("#dDate").value, stage:$("#dStage").value, who:$("#dWho").value, km:$("#dKm").value, text});
-  store.set("caponord-diario", diary);
+  store.set("caponord-diario", diary, true);
   $("#dText").value=""; $("#dKm").value="";
   renderDiary(); toast("📓 Pagina salvata nel diario");
 });
@@ -5301,6 +5381,7 @@ async function updateDressing(){
     }
     /* ── OSPITE: nessuna identità, nessun tocco ── */
     document.body.classList.add("guest");
+    try{ initGuestShowcase(); }catch(e){}
     try{ if(LS){ LS.removeItem("caponord:" + ME_KEY); LS.removeItem("caponord:" + AUTO_KEY); } }catch(e){}
     try{ ME = null; }catch(e){}
     try{ renderWhoAmI(); renderCrewPos(); }catch(e){}
@@ -5800,6 +5881,97 @@ try{ initSchedaPaese(); }catch(e){}
   document.getElementById("setLogout")?.addEventListener("click", ()=>{ if(typeof logout === "function") logout(); });
   document.getElementById("drawerLogout")?.addEventListener("click", ()=>{ if(typeof logout === "function") logout(); });
 })();
+
+
+/* ================= VETRINA OSPITE ================= */
+let __guestShowcaseDone = false;
+async function initGuestShowcase(){
+  if(__guestShowcaseDone) return;
+  const host = document.getElementById("guestShowcase");
+  if(!host) return;
+  __guestShowcaseDone = true;
+  try{
+    const n = DAYS.length, d = tripDay();
+    const idx = d < 1 ? 0 : (d > n ? n-1 : d-1);
+    document.getElementById("scDay").textContent = d < 1 ? "—" : (d + "/" + n);
+    const kmDone = (typeof tripKmDone === "function") ? tripKmDone(Math.max(1, Math.min(d, n))) : 0;
+    document.getElementById("scKm").textContent = d < 1 ? "0" : Math.round(kmDone).toLocaleString("it-IT");
+    document.getElementById("scNext").textContent = DESTS[idx] || "—";
+  }catch(e){}
+  try{
+    const fi = (await store.get("caponord-foto-index", true)) || [];
+    const g = document.getElementById("guestGallery");
+    const last = fi.slice(0, 8);
+    if(!last.length){ document.getElementById("guestGalleryEmpty").style.display = "block"; }
+    else{
+      g.innerHTML = last.map(f=>`<figure><img id="gimg-${f.id}" alt=""></figure>`).join("");
+      for(const f of last){
+        try{ const src = f.src || await store.get("caponord-foto-"+f.id, true);
+          const im = document.getElementById("gimg-"+f.id); if(im && src) im.src = src; }catch(e){}
+      }
+    }
+  }catch(e){}
+  try{
+    const dl = (await store.get("caponord-diario", true)) || [];
+    const box = document.getElementById("guestDiary");
+    const last = dl.slice(0, 2);
+    if(!last.length){ box.innerHTML = `<p class="section-sub">La prima pagina si scrive alla partenza.</p>`; }
+    else box.innerHTML = last.map(e=>`<article class="entry"><div class="entry-head"><h3>${esc(e.stage||"")}</h3><time>${e.date?new Date(e.date+"T12:00").toLocaleDateString("it-IT",{day:"numeric",month:"long"}):""}${e.who?" · "+esc(e.who):""}</time></div><p>${esc(e.text||"")}</p></article>`).join("");
+  }catch(e){}
+  initGuestMap();
+}
+async function initGuestMap(){
+  const el = document.getElementById("guestMap");
+  if(!el) return;
+  if(typeof L === "undefined"){ setTimeout(initGuestMap, 600); return; }
+  if(el._built) return; el._built = true;
+  const map = L.map(el, {zoomControl:true, scrollWheelZoom:false}).setView([62, 16], 4);
+  el.classList.add("dark-tiles");
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(map);
+  const TORINO = [45.0703, 7.6869], NK = [71.1703, 25.7833];
+  const pts = [TORINO];
+  DESTS.forEach(dn=>{ const g = CITYGEO[dn]; if(g && g.c) pts.push([g.c[0], g.c[1]]); });
+  if(pts.length > 1){
+    L.polyline(pts, {color:"#4FE3C1", weight:2, opacity:.5, dashArray:"5 7"}).addTo(map);
+    DESTS.forEach(dn=>{
+      const g = CITYGEO[dn]; if(!g || !g.c) return;
+      if(/capo nord/i.test(dn)) return;   // ha il suo marker speciale
+      L.circleMarker([g.c[0], g.c[1]], {radius:3.5, color:"#4FE3C1", weight:1.5, fillColor:"#0B1220", fillOpacity:.9})
+        .addTo(map).bindTooltip(dn, {permanent:true, direction:"right", className:"city-label", offset:[5,0]});
+    });
+    L.circleMarker(TORINO, {radius:5, color:"#93A6C2", weight:2, fillColor:"#0B1220", fillOpacity:.95})
+      .addTo(map).bindTooltip("Torino", {permanent:true, direction:"left", className:"city-label", offset:[-5,0]});
+    L.circleMarker(NK, {radius:7, color:"#FFB454", weight:3, fillColor:"#1a1030", fillOpacity:.95})
+      .addTo(map).bindTooltip("Capo Nord", {permanent:true, direction:"top", className:"city-label city-label-nk"});
+  }
+  let positions = {};
+  try{ positions = (await store.get("caponord-posizioni", true)) || {}; }catch(e){}
+  const COL = {Ste:"#4FE3C1", Vale:"#7C6CFF", Ale:"#FF8A5B"};
+  const crewPts = [];
+  Object.keys(COL).forEach(name=>{
+    const p = positions[name];
+    if(p && typeof p.lat === "number"){
+      crewPts.push([p.lat, p.lon]);
+      L.circleMarker([p.lat, p.lon], {radius:9, color:COL[name], weight:3, fillColor:COL[name], fillOpacity:.85})
+        .addTo(map).bindTooltip("🏍 " + name, {permanent:true, direction:"top", className:"crew-tip"});
+    }
+  });
+  const list = document.getElementById("guestPosList");
+  if(list){
+    list.innerHTML = Object.keys(COL).map(name=>{
+      const p = positions[name];
+      if(!p) return `<div class="pos-row"><span class="pr-dot"></span><div><b>${name}</b><div class="pr-meta">posizione non ancora condivisa</div></div><span></span></div>`;
+      const near = (typeof nearestCity === "function") ? nearestCity(p.lat, p.lon) : null;
+      const nearTxt = near ? `<div class="pos-near">📍 ${near.dist < 3 ? "a" : (typeof fmtDist==="function"?fmtDist(near.dist):"")+" da"} ${esc(near.name)} ${near.flag||""}</div>` : "";
+      return `<div class="pos-row fresh"><span class="pr-dot"></span><div><b>${name}</b>${nearTxt}<div class="pr-meta">${(typeof timeAgo==="function")?timeAgo(p.ts):""}</div></div><span></span></div>`;
+    }).join("");
+  }
+  const all = crewPts.concat(pts);
+  if(all.length > 1){ try{ map.fitBounds(all, {padding:[30,30]}); }catch(e){} }
+  setTimeout(()=>{ try{ map.invalidateSize(); }catch(e){} }, 150);
+}
+document.getElementById("goSponsor")?.addEventListener("click", ()=> document.querySelector('.tab[data-view="sponsor"]')?.click());
+if(window.__guest){ try{ initGuestShowcase(); }catch(e){} }
 
 </script>
 </body>
