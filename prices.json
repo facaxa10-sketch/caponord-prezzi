@@ -1,7 +1,7 @@
 {
- "updated": "2026-07-31",
+ "updated": "2026-08-01",
  "prices": {
-  "IT": 1.99,
+  "IT": 1.996,
   "CH": 1.96,
   "DE": 2.191,
   "DK": 2.486,
@@ -14,15 +14,7 @@
   "PL": 1.719
  },
  "sources": {
-  "IT": "MIMIT media su 20306 impianti self",
-  "PL": "Bollettino UE via fuel-prices.eu",
-  "LT": "Bollettino UE via fuel-prices.eu",
-  "DE": "Bollettino UE via fuel-prices.eu",
-  "EE": "Bollettino UE via fuel-prices.eu",
-  "FI": "Bollettino UE via fuel-prices.eu",
-  "SE": "Bollettino UE via fuel-prices.eu",
-  "LV": "Bollettino UE via fuel-prices.eu",
-  "DK": "Bollettino UE via fuel-prices.eu",
+  "IT": "MIMIT media su 20337 impianti self",
   "NO": "manuale (sito)",
   "CH": "manuale (sito)"
  },
