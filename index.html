@@ -723,11 +723,6 @@ body.polar-night .stars span{animation-duration:3s}
 .sky-cell .sc-meta{font-size:.64rem;color:var(--mist);margin-top:4px}
 .sky-cell .sc-ring{width:44px;height:44px;margin:8px auto 4px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:.9rem;font-weight:700}
 /* mappa 3D terreno */
-/* gemello del viaggio */
-.twin-card{background:linear-gradient(135deg,rgba(124,108,255,.16),rgba(79,227,193,.08)),var(--panel);border:1px solid rgba(124,108,255,.35);border-radius:var(--radius);padding:18px 20px;margin-top:16px;display:none;gap:14px;align-items:center}
-.twin-card .tw-ico{font-size:2rem}
-.twin-card h4{font-family:var(--display);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--aurora-2)}
-.twin-card p{font-size:.9rem;color:var(--ice);margin-top:3px}
 
 /* ---------- v12: equipaggio, valute, frasi ---------- */
 .crew-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px}
@@ -847,6 +842,29 @@ body.guest .ck-box,body.guest .qty,body.guest .ck-del,body.guest .diary-form,
 body.guest .checkin-card .btn,body.guest .crew-card .cr-edit,body.guest .foto-tools,
 body.guest #posControls,body.guest .check-tools .btn{opacity:.45}
 body.guest .guest-hidden { display: none !important; }
+#reminders{display:flex;flex-direction:column;gap:10px;margin:4px 0 22px}
+.reminders-title{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--aurora-1);margin:0}
+.reminder{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,rgba(79,227,193,.07),var(--panel));border:1px solid var(--line);border-left:3px solid var(--aurora-1);border-radius:12px;padding:13px 16px}
+.reminder.warn{border-left-color:var(--sun);background:linear-gradient(135deg,rgba(255,180,84,.08),var(--panel))}
+.reminder.apex{border-left-color:var(--sun);background:linear-gradient(135deg,rgba(255,180,84,.14),var(--panel))}
+.reminder .ic{font-size:1.4rem;line-height:1.1;flex-shrink:0}
+.reminder .txt{font-size:.92rem;color:var(--ice);line-height:1.4}
+.reminder .txt b{color:var(--ice);font-weight:600}
+.reminder .det{font-size:.78rem;color:var(--mist);margin-top:3px;font-family:var(--mono);letter-spacing:.02em}
+/* ---- Modalità guida ---- */
+.ride-mode{position:fixed;inset:0;z-index:3000;background:radial-gradient(circle at 50% 28%,#0E1729,#050912 72%);color:var(--ice);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:var(--display)}
+.ride-mode.on{display:flex}
+.ride-clock{position:absolute;top:calc(18px + env(safe-area-inset-top));left:20px;font-family:var(--mono);font-size:1.4rem;color:var(--mist);letter-spacing:.05em}
+.ride-exit{position:absolute;top:calc(14px + env(safe-area-inset-top));right:18px;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--mist);border-radius:999px;padding:10px 18px;font-family:var(--display);font-size:.9rem;cursor:pointer}
+.ride-toward{font-family:var(--mono);letter-spacing:.3em;text-transform:uppercase;font-size:.85rem;color:var(--aurora-1)}
+.ride-dest{font-weight:700;text-transform:uppercase;font-size:clamp(2.2rem,10vw,5rem);line-height:1;margin:8px 0 22px;background:linear-gradient(100deg,var(--aurora-1),var(--aurora-2) 60%,var(--sun));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ride-dist b{font-size:clamp(4rem,24vw,10rem);font-weight:700;line-height:.85;display:block;color:var(--sun);text-shadow:0 0 34px rgba(255,180,84,.4)}
+.ride-dist span{font-family:var(--mono);font-size:1rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mist)}
+.ride-row{display:flex;gap:34px;margin-top:36px;flex-wrap:wrap;justify-content:center}
+.ride-cell b{font-size:clamp(1.8rem,7vw,3rem);font-weight:700;display:block;line-height:1;color:var(--ice)}
+.ride-cell span{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mist)}
+.ride-aurora{margin-top:26px;font-size:1.1rem;color:var(--aurora-1);min-height:1.4em}
+.ride-note{margin-top:12px;font-family:var(--body);font-size:.95rem;color:var(--mist);max-width:44ch}
 body.guest .guest-badge{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:120;
   font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;padding:5px 12px;border-radius:99px;
   background:rgba(24,39,65,.9);border:1px solid var(--line);color:var(--mist);pointer-events:none}
@@ -1187,7 +1205,10 @@ body.guest .entry .del, body.guest .ph .del, body.guest .doc-card .del, body.gue
     </div>
   </div>
 
-  <div class="twin-card guest-hidden" id="twinCard"><div class="tw-ico">🕰</div><div><h4>Il gemello del viaggio</h4><p id="twinText"></p></div></div>
+  <div class="guest-hidden" id="reminders" style="display:none"></div>
+  <button class="btn guest-hidden" id="rideBtn" style="margin-bottom:22px">🏍️ Modalità guida</button>
+  <button class="btn guest-hidden" id="wrapBtn" style="margin-bottom:22px">🎬 Wrapped del viaggio</button>
+
   <div class="nextcard guest-hidden" id="nextAction" style="display:none"><div class="nx-ico" id="nxIco">🧭</div><div><h4>Prossima mossa</h4><p id="nxText"></p></div></div>
   <div class="checkin-card guest-hidden" id="checkinCard" style="display:none"><h3 id="ciTitle">📍 Check-in di oggi</h3><p id="ciDesc"></p><button class="btn" id="ciBtn">Sono arrivato</button></div>
 
@@ -1443,6 +1464,7 @@ body.guest .entry .del, body.guest .ph .del, body.guest .doc-card .del, body.gue
   <span class="coord-tag" aria-hidden="true">SHIP LOG</span>
   <h2 class="section-title">Diario di bordo</h2>
   <p class="section-sub">Il racconto del viaggio, chilometro dopo chilometro. Le pagine restano salvate anche quando chiudi il sito.</p>
+  <button class="btn" id="cartolinaBtn" style="margin-bottom:18px">📸 Cartolina di oggi</button>
   <div class="diary-form reveal">
     <div class="row" style="grid-template-columns:1fr 1fr 120px 140px">
       <div><label class="f" for="dDate">Data</label><input type="date" id="dDate"></div>
@@ -1703,6 +1725,59 @@ body.guest .entry .del, body.guest .ph .del, body.guest .doc-card .del, body.gue
     </div>
   </div>
 </section>
+
+<!-- ============ MODALITÀ GUIDA (schermo intero) ============ -->
+<div id="rideMode" class="ride-mode" aria-hidden="true">
+  <div class="ride-clock" id="rideClock">--:--</div>
+  <button class="ride-exit" id="rideExit">✕ Esci</button>
+  <div class="ride-toward">Verso</div>
+  <div class="ride-dest" id="rideDest">—</div>
+  <div class="ride-dist"><b id="rideKm">—</b><span>km alla tappa</span></div>
+  <div class="ride-row">
+    <div class="ride-cell"><b id="rideSpeed">—</b><span>km/h</span></div>
+    <div class="ride-cell"><b id="rideSunset">—</b><span>tramonto</span></div>
+    <div class="ride-cell"><b id="rideLight">—</b><span>luce rimasta</span></div>
+  </div>
+  <div class="ride-aurora" id="rideAurora"></div>
+  <div class="ride-note" id="rideNote"></div>
+</div>
+
+<!-- ============ WRAPPED DEL VIAGGIO (Fase 4) ============ -->
+<style id="wrapCSS">
+.wrap-mode{position:fixed;inset:0;z-index:3200;background:radial-gradient(circle at 50% 30%,#0E1729,#050912 74%);color:var(--ice);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(20px,6vw,40px);font-family:var(--display);overflow:hidden}
+.wrap-mode.on{display:flex}
+.wrap-mode::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(420px 300px at 22% 20%,rgba(79,227,193,.16),transparent 70%),
+  radial-gradient(420px 320px at 82% 16%,rgba(124,108,255,.16),transparent 70%),
+  radial-gradient(520px 380px at 50% 108%,rgba(255,180,84,.10),transparent 70%)}
+.wrap-bars{position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;right:14px;display:flex;gap:6px;z-index:3}
+.wrap-seg{flex:1;height:3px;border-radius:99px;background:rgba(147,166,194,.28);overflow:hidden}
+.wrap-seg i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--aurora-1),var(--aurora-2));border-radius:99px}
+.wrap-seg.done i{width:100%}
+.wrap-seg.active i{width:100%;transition:width var(--wrapdur,3000ms) linear}
+.wrap-exit{position:absolute;top:calc(30px + env(safe-area-inset-top));right:16px;z-index:4;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--mist);border-radius:999px;padding:9px 16px;font-family:var(--display);font-size:.85rem;cursor:pointer}
+.wrap-tap{position:absolute;top:0;bottom:0;width:40%;z-index:2;cursor:pointer}
+.wrap-tap.l{left:0}.wrap-tap.r{right:0;width:60%}
+.wrap-slide{position:relative;z-index:3;max-width:640px;animation:wrapIn .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes wrapIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.wrap-eyebrow{font-family:var(--mono);letter-spacing:.28em;text-transform:uppercase;font-size:.8rem;color:var(--aurora-1);margin-bottom:18px}
+.wrap-num{font-weight:700;line-height:.85;font-size:clamp(4.4rem,26vw,11rem);background:linear-gradient(100deg,var(--aurora-1),var(--aurora-2) 55%,var(--sun));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 60px rgba(124,108,255,.25)}
+.wrap-big{font-weight:700;line-height:.95;font-size:clamp(2.6rem,12vw,5.4rem);text-transform:uppercase;background:linear-gradient(100deg,var(--aurora-1),var(--aurora-2) 55%,var(--sun));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:pre-line}
+.wrap-lab{font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase;font-size:1rem;color:var(--ice);margin-top:14px}
+.wrap-sub{font-family:var(--body);color:var(--mist);font-size:1rem;margin-top:16px;max-width:34ch;margin-left:auto;margin-right:auto;line-height:1.5}
+.wrap-flags{font-size:clamp(1.4rem,7vw,2.4rem);letter-spacing:.12em;margin-top:20px;line-height:1.5}
+.wrap-share{margin-top:30px;background:linear-gradient(100deg,var(--aurora-1),var(--aurora-2));color:#08101f;border:none;border-radius:999px;padding:15px 28px;font-family:var(--display);font-weight:700;font-size:1.02rem;cursor:pointer;box-shadow:0 12px 34px rgba(79,227,193,.28)}
+.wrap-hint{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mist);opacity:.6;z-index:3}
+@media(prefers-reduced-motion:reduce){.wrap-slide{animation:none}.wrap-seg.active i{transition:none}}
+</style>
+<div id="wrapMode" class="wrap-mode" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Wrapped del viaggio">
+  <div class="wrap-bars" id="wrapBars"></div>
+  <button class="wrap-exit" id="wrapExit">✕ Esci</button>
+  <div class="wrap-tap l" id="wrapPrev" aria-label="Indietro"></div>
+  <div class="wrap-tap r" id="wrapNext" aria-label="Avanti"></div>
+  <div class="wrap-slide" id="wrapSlide"></div>
+  <div class="wrap-hint" id="wrapHint">tocca per continuare</div>
+</div>
 
 <footer>
   <span>CAPO NORD 2026 · 28 AGO → 20 SET · STE + VALE + ALE · 2 MOTO</span>
@@ -4556,40 +4631,6 @@ async function loadSkyHunt(){
   }
 }
 
-/* ================= v11: IL GEMELLO DEL VIAGGIO ================= */
-async function initTwin(){
-  const card = document.getElementById("twinCard");
-  if(!card) return;
-  const now = new Date();
-  // durante il viaggio: mostra dove sarete/eravate. Dopo: "un anno fa oggi"
-  const d = tripDay();
-  let text = "";
-  // 1) memoria da diario dello stesso giorno di calendario in anni passati
-  const diaryData = (await store.get("caponord-diario", true)) || [];
-  const md = (now.getMonth()+1)+"-"+now.getDate();
-  const past = diaryData.find(e=>{ if(!e.date) return false; const dt=new Date(e.date); return dt.getFullYear()<now.getFullYear() && (dt.getMonth()+1)+"-"+dt.getDate()===md; });
-  if(past){
-    const yrs = now.getFullYear() - new Date(past.date).getFullYear();
-    text = `${yrs} anno${yrs>1?'i':''} fa oggi eravate a ${past.stage||'una tappa'}: "${(past.text||'').slice(0,90)}${past.text&&past.text.length>90?'…':''}"`;
-    card.querySelector(".tw-ico").textContent = "📸";
-  }
-  // 2) durante il viaggio, anteprima simbolica dell'anno prossimo
-  else if(d>=1 && d<=DAYS.length){
-    text = `Fra un anno, in questo giorno, l'app vi riporterà qui: al Giorno ${d}, ${DESTS[d-1]}. Scrivete nel diario — sarà il ricordo che vi aspetta.`;
-  }
-  // 3) prima della partenza: conto alla rovescia emozionale
-  else if(d<1){
-    const gg = Math.ceil((TRIP_START - now)/864e5);
-    if(gg>0){ text = `Fra ${gg} giorni inizia la storia che fra un anno rivivrete da qui. Ogni pagina di diario diventerà un "un anno fa oggi".`; }
-  }
-  // 4) dopo il viaggio
-  else{
-    text = "Il viaggio è compiuto. Tornate ogni tanto: nei prossimi anni, questa card vi riporterà ai giorni esatti in cui eravate lassù.";
-    card.querySelector(".tw-ico").textContent = "🏔";
-  }
-  if(text){ document.getElementById("twinText").textContent = text; card.style.display = "flex"; }
-}
-
 /* ================= v11: TERRENO 3D DELLE TAPPE ARTICHE ================= */
 /* aggancio: quando apro il tab meteo, carico sky-hunt e (prima volta) il terreno */
 (function(){
@@ -4601,7 +4642,6 @@ async function initTwin(){
   });
 })();
 
-initTwin();
 
 
 
@@ -5155,7 +5195,7 @@ document.querySelector('.tab[data-view="mappa"]')?.addEventListener("click", asy
 
 initCrewPos();
 setTimeout(()=>{ if(typeof updateDressing==="function") updateDressing(); }, 900);
-(function(){ const v=document.getElementById("appVer"); if(v) v.textContent = "build 31 · accesso rapido con PIN"; })();
+(function(){ const v=document.getElementById("appVer"); if(v) v.textContent = "build 33 · Wrapped del viaggio"; })();
 
 
 
@@ -5492,7 +5532,7 @@ async function updateDressing(){
     }
     if(!window.__guestShield){
       window.__guestShield = true;
-      const ALLOW = ".tab,.menu-btn,.drawer-close,.drawer-account,#drawerScrim,.lang-picker,.p-chip,.day-row,.city-card,.modal-x,.leaflet-container,.fx-row,.lg-box,#lgGuest,#lgOut,.sun-nav,#sunToday,a,[data-view]";
+      const ALLOW = ".tab,.menu-btn,.drawer-close,.drawer-account,#drawerScrim,#cartolinaBtn,.lang-picker,.p-chip,.day-row,.city-card,.modal-x,.leaflet-container,.fx-row,.lg-box,#lgGuest,#lgOut,.sun-nav,#sunToday,a,[data-view]";
       document.addEventListener("click", e=>{
         if(!window.__guest) return;
         const t = e.target;
@@ -6117,6 +6157,403 @@ if(!posPollTimer){
   document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState === "visible") pollPositions(false); });
 }
 document.querySelector('.tab[data-view="mappa"]')?.addEventListener("click", ()=> setTimeout(()=>pollPositions(true), 60));
+
+/* ================= CARTOLINA DEL GIORNO ================= */
+function cartWrap(ctx, text, maxW){
+  const words = String(text).split(" "); const lines=[]; let line="";
+  for(const w of words){ const t=line?line+" "+w:w; if(ctx.measureText(t).width>maxW && line){ lines.push(line); line=w; } else line=t; }
+  if(line) lines.push(line); return lines;
+}
+async function shareGiornata(){
+  const n = DAYS.length, d = tripDay();
+  let idx, badge;
+  if(d < 1){ const gg=Math.max(0,Math.ceil((TRIP_START-Date.now())/864e5)); idx=0; badge=`Tra ${gg} ${gg===1?"giorno":"giorni"} si parte`; }
+  else if(d > n){ idx=n-1; badge="Missione compiuta"; }
+  else { idx=d-1; badge=`Giorno ${d} / ${n}`; }
+  const day = DAYS[idx];
+  const date = new Date(TRIP_START.getTime()+idx*864e5).toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"});
+  const kp = (typeof window.__KP==="number") ? window.__KP : null;
+
+  const W=1080,H=1350, cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const ctx=cv.getContext("2d");
+  const bg=ctx.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#0B1220"); bg.addColorStop(.5,"#0E1729"); bg.addColorStop(1,"#0A0F1C");
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  const glow=(x,y,r,c)=>{ const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,c); g.addColorStop(1,"rgba(0,0,0,0)"); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); };
+  glow(300,220,560,"rgba(79,227,193,.20)"); glow(830,140,480,"rgba(124,108,255,.20)"); glow(560,1230,650,"rgba(255,180,84,.10)");
+  ctx.strokeStyle="rgba(147,166,194,.25)"; ctx.lineWidth=2; ctx.strokeRect(46,46,W-92,H-92);
+  ctx.textAlign="center";
+  ctx.fillStyle="#4FE3C1"; ctx.font="700 30px 'Chakra Petch', monospace";
+  ctx.fillText("C A P O   N O R D   ·   2 0 2 6", W/2, 170);
+  // badge
+  ctx.fillStyle="#FFB454"; ctx.font="700 44px 'Space Grotesk', sans-serif";
+  ctx.fillText(badge.toUpperCase(), W/2, 260);
+  ctx.fillStyle="#93A6C2"; ctx.font="400 34px 'Inter', sans-serif";
+  ctx.fillText(date.charAt(0).toUpperCase()+date.slice(1), W/2, 320);
+  // rotta (gradiente aurora→oro, a capo se lunga)
+  const routeGrad=ctx.createLinearGradient(120,0,W-120,0);
+  routeGrad.addColorStop(0,"#4FE3C1"); routeGrad.addColorStop(.6,"#7C6CFF"); routeGrad.addColorStop(1,"#FFB454");
+  ctx.fillStyle=routeGrad; ctx.font="700 82px 'Space Grotesk', sans-serif";
+  const rlines=cartWrap(ctx, (day.route||"").toUpperCase(), W-160);
+  let ry=560 - (rlines.length-1)*46;
+  rlines.forEach(l=>{ ctx.fillText(l, W/2, ry); ry+=92; });
+  // divider
+  ctx.strokeStyle="rgba(34,49,79,.9)"; ctx.beginPath(); ctx.moveTo(200,720); ctx.lineTo(W-200,720); ctx.stroke();
+  // stat: km · ore · dove dorme
+  const stats=[];
+  if(day.km) stats.push([day.km.toLocaleString("it-IT"),"KM"]);
+  if(day.h) stats.push([String(day.h).replace(".",","),"ORE"]);
+  const sleep = day.sleep==="TENDA"?"TENDA":(day.sleep==="ARRIVO"?"ARRIVO":(day.sleep||"—"));
+  stats.push([sleep,"NOTTE"]);
+  const sw=W/stats.length;
+  stats.forEach((s,i)=>{ const cx=sw*i+sw/2;
+    ctx.fillStyle="#E9F2F9"; ctx.font="700 66px 'Space Grotesk', sans-serif"; ctx.fillText(s[0], cx, 850);
+    ctx.fillStyle="#93A6C2"; ctx.font="700 24px 'Chakra Petch', monospace"; ctx.fillText(s[1], cx, 895);
+  });
+  // aurora / nota
+  let yy=1010;
+  if(kp!=null && kp>=4){ ctx.fillStyle="#4FE3C1"; ctx.font="600 38px 'Space Grotesk', sans-serif";
+    ctx.fillText(`🌌 Aurora stanotte · Kp ${kp.toFixed(1)}`, W/2, yy); yy+=70; }
+  if(day.note){ ctx.fillStyle="#B9C6D8"; ctx.font="400 34px 'Inter', sans-serif";
+    cartWrap(ctx, day.note, W-220).slice(0,3).forEach(l=>{ ctx.fillText(l, W/2, yy); yy+=48; }); }
+  // footer
+  ctx.fillStyle="#FFB454"; ctx.font="700 30px 'Chakra Petch', monospace";
+  ctx.fillText("TORINO → CAPO NORD → TORINO · 9.754 KM", W/2, H-110);
+  ctx.fillStyle="#93A6C2"; ctx.font="400 28px 'Inter', sans-serif";
+  ctx.fillText("segui la spedizione in tempo reale", W/2, H-72);
+
+  cv.toBlob(async blob=>{
+    if(!blob){ toast("Errore nel creare la cartolina"); return; }
+    const file=new File([blob],"capo-nord-"+(d>=1?("giorno-"+Math.min(d,n)):"partenza")+".png",{type:"image/png"});
+    const txt=`${badge} · ${day.route} — Spedizione Capo Nord 2026 🏍️`;
+    try{
+      if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:txt}); return; }
+    }catch(e){ if(e && e.name==="AbortError") return; }
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=file.name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    toast("📸 Cartolina salvata — pronta da condividere");
+  }, "image/png");
+}
+document.getElementById("cartolinaBtn")?.addEventListener("click", ()=>{ try{ shareGiornata(); }catch(e){ toast("Errore cartolina"); } });
+
+/* ================= PROMEMORIA INTELLIGENTI ================= */
+function buildReminders(){
+  const n = DAYS.length, d = tripDay(), R = [];
+  const ccFor = i => (i>=0 && i<DESTS.length) ? (SP_DEST2CC[DESTS[i]]||null) : null;
+
+  if(d < 1){
+    const gg = Math.max(0, Math.ceil((TRIP_START - Date.now())/864e5));
+    R.push({ic:"🏍️", cls:"apex", text:`Partenza tra <b>${gg} ${gg===1?"giorno":"giorni"}</b> — ultimi preparativi.`});
+    // primo traghetto / prenotazioni nei primi giorni
+    for(let i=0;i<Math.min(3,n);i++){ const nt=DAYS[i].note||""; const fm=nt.match(/Traghetto[^·]*/i);
+      if(fm) R.push({ic:"⛴", cls:"warn", text:`Giorno ${i+1}: traghetto ${fm[0].replace(/Traghetto/i,"").trim()}`}); }
+    return R;
+  }
+  if(d > n){ R.push({ic:"🏆", cls:"apex", text:"Missione compiuta — 9.754 km, Torino → Capo Nord → Torino. 🏁"}); return R; }
+
+  const today = Math.max(0, Math.min(d-1, n-1)), tom = today + 1;
+  // frontiera domani
+  if(tom < n){ const a=ccFor(today), b=ccFor(tom);
+    if(b && b!==a && SP_META[b]){ const m=SP_META[b];
+      R.push({ic:m.fl, text:`Domani entri in <b>${m.name}</b>`, detail:`Limiti ${m.speed} · alcol ${m.alc} · valuta ${m.cur}`}); } }
+  // Capo Nord domani
+  if(tom < n && /capo nord/i.test(DAYS[tom].route||"")) R.push({ic:"🚩", cls:"apex", text:"<b>Domani è il giorno di Capo Nord!</b> 71°10′N vi aspetta."});
+  // sosta domani
+  if(tom < n && DAYS[tom].rest) R.push({ic:"☕", text:`Domani <b>giornata di sosta</b>${DESTS[tom]?" a "+DESTS[tom]:""}: riposo e bucato.`});
+  // tenda stanotte
+  if(DAYS[today].sleep === "TENDA") R.push({ic:"⛺", cls:"warn", text:"<b>Stanotte in tenda</b> — termico, sacco serio e occhio al meteo."});
+  // traghetti / prenotazioni prossimi 3 giorni
+  for(let i=today;i<Math.min(today+3,n);i++){
+    const nt=DAYS[i].note||"", when=i===today?"oggi":(i===today+1?"domani":`tra ${i-today} giorni`);
+    const fm=nt.match(/Traghetto[^·]*/i);
+    if(fm) R.push({ic:"⛴", cls:"warn", text:`Traghetto <b>${when}</b>: ${fm[0].replace(/Traghetto/i,"").trim()}`});
+    if(/prenotare/i.test(nt) && i>today) R.push({ic:"📌", cls:"warn", text:`Da prenotare per <b>${when}</b>${DESTS[i]?" ("+DESTS[i]+")":""}.`});
+  }
+  return R;
+}
+function renderReminders(){
+  const host = document.getElementById("reminders"); if(!host) return;
+  let list=[]; try{ list=buildReminders(); }catch(e){}
+  if(!list.length){ host.style.display="none"; host.innerHTML=""; return; }
+  host.style.display="flex";
+  host.innerHTML = `<div class="reminders-title">Prossime mosse</div>` +
+    list.map(r=>`<div class="reminder ${r.cls||""}"><span class="ic">${r.ic}</span><div><div class="txt">${r.text}</div>${r.detail?`<div class="det">${r.detail}</div>`:""}</div></div>`).join("");
+}
+try{ renderReminders(); }catch(e){}
+
+/* ================= MODALITÀ GUIDA ================= */
+let rideWatch=null, rideClock=null, rideWake=null, rideDestCoords=null, rideLastPos=null, rideSunsetDate=null;
+function haversineKm(la1,lo1,la2,lo2){const R=6371,dLat=(la2-la1)*Math.PI/180,dLon=(lo2-lo1)*Math.PI/180,a=Math.sin(dLat/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(a));}
+async function openRide(){
+  const el=document.getElementById("rideMode"); if(!el) return;
+  const n=DAYS.length, d=tripDay(), idx=d<1?0:(d>n?n-1:d-1);
+  const dest=DESTS[idx]||"—";
+  document.getElementById("rideDest").textContent=dest;
+  document.getElementById("rideNote").textContent=DAYS[idx].route||"";
+  rideDestCoords=(CITYGEO[dest]&&CITYGEO[dest].c)?{lat:CITYGEO[dest].c[0],lon:CITYGEO[dest].c[1]}:null;
+  rideSunsetDate=null;
+  try{
+    const ci=(typeof cityInfo==="function")?cityInfo(dest):null;
+    if(ci && typeof SUN!=="undefined"){
+      const t=SUN.times(new Date(),ci.lat,ci.lon,-0.833);
+      if(t&&t.set){ document.getElementById("rideSunset").textContent=hhmm(t.set,ci.tz); rideSunsetDate=t.set; }
+      else if(t&&t.polar==="day"){ document.getElementById("rideSunset").textContent="24h☀"; }
+      else document.getElementById("rideSunset").textContent="—";
+    }
+  }catch(e){}
+  const kp=(typeof window.__KP==="number")?window.__KP:null;
+  document.getElementById("rideAurora").textContent=(kp!=null&&kp>=4)?`🌌 Aurora stanotte · Kp ${kp.toFixed(1)}`:"";
+  el.classList.add("on"); el.setAttribute("aria-hidden","false");
+  try{ if("wakeLock" in navigator) rideWake=await navigator.wakeLock.request("screen"); }catch(e){}
+  try{ if(el.requestFullscreen) el.requestFullscreen(); }catch(e){}
+  const tick=()=>{ const now=new Date();
+    document.getElementById("rideClock").textContent=now.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+    const ls=document.getElementById("rideLight");
+    if(rideSunsetDate){ const ms=rideSunsetDate-now;
+      if(ms>0){ const h=Math.floor(ms/3.6e6),m=Math.floor(ms%3.6e6/6e4); ls.textContent=(h>0?h+"h ":"")+m+"m"; }
+      else ls.textContent="buio"; }
+    else ls.textContent="—";
+  };
+  tick(); rideClock=setInterval(tick,1000);
+  if(navigator.geolocation){
+    rideWatch=navigator.geolocation.watchPosition(pos=>{
+      const c=pos.coords;
+      let kmh=(c.speed!=null&&c.speed>=0)?c.speed*3.6:null;
+      if(kmh==null && rideLastPos){ const dt=(pos.timestamp-rideLastPos.t)/1000;
+        if(dt>0.5){ const dd=haversineKm(rideLastPos.lat,rideLastPos.lon,c.latitude,c.longitude); kmh=dd/dt*3600; } }
+      rideLastPos={lat:c.latitude,lon:c.longitude,t:pos.timestamp};
+      document.getElementById("rideSpeed").textContent=(kmh!=null&&kmh<400)?Math.round(kmh):"—";
+      if(rideDestCoords){ const km=haversineKm(c.latitude,c.longitude,rideDestCoords.lat,rideDestCoords.lon);
+        document.getElementById("rideKm").textContent=Math.round(km).toLocaleString("it-IT"); }
+    }, ()=>{}, {enableHighAccuracy:true,maximumAge:4000,timeout:15000});
+  }
+}
+function closeRide(){
+  const el=document.getElementById("rideMode"); if(!el) return;
+  el.classList.remove("on"); el.setAttribute("aria-hidden","true");
+  if(rideWatch!=null){ try{navigator.geolocation.clearWatch(rideWatch);}catch(e){} rideWatch=null; }
+  if(rideClock){ clearInterval(rideClock); rideClock=null; }
+  try{ rideWake&&rideWake.release(); }catch(e){} rideWake=null;
+  try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+  rideLastPos=null;
+}
+document.getElementById("rideBtn")?.addEventListener("click", ()=>{ try{ openRide(); }catch(e){} });
+document.getElementById("rideExit")?.addEventListener("click", closeRide);
+
+/* ================= WRAPPED DEL VIAGGIO (Fase 4) ================= */
+let wrapSlides = [], wrapIdx = 0, wrapTimer = null, wrapRAF = null;
+const WRAP_DUR = 3000;
+const wrapReduce = () => { try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e){ return false; } };
+
+function wrapClearTimers(){
+  if(wrapTimer){ clearTimeout(wrapTimer); wrapTimer=null; }
+  if(wrapRAF){ cancelAnimationFrame(wrapRAF); wrapRAF=null; }
+}
+
+async function wrapStats(){
+  const km = DAYS.reduce((s,d)=> s + (Number(d.km)||0), 0);
+  const giorni = DAYS.length;
+  const riposo = DAYS.filter(d=>d.rest).length;
+  let tappa = {km:0, route:"—"};
+  DAYS.forEach(d=>{ if((Number(d.km)||0) > tappa.km) tappa = {km:Number(d.km), route:d.route||"—"}; });
+  let foto=0, diario=0, done=0;
+  try{ foto = ((await store.get("caponord-foto-index", true))||[]).length; }catch(e){}
+  try{ diario = ((await store.get("caponord-diario", true))||[]).length; }catch(e){}
+  try{ const ts=(await store.get("caponord-trofei", true))||{}; done = TROPHIES.filter(tr=>ts[tr.id]&&ts[tr.id].on).length; }catch(e){}
+  return { km, paesi:11, giorni, riposo, tappa, foto, diario, done, tot:TROPHIES.length };
+}
+
+function wrapBuildSlides(s){
+  return [
+    {type:"intro", eyebrow:"Capo Nord · 2026", big:"Il viaggio,\nin numeri", sub:"Torino → Capo Nord → Torino"},
+    {type:"num", eyebrow:"Chilometri in sella", value:s.km, lab:"km", sub:"dal Gottardo fino al Mare di Barents"},
+    {type:"flags", eyebrow:"Confini attraversati", value:s.paesi, lab:"paesi", flags:"🇮🇹 🇨🇭 🇩🇪 🇩🇰 🇸🇪 🇳🇴 🇫🇮 🇪🇪 🇱🇻 🇱🇹 🇵🇱"},
+    {type:"num", eyebrow:"Giorni di spedizione", value:s.giorni, lab:"giorni", sub:"28 agosto → 20 settembre · "+s.riposo+" giornate di sosta"},
+    {type:"text", eyebrow:"Il punto più a nord", big:"71°10′", lab:"nord", sub:"Capo Nord · dove finisce il continente"},
+    {type:"num", eyebrow:"La tappa più lunga", value:s.tappa.km, lab:"km in un giorno", sub:s.tappa.route},
+    {type:"num", eyebrow:"Album condiviso", value:s.foto, lab:(s.foto===1?"scatto":"scatti"), sub:"i momenti da non scordare"},
+    {type:"num", eyebrow:"Diario di bordo", value:s.diario, lab:(s.diario===1?"pagina":"pagine"), sub:"il racconto della strada, giorno per giorno"},
+    {type:"num", eyebrow:"Trofei di rotta", value:s.done, lab:"su "+s.tot, sub:"le conquiste lungo il cammino"},
+    {type:"final", eyebrow:"3 leggende · 2 moto", big:"Ste · Vale\n· Ale", sub:"9.754 km insieme, fino in cima al mondo"}
+  ];
+}
+
+function wrapCountUp(el, target){
+  const set = v => el.textContent = Math.round(v).toLocaleString("it-IT");
+  if(wrapReduce() || target <= 0){ set(target); return; }
+  const dur = 1100, t0 = performance.now();
+  const step = now => {
+    let p = Math.min(1, (now - t0) / dur); p = 1 - Math.pow(1 - p, 3);
+    set(target * p);
+    if(p < 1) wrapRAF = requestAnimationFrame(step); else wrapRAF = null;
+  };
+  wrapRAF = requestAnimationFrame(step);
+}
+
+function wrapRenderBars(){
+  const bars = document.getElementById("wrapBars");
+  if(!bars) return;
+  bars.innerHTML = wrapSlides.map(()=>'<div class="wrap-seg"><i></i></div>').join("");
+}
+
+function wrapRenderSlide(i){
+  wrapClearTimers();
+  wrapIdx = Math.max(0, Math.min(wrapSlides.length - 1, i));
+  const sl = wrapSlides[wrapIdx];
+  const host = document.getElementById("wrapSlide");
+  if(!host) return;
+  const isFinal = sl.type === "final";
+
+  let inner = '<div class="wrap-eyebrow">'+esc(sl.eyebrow)+'</div>';
+  if(sl.type === "num" || sl.type === "flags"){
+    inner += '<div class="wrap-num" id="wrapNumEl">0</div>';
+    if(sl.lab) inner += '<div class="wrap-lab">'+esc(sl.lab)+'</div>';
+    if(sl.type === "flags") inner += '<div class="wrap-flags">'+sl.flags+'</div>';
+  } else {
+    inner += '<div class="wrap-big">'+esc(sl.big)+'</div>';
+    if(sl.lab) inner += '<div class="wrap-lab">'+esc(sl.lab)+'</div>';
+  }
+  if(sl.sub) inner += '<div class="wrap-sub">'+esc(sl.sub)+'</div>';
+  if(isFinal) inner += '<button class="wrap-share" id="wrapShare">📸 Condividi il recap</button>';
+  host.innerHTML = inner;
+  host.style.animation = "none"; void host.offsetWidth; host.style.animation = "";
+
+  if(sl.type === "num" || sl.type === "flags"){
+    const numEl = document.getElementById("wrapNumEl");
+    if(numEl) wrapCountUp(numEl, Number(sl.value)||0);
+  }
+  if(isFinal){
+    const sb = document.getElementById("wrapShare");
+    if(sb) sb.addEventListener("click", ()=>{ try{ shareWrapped(); }catch(e){ toast("Errore recap"); } });
+  }
+
+  // progress bars
+  const segs = document.querySelectorAll("#wrapBars .wrap-seg");
+  segs.forEach((seg, k)=>{
+    seg.classList.remove("active", "done");
+    const fill = seg.querySelector("i");
+    if(k < wrapIdx){ seg.classList.add("done"); }
+    else if(k === wrapIdx){
+      if(wrapReduce() || isFinal){ seg.classList.add("done"); }
+      else {
+        fill.style.transition = "none"; fill.style.width = "0%"; void fill.offsetWidth;
+        seg.style.setProperty("--wrapdur", WRAP_DUR + "ms");
+        seg.classList.add("active"); fill.style.transition = ""; fill.style.width = "";
+      }
+    } else { fill.style.transition = "none"; fill.style.width = "0%"; }
+  });
+
+  const hint = document.getElementById("wrapHint");
+  if(hint) hint.textContent = isFinal ? "tocca ✕ per chiudere" : "tocca per continuare";
+
+  if(!isFinal && !wrapReduce()){
+    wrapTimer = setTimeout(()=> wrapNext(), WRAP_DUR);
+  }
+}
+
+function wrapNext(){ if(wrapIdx < wrapSlides.length - 1) wrapRenderSlide(wrapIdx + 1); else wrapClearTimers(); }
+function wrapPrev(){ if(wrapIdx > 0) wrapRenderSlide(wrapIdx - 1); }
+
+async function openWrap(){
+  const overlay = document.getElementById("wrapMode");
+  if(!overlay) return;
+  let s; try{ s = await wrapStats(); }catch(e){ toast("Dati non pronti"); return; }
+  wrapSlides = wrapBuildSlides(s);
+  wrapRenderBars();
+  overlay.classList.add("on"); overlay.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  wrapRenderSlide(0);
+}
+
+function closeWrap(){
+  wrapClearTimers();
+  const overlay = document.getElementById("wrapMode");
+  if(overlay){ overlay.classList.remove("on"); overlay.setAttribute("aria-hidden", "true"); }
+  document.body.style.overflow = "";
+}
+
+/* ---- card condivisibile 1080x1350 (riusa il motore della Cartolina) ---- */
+async function shareWrapped(){
+  let s; try{ s = await wrapStats(); }catch(e){ s = {km:9754, paesi:11, giorni:24, foto:0, diario:0, done:0, tot:18}; }
+  const W=1080, H=1350, cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const ctx=cv.getContext("2d");
+  const bg=ctx.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#0B1220"); bg.addColorStop(.5,"#0E1729"); bg.addColorStop(1,"#0A0F1C");
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  const glow=(x,y,r,c)=>{ const g=ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,c); g.addColorStop(1,"rgba(0,0,0,0)"); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); };
+  glow(300,220,560,"rgba(79,227,193,.20)"); glow(830,150,480,"rgba(124,108,255,.20)"); glow(560,1240,650,"rgba(255,180,84,.10)");
+  ctx.strokeStyle="rgba(147,166,194,.25)"; ctx.lineWidth=2; ctx.strokeRect(46,46,W-92,H-92);
+  ctx.textAlign="center";
+  ctx.fillStyle="#4FE3C1"; ctx.font="700 30px 'Chakra Petch', monospace";
+  ctx.fillText("C A P O   N O R D   ·   2 0 2 6", W/2, 150);
+  ctx.fillStyle="#FFB454"; ctx.font="700 66px 'Space Grotesk', sans-serif";
+  ctx.fillText("IL VIAGGIO IN NUMERI", W/2, 228);
+  ctx.fillStyle="#93A6C2"; ctx.font="400 32px 'Inter', sans-serif";
+  ctx.fillText("Torino → Capo Nord → Torino", W/2, 280);
+
+  const cells = [
+    [s.km.toLocaleString("it-IT"), "CHILOMETRI"],
+    [String(s.paesi), "PAESI"],
+    [String(s.giorni), "GIORNI"],
+    ["71°10′", "PUNTO PIÙ A NORD"],
+    [String(s.foto), (s.foto===1?"FOTO":"FOTO")],
+    [s.done+"/"+s.tot, "TROFEI"]
+  ];
+  const colX=[W*0.29, W*0.71], rowY=[470, 700, 930];
+  cells.forEach((c,i)=>{
+    const cx=colX[i%2], cy=rowY[Math.floor(i/2)];
+    let fs=100; ctx.font="700 "+fs+"px 'Space Grotesk', sans-serif";
+    while(ctx.measureText(c[0]).width > W*0.40 && fs>44){ fs-=6; ctx.font="700 "+fs+"px 'Space Grotesk', sans-serif"; }
+    const grad=ctx.createLinearGradient(cx-180,0,cx+180,0);
+    grad.addColorStop(0,"#4FE3C1"); grad.addColorStop(.6,"#7C6CFF"); grad.addColorStop(1,"#FFB454");
+    ctx.fillStyle=grad; ctx.fillText(c[0], cx, cy);
+    ctx.fillStyle="#93A6C2"; ctx.font="700 26px 'Chakra Petch', monospace"; ctx.fillText(c[1], cx, cy+46);
+  });
+
+  ctx.strokeStyle="rgba(34,49,79,.9)"; ctx.beginPath(); ctx.moveTo(200,1040); ctx.lineTo(W-200,1040); ctx.stroke();
+  const cg=ctx.createLinearGradient(240,0,W-240,0);
+  cg.addColorStop(0,"#4FE3C1"); cg.addColorStop(.5,"#7C6CFF"); cg.addColorStop(1,"#FFB454");
+  ctx.fillStyle=cg; ctx.font="700 62px 'Space Grotesk', sans-serif"; ctx.fillText("STE · VALE · ALE", W/2, 1130);
+  ctx.fillStyle="#B9C6D8"; ctx.font="400 32px 'Inter', sans-serif"; ctx.fillText("3 leggende · 2 moto · 1 obiettivo", W/2, 1180);
+
+  ctx.fillStyle="#FFB454"; ctx.font="700 30px 'Chakra Petch', monospace";
+  ctx.fillText("TORINO → CAPO NORD → TORINO · 9.754 KM", W/2, H-110);
+  ctx.fillStyle="#93A6C2"; ctx.font="400 28px 'Inter', sans-serif";
+  ctx.fillText("una spedizione lunga un continente", W/2, H-72);
+
+  cv.toBlob(async blob=>{
+    if(!blob){ toast("Errore nel creare il recap"); return; }
+    const file=new File([blob],"capo-nord-wrapped.png",{type:"image/png"});
+    const txt="Capo Nord 2026 — "+s.km.toLocaleString("it-IT")+" km, 11 paesi, fino a 71°10′ N 🏍️🌌";
+    try{ if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:txt}); return; } }
+    catch(e){ if(e && e.name==="AbortError") return; }
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=file.name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    toast("📸 Recap salvato — pronto da condividere");
+  }, "image/png");
+}
+
+document.getElementById("wrapBtn")?.addEventListener("click", ()=>{ try{ openWrap(); }catch(e){ toast("Errore Wrapped"); } });
+document.getElementById("wrapExit")?.addEventListener("click", closeWrap);
+document.getElementById("wrapNext")?.addEventListener("click", wrapNext);
+document.getElementById("wrapPrev")?.addEventListener("click", wrapPrev);
+document.addEventListener("keydown", e=>{
+  const ov=document.getElementById("wrapMode");
+  if(!ov || !ov.classList.contains("on")) return;
+  if(e.key==="Escape") closeWrap();
+  else if(e.key==="ArrowRight"||e.key===" ") { e.preventDefault(); wrapNext(); }
+  else if(e.key==="ArrowLeft") wrapPrev();
+});
+(function(){
+  const ov=document.getElementById("wrapMode"); if(!ov) return;
+  let sx=0, sy=0;
+  ov.addEventListener("touchstart", e=>{ const t=e.changedTouches[0]; sx=t.clientX; sy=t.clientY; }, {passive:true});
+  ov.addEventListener("touchend", e=>{ const t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)){ if(dx<0) wrapNext(); else wrapPrev(); } }, {passive:true});
+})();
+document.addEventListener("visibilitychange", async ()=>{
+  if(document.visibilityState==="visible" && document.getElementById("rideMode")?.classList.contains("on")){
+    try{ if("wakeLock" in navigator) rideWake=await navigator.wakeLock.request("screen"); }catch(e){}
+  }
+});
 
 
 /* ---- QR pagina sponsor: punta all'URL reale dove gira il sito ---- */
