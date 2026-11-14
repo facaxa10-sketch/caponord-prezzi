@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13",
+ "updated": "2026-11-14",
  "prices": {
   "IT": 1.995,
   "CH": 1.96,
@@ -14,14 +14,14 @@
   "PL": 1.384
  },
  "sources": {
-  "LV": "Bollettino UE via fuel-prices.eu",
-  "DE": "Bollettino UE via fuel-prices.eu",
-  "PL": "Bollettino UE via fuel-prices.eu",
-  "DK": "Bollettino UE via fuel-prices.eu",
-  "EE": "Bollettino UE via fuel-prices.eu",
   "LT": "Bollettino UE via fuel-prices.eu",
-  "FI": "Bollettino UE via fuel-prices.eu",
+  "LV": "Bollettino UE via fuel-prices.eu",
   "SE": "Bollettino UE via fuel-prices.eu",
+  "EE": "Bollettino UE via fuel-prices.eu",
+  "DK": "Bollettino UE via fuel-prices.eu",
+  "FI": "Bollettino UE via fuel-prices.eu",
+  "PL": "Bollettino UE via fuel-prices.eu",
+  "DE": "Bollettino UE via fuel-prices.eu",
   "IT": "fuel-prices.eu (riserva, MIMIT KO)",
   "NO": "manuale (sito)",
   "CH": "manuale (sito)"
